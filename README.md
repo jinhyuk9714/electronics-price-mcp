@@ -55,6 +55,35 @@ npm run dev
 
 기본 MCP 주소는 `http://127.0.0.1:8787/mcp`입니다.
 
+## 바로 연결하기
+
+배포된 원격 MCP 주소는 아래와 같습니다.
+
+```text
+https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
+```
+
+### ChatGPT
+
+ChatGPT에서 원격 MCP 서버를 추가할 수 있는 화면이 보이면 위 주소를 그대로 넣으면 됩니다.
+화면 이름은 제품 버전에 따라 조금 달라질 수 있으니, `MCP`, `Connector`, `Server` 같은 항목을 찾으면 됩니다.
+
+### Claude Desktop
+
+원격 MCP를 직접 추가할 수 있는 환경이라면 같은 주소를 사용하면 됩니다.
+
+### Claude Code
+
+```bash
+claude mcp add electronics-price-mcp https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp --transport http
+```
+
+### 연결 확인용 질문
+
+- `그램 16 검색해 줘`
+- `RTX 5070 가격 비교해 줘`
+- `무선 기계식 키보드 중에서 현재 가격대 보여 줘`
+
 ## 배포하기
 
 Cloudflare Workers 인증이 되어 있다면 아래 명령으로 바로 배포할 수 있습니다.
