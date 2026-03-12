@@ -1,4 +1,5 @@
 import {
+  extractExactQueryModel,
   extractNormalizedModel,
   isAmbiguousComparison,
   normalizeBrand,
@@ -13,6 +14,7 @@ import type {
   ExplainFocus,
   ProductGroup,
   ProductOffer,
+  SearchProviderInput,
   SearchProductsInput,
   SearchProductsResult,
   SearchProvider
@@ -24,6 +26,26 @@ interface CacheEntry {
   group: ProductGroup;
   offers: ProductOffer[];
 }
+
+interface NormalizedSearchResult {
+  query: string;
+  offers: ProductOffer[];
+}
+
+type ComparisonTarget =
+  | {
+      status: "ok";
+      query: string;
+      group: ProductGroup;
+      offers: ProductOffer[];
+    }
+  | {
+      status: "ambiguous";
+      query: string;
+      summary: string;
+      warning: string;
+      offers: ProductOffer[];
+    };
 
 export class PriceService {
   private readonly provider: SearchProvider;
@@ -38,7 +60,7 @@ export class PriceService {
   }
 
   async searchProducts(input: SearchProductsInput): Promise<SearchProductsResult> {
-    const providerResult = await this.provider.searchProducts({
+    const providerResult = await this.fetchNormalizedOffers({
       query: input.query,
       category: input.category,
       sort: input.sort,
@@ -48,15 +70,14 @@ export class PriceService {
 
     const offers = filterUnsafeComparisonOffers(
       providerResult.query,
-      this.normalizeOffers(providerResult.query, providerResult.offers)
+      providerResult.offers
     ).filter((offer) =>
       typeof input.budgetMax === "number" ? offer.price <= input.budgetMax : true
     );
-    const dedupedOffers = dedupeOffers(offers);
-    const groups = buildGroups(dedupedOffers);
+    const groups = buildGroups(offers);
 
     for (const group of groups) {
-      const relatedOffers = dedupedOffers.filter((offer) => offer.productId === group.productId);
+      const relatedOffers = offers.filter((offer) => offer.productId === group.productId);
       this.cache.set(group.productId, {
         expiresAt: this.now() + this.cacheTtlMs,
         query: providerResult.query,
@@ -70,8 +91,8 @@ export class PriceService {
       summary:
         groups.length === 0
           ? `검색 결과가 없습니다: ${providerResult.query}`
-          : `${providerResult.query} 기준 ${groups.length}개 모델, ${dedupedOffers.length}개 판매처를 찾았습니다.`,
-      offers: dedupedOffers,
+          : `${providerResult.query} 기준 ${groups.length}개 모델, ${offers.length}개 판매처를 찾았습니다.`,
+      offers,
       groups
     };
   }
@@ -93,8 +114,8 @@ export class PriceService {
       return {
         query: target.query,
         status: "ambiguous",
-        summary: "정확히 같은 모델만 비교할 수 있습니다.",
-        warning: createAmbiguousWarning(target.offers),
+        summary: target.summary,
+        warning: target.warning,
         selectedProductId: null,
         offers: target.offers
       };
@@ -150,6 +171,15 @@ export class PriceService {
     };
   }
 
+  private async fetchNormalizedOffers(input: SearchProviderInput): Promise<NormalizedSearchResult> {
+    const providerResult = await this.provider.searchProducts(input);
+
+    return {
+      query: providerResult.query,
+      offers: dedupeOffers(this.normalizeOffers(providerResult.query, providerResult.offers))
+    };
+  }
+
   private normalizeOffers(query: string, offers: ProductOffer[]): ProductOffer[];
   private normalizeOffers(query: string, offers: Array<Omit<ProductOffer, "productId" | "normalizedModel" | "matchConfidence">>): ProductOffer[];
   private normalizeOffers(query: string, offers: Array<Omit<ProductOffer, "productId" | "normalizedModel" | "matchConfidence">>): ProductOffer[] {
@@ -184,29 +214,15 @@ export class PriceService {
     return cached;
   }
 
-  private async resolveTarget(productId?: string, query?: string): Promise<
-    | {
-        status: "ok";
-        query: string;
-        group: ProductGroup;
-        offers: ProductOffer[];
-      }
-    | {
-        status: "ambiguous";
-        query: string;
-        offers: ProductOffer[];
-      }
-    | null
-  > {
+  private async resolveTarget(productId?: string, query?: string): Promise<ComparisonTarget | null> {
     if (productId) {
       const cached = this.getCached(productId);
       if (cached) {
-        return {
-          status: "ok",
+        return resolveComparisonTarget({
           query: cached.query,
-          group: cached.group,
-          offers: cached.offers
-        };
+          offers: cached.offers,
+          forcedExactModel: cached.group.normalizedModel
+        });
       }
     }
 
@@ -214,7 +230,7 @@ export class PriceService {
       return null;
     }
 
-    const search = await this.searchProducts({
+    const search = await this.fetchNormalizedOffers({
       query,
       sort: "relevance",
       excludeUsed: true,
@@ -225,22 +241,63 @@ export class PriceService {
       return null;
     }
 
-    if (isAmbiguousComparison(query, search.offers) || search.groups.length !== 1) {
-      return {
-        status: "ambiguous",
-        query,
-        offers: search.offers
-      };
-    }
-
-    const group = search.groups[0];
-    return {
-      status: "ok",
+    return resolveComparisonTarget({
       query,
-      group,
-      offers: search.offers.filter((offer) => offer.productId === group.productId)
+      offers: search.offers
+    });
+  }
+}
+
+function resolveComparisonTarget(options: {
+  query: string;
+  offers: ProductOffer[];
+  forcedExactModel?: string | null;
+}): ComparisonTarget | null {
+  const dedupedOffers = dedupeOffers(options.offers);
+  if (dedupedOffers.length === 0) {
+    return null;
+  }
+
+  const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
+  const comparisonOffers = filterComparisonCandidates(options.query, dedupedOffers, exactQueryModel);
+  const groups = buildGroups(comparisonOffers);
+
+  if (comparisonOffers.length === 0) {
+    const accessoryOnlyExactQuery = exactQueryModel
+      ? hasOnlyUnsafeExactModelOffers(dedupedOffers, exactQueryModel)
+      : false;
+
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: accessoryOnlyExactQuery
+        ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다."
+        : "정확히 같은 모델만 비교할 수 있습니다.",
+      warning: accessoryOnlyExactQuery
+        ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
+        : createAmbiguousWarning(dedupedOffers),
+      offers: dedupedOffers
     };
   }
+
+  if ((!exactQueryModel && (isAmbiguousComparison(options.query, comparisonOffers) || groups.length !== 1)) || groups.length !== 1) {
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: "정확히 같은 모델만 비교할 수 있습니다.",
+      warning: createAmbiguousWarning(comparisonOffers),
+      offers: comparisonOffers
+    };
+  }
+
+  const group = groups[0]!;
+
+  return {
+    status: "ok",
+    query: options.query,
+    group,
+    offers: comparisonOffers.filter((offer) => offer.productId === group.productId)
+  };
 }
 
 function dedupeOffers(offers: ProductOffer[]): ProductOffer[] {
@@ -355,15 +412,27 @@ const ACCESSORY_KEYWORDS = [
   "필름",
   "어댑터",
   "충전기",
+  "케이블",
   "파우치",
   "가방",
   "거치대",
   "스탠드",
   "커버",
+  "키커버",
   "키스킨",
+  "덮개",
   "번들",
   "패키지",
   "BUNDLE"
+] as const;
+
+const CONFIG_VARIANT_KEYWORDS = [
+  "추가",
+  "교체",
+  "업그레이드",
+  "사은품",
+  "증정",
+  "무선광"
 ] as const;
 
 const DEVICE_SERIES_CUES = [
@@ -388,6 +457,20 @@ function filterUnsafeComparisonOffers(query: string, offers: ProductOffer[]): Pr
   return offers.filter((offer) => !isAccessoryLikeOffer(query, offer));
 }
 
+function filterComparisonCandidates(
+  query: string,
+  offers: ProductOffer[],
+  exactQueryModel: string | null
+): ProductOffer[] {
+  return offers.filter((offer) => {
+    if (exactQueryModel && offer.normalizedModel !== exactQueryModel) {
+      return false;
+    }
+
+    return !isComparisonExcludedOffer(query, offer);
+  });
+}
+
 function isAccessoryLikeOffer(query: string, offer: ProductOffer): boolean {
   const normalizedTitle = normalizeQuery(offer.title);
   const normalizedQuery = normalizeQuery(query);
@@ -404,6 +487,22 @@ function isAccessoryLikeOffer(query: string, offer: ProductOffer): boolean {
   return DEVICE_SERIES_CUES.some(
     (cue) => normalizedTitle.includes(cue) || normalizedQuery.includes(cue)
   );
+}
+
+function isComparisonExcludedOffer(query: string, offer: ProductOffer): boolean {
+  return isAccessoryLikeOffer(query, offer) || isConfigVariantOffer(offer.title);
+}
+
+function isConfigVariantOffer(title: string): boolean {
+  const normalizedTitle = normalizeQuery(title);
+
+  return normalizedTitle.includes("+") || CONFIG_VARIANT_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword));
+}
+
+function hasOnlyUnsafeExactModelOffers(offers: ProductOffer[], exactQueryModel: string): boolean {
+  const matchingOffers = offers.filter((offer) => offer.normalizedModel === exactQueryModel);
+
+  return matchingOffers.length > 0 && matchingOffers.every((offer) => isComparisonExcludedOffer(exactQueryModel, offer));
 }
 
 function createAmbiguousWarning(offers: ProductOffer[]): string {

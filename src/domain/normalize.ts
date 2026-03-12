@@ -20,10 +20,14 @@ const HTML_ENTITIES: Record<string, string> = {
   "&#39;": "'"
 };
 
+const DASH_CHARACTERS = /[‐‑‒–—−]/g;
+
 const NOTEBOOK_MODEL_PATTERNS = [
   /\b(\d{2}Z[A-Z0-9]{3,})\s*[- ]\s*([A-Z0-9]{4,})\b/g,
   /\b([A-Z]{1,3}\d{3,}[A-Z0-9]{2,})\s*[- ]\s*([A-Z0-9]{3,})\b/g
 ] as const;
+
+const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업"] as const;
 
 export function stripHtml(value: string): string {
   const withoutTags = value.replace(/<[^>]+>/g, " ");
@@ -53,7 +57,7 @@ export function normalizeBrand(value: string | null | undefined): string | null 
 }
 
 export function extractNormalizedModel(value: string): string | null {
-  const normalized = stripHtml(value).toUpperCase();
+  const normalized = normalizeModelText(value);
 
   const rtxMatch = normalized.match(/\bRTX\s*(\d{4})(?:\s*(TI|SUPER))?\b/);
   if (rtxMatch) {
@@ -73,6 +77,15 @@ export function extractNormalizedModel(value: string): string | null {
   }
 
   return null;
+}
+
+export function extractExactQueryModel(value: string): string | null {
+  const normalizedQuery = normalizeQuery(value);
+  if (BROAD_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))) {
+    return null;
+  }
+
+  return extractNormalizedModel(value);
 }
 
 export function isAmbiguousComparison(
@@ -97,7 +110,11 @@ export function isAmbiguousComparison(
 }
 
 export function normalizeQuery(value: string): string {
-  return stripHtml(value).toUpperCase().replace(/\s+/g, " ").trim();
+  return stripHtml(value)
+    .replace(DASH_CHARACTERS, "-")
+    .toUpperCase()
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function extractNotebookModelCode(value: string): string | null {
@@ -121,4 +138,11 @@ function normalizeModelPart(value: string): string {
 
 function isNotebookModelPart(value: string): boolean {
   return value.length >= 4 && /[A-Z]/.test(value) && /\d/.test(value);
+}
+
+function normalizeModelText(value: string): string {
+  return stripHtml(value)
+    .replace(DASH_CHARACTERS, "-")
+    .replace(/\s*-\s*/g, "-")
+    .toUpperCase();
 }

@@ -110,7 +110,7 @@ describe("PriceService", () => {
     expect(result.groups).toHaveLength(1);
   });
 
-  test("compareProductPrices rejects ambiguous comparisons", async () => {
+  test("compareProductPrices keeps only exact GPU model matches for exact model queries", async () => {
     const service = new PriceService({
       provider: createProvider({
         query: "rtx 5070",
@@ -127,6 +127,16 @@ describe("PriceService", () => {
           },
           {
             source: "naver-shopping",
+            sourceProductId: "150",
+            title: "ASUS PRIME GeForce RTX 5060 OC 8GB",
+            brand: "ASUS",
+            mallName: "몰C",
+            price: 699000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
             sourceProductId: "200",
             title: "MSI GeForce RTX 5070 Ti Ventus 2X OC D7 12GB",
             brand: "MSI",
@@ -134,6 +144,16 @@ describe("PriceService", () => {
             price: 999000,
             link: "https://example.com/b",
             image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "GIGABYTE GeForce RTX 5070 Eagle OC SFF 12GB",
+            brand: "GIGABYTE",
+            mallName: "몰D",
+            price: 889000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
           }
         ]
       })
@@ -143,14 +163,16 @@ describe("PriceService", () => {
       query: "rtx 5070"
     });
 
-    expect(result.status).toBe("ambiguous");
-    expect(result.warning).toContain("정확히 같은 모델");
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("RTX 5070");
+    expect(result.comparison?.mallCount).toBe(2);
+    expect(result.offers.every((offer) => offer.normalizedModel === "RTX 5070")).toBe(true);
   });
 
-  test("compareProductPrices rejects mixed RX variants", async () => {
+  test("compareProductPrices rejects mixed RX variants for broad series queries", async () => {
     const service = new PriceService({
       provider: createProvider({
-        query: "rx 9070",
+        query: "rx 9070 시리즈",
         offers: [
           {
             source: "naver-shopping",
@@ -177,7 +199,7 @@ describe("PriceService", () => {
     });
 
     const result = await service.compareProductPrices({
-      query: "rx 9070"
+      query: "rx 9070 시리즈"
     });
 
     expect(result.status).toBe("ambiguous");
@@ -269,6 +291,143 @@ describe("PriceService", () => {
     expect(compare.comparison?.mallCount).toBe(2);
   });
 
+  test("compareProductPrices stops when only accessory results exist for an exact notebook model query", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "LG 그램 16 16Z90T-GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG그램 AI 16Z90T-GA5CK 노트북 키스킨 키커버",
+            brand: "LG",
+            mallName: "몰A",
+            price: 8000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG그램 AI 16Z90T-GA5CK 노트북 키스킨 커버 덮개",
+            brand: "LG",
+            mallName: "몰B",
+            price: 13000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "LG 그램 16 16Z90T-GA5CK"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("비교를 중단");
+    expect(result.warning).toContain("액세서리");
+  });
+
+  test("compareProductPrices filters config bundles but keeps base notebook offers", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "NT960XGQ-A51A",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰A",
+            price: 2498900,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ - A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰B",
+            price: 2510000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "FINE NT960XGQ-A51A + NVME 1TB 추가 (무선광+파우치)",
+            brand: "Samsung",
+            mallName: "몰C",
+            price: 3800000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "NT960XGQ-A51A"
+    });
+
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("NT960XGQ-A51A");
+    expect(result.comparison?.mallCount).toBe(2);
+    expect(result.offers.some((offer) => offer.title.includes("추가"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("파우치"))).toBe(false);
+  });
+
+  test("compareProductPrices normalizes spaced notebook model queries before filtering comparison candidates", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "16Z90T GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램 16Z90T - GA5CK 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1999000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 그램 16Z90T-GA5CK 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰B",
+            price: 2050000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "LG그램 16Z90T-GA5CK 키스킨 키커버",
+            brand: "LG",
+            mallName: "몰C",
+            price: 9000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "16Z90T GA5CK"
+    });
+
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("16Z90T-GA5CK");
+    expect(result.comparison?.mallCount).toBe(2);
+    expect(result.offers.every((offer) => offer.normalizedModel === "16Z90T-GA5CK")).toBe(true);
+  });
+
   test("explainPurchaseOptions summarizes current price spread for the lowest price focus", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -306,5 +465,34 @@ describe("PriceService", () => {
     expect(result.status).toBe("ok");
     expect(result.insight?.focus).toBe("lowest_price");
     expect(result.summary).toContain("1499000");
+  });
+
+  test("explainPurchaseOptions surfaces the accessory/config warning for exact-model queries without clean device offers", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "LG 그램 16 16Z90T-GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG그램 AI 16Z90T-GA5CK 노트북 키스킨 키커버",
+            brand: "LG",
+            mallName: "몰A",
+            price: 8000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "LG 그램 16 16Z90T-GA5CK",
+      focus: "lowest_price"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("비교를 중단");
+    expect(result.warning).toContain("액세서리");
   });
 });
