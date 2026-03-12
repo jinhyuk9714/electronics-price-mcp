@@ -1,7 +1,10 @@
 import {
+  classifyOfferTitle,
+  detectBroadQueryKind,
   extractExactQueryModel,
   extractNormalizedModel,
   isAmbiguousComparison,
+  isBroadExploratoryQuery,
   normalizeBrand,
   normalizeQuery,
   simplifyIntentQuery,
@@ -281,7 +284,19 @@ function resolveComparisonTarget(options: {
   }
 
   const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
-  const comparisonOffers = filterComparisonCandidates(options.query, dedupedOffers, exactQueryModel);
+  const scopedOffers = exactQueryModel ? dedupedOffers : filterBroadSearchOffers(options.query, dedupedOffers);
+
+  if (!exactQueryModel && scopedOffers.length === 0) {
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      warning: "렌탈, 액세서리, 완본체 같은 다른 상품군만 확인되어 비교를 중단했습니다. 더 구체적인 제품명으로 다시 검색해 주세요.",
+      offers: []
+    };
+  }
+
+  const comparisonOffers = filterComparisonCandidates(options.query, scopedOffers, exactQueryModel);
   const groups = buildGroups(comparisonOffers);
 
   if (comparisonOffers.length === 0) {
@@ -297,8 +312,8 @@ function resolveComparisonTarget(options: {
         : "정확히 같은 모델만 비교할 수 있습니다.",
       warning: accessoryOnlyExactQuery
         ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
-        : createAmbiguousWarning(dedupedOffers),
-      offers: dedupedOffers
+        : createAmbiguousWarning(scopedOffers),
+      offers: scopedOffers
     };
   }
 
@@ -326,8 +341,15 @@ function selectSearchOffers(query: string, offers: ProductOffer[]): SearchSelect
   const exactQueryModel = extractExactQueryModel(query);
 
   if (!exactQueryModel) {
+    const broadOffers = filterBroadSearchOffers(query, offers);
+
     return {
-      offers: filterUnsafeComparisonOffers(query, offers)
+      offers: broadOffers,
+      ...(offers.length > 0 && broadOffers.length === 0
+        ? {
+            warning: "렌탈, 액세서리, 완본체 같은 다른 상품군만 확인되어 검색 결과를 비웠습니다. 더 구체적인 제품명으로 다시 검색해 주세요."
+          }
+        : {})
     };
   }
 
@@ -573,8 +595,14 @@ const DEVICE_SERIES_CUES = [
   "RADEON"
 ] as const;
 
-function filterUnsafeComparisonOffers(query: string, offers: ProductOffer[]): ProductOffer[] {
-  return offers.filter((offer) => !isAccessoryLikeOffer(query, offer));
+function filterBroadSearchOffers(query: string, offers: ProductOffer[]): ProductOffer[] {
+  if (!isBroadExploratoryQuery(query)) {
+    return offers;
+  }
+
+  const broadQueryKind = detectBroadQueryKind(query);
+
+  return offers.filter((offer) => !isBroadSearchExcludedOffer(query, offer, broadQueryKind));
 }
 
 function filterComparisonCandidates(
@@ -613,10 +641,40 @@ function isComparisonExcludedOffer(query: string, offer: ProductOffer): boolean 
   return isAccessoryLikeOffer(query, offer) || isConfigVariantOffer(offer.title);
 }
 
+function isBroadSearchExcludedOffer(
+  query: string,
+  offer: ProductOffer,
+  broadQueryKind: "graphics-card" | "laptop" | "other"
+): boolean {
+  if (isComparisonExcludedOffer(query, offer)) {
+    return true;
+  }
+
+  const keywordFlags = classifyOfferTitle(offer.title);
+
+  if (keywordFlags.isRental) {
+    return true;
+  }
+
+  if (broadQueryKind === "graphics-card") {
+    return keywordFlags.isGpuAccessory || keywordFlags.isDesktopPc;
+  }
+
+  if (broadQueryKind === "laptop") {
+    return keywordFlags.isNotebookAccessory;
+  }
+
+  return false;
+}
+
 function isConfigVariantOffer(title: string): boolean {
   const normalizedTitle = normalizeQuery(title);
 
-  return normalizedTitle.includes("+") || CONFIG_VARIANT_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword));
+  return (
+    /\+\s*(?:NVME|SSD|RAM|메모리|저장|추가|교체|업그레이드|사은품|증정|무선광|파우치|케이스|키스킨|키커버|마우스|키보드)/.test(
+      normalizedTitle
+    ) || CONFIG_VARIANT_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))
+  );
 }
 
 function hasOnlyUnsafeExactModelOffers(offers: ProductOffer[], exactQueryModel: string): boolean {

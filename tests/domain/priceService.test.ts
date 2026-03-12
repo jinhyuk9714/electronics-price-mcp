@@ -404,6 +404,121 @@ describe("PriceService", () => {
     expect(result.groups).toHaveLength(2);
   });
 
+  test("searchProducts removes rental products from broad notebook searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "[대여] 노트북 렌탈 게이밍 MSI GF76 i7 RTX 4060 임대 대여 7일",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 39000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "HP 빅터스 16 게이밍 노트북 RTX 4060",
+            brand: "HP",
+            mallName: "몰B",
+            price: 1479000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "레노버 리전 5 게이밍 노트북 RTX 4060",
+            brand: "Lenovo",
+            mallName: "몰C",
+            price: 1649000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.some((offer) => offer.title.includes("렌탈"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("대여"))).toBe(false);
+  });
+
+  test("searchProducts removes GPU accessories and complete PCs from broad graphics searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ACIDALIE 레드 안티 새깅 GPU 브라켓 - RTX 5070 /40/30 시리즈",
+            brand: null,
+            mallName: "몰A",
+            price: 115150,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "인텔 울트라7 265KF RTX5070 고사양 게이밍컴퓨터 조립PC",
+            brand: "포유컴",
+            mallName: "몰B",
+            price: 2829000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge OC 12GB",
+            brand: "ZOTAC",
+            mallName: "몰C",
+            price: 919000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "MSI GeForce RTX 5070 Ti Ventus 3X OC 16GB",
+            brand: "MSI",
+            mallName: "몰D",
+            price: 1069000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "RTX 5070 시리즈",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.some((offer) => offer.title.includes("브라켓"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("조립PC"))).toBe(false);
+    expect(result.groups.map((group) => group.normalizedModel)).toEqual(["RTX 5070", "RTX 5070 TI"]);
+  });
+
   test("compareProductPrices keeps only exact GPU model matches for exact model queries", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -499,6 +614,65 @@ describe("PriceService", () => {
     expect(result.status).toBe("ambiguous");
     expect(result.warning).toContain("모델 코드");
     expect(result.suggestedQueries).toEqual(["RX 9070 가격 비교해 줘", "RX 9070 XT 가격 비교해 줘"]);
+  });
+
+  test("compareProductPrices builds suggested queries from cleaned broad graphics results only", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ACIDALIE 레드 안티 새깅 GPU 브라켓 - RTX 5070 /40/30 시리즈",
+            brand: null,
+            mallName: "몰A",
+            price: 115150,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "인텔 울트라7 265KF RTX5070 고사양 게이밍컴퓨터 조립PC",
+            brand: "포유컴",
+            mallName: "몰B",
+            price: 2829000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge OC 12GB",
+            brand: "ZOTAC",
+            mallName: "몰C",
+            price: 919000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "MSI GeForce RTX 5070 Ti Ventus 3X OC 16GB",
+            brand: "MSI",
+            mallName: "몰D",
+            price: 1069000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "RTX 5070 시리즈 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual(["RTX 5070 가격 비교해 줘", "RTX 5070 TI 가격 비교해 줘"]);
+    expect(result.offers.some((offer) => offer.title.includes("브라켓"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("조립PC"))).toBe(false);
   });
 
   test("compareProductPrices keeps notebook line-name searches ambiguous when exact models are mixed", async () => {

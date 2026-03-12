@@ -29,6 +29,63 @@ const NOTEBOOK_MODEL_PATTERNS = [
 
 const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업"] as const;
 
+const NOTEBOOK_QUERY_CUES = [
+  "노트북",
+  "그램",
+  "GALAXYBOOK",
+  "갤럭시북",
+  "MACBOOK",
+  "맥북",
+  "VIVOBOOK",
+  "ZENBOOK",
+  "THINKPAD",
+  "IDEAPAD",
+  "INSPIRON",
+  "PAVILION"
+] as const;
+
+const GRAPHICS_QUERY_CUES = [
+  "RTX",
+  "RX",
+  "GEFORCE",
+  "RADEON",
+  "그래픽카드",
+  "그래픽 카드",
+  "GPU"
+] as const;
+
+const NOTEBOOK_ACCESSORY_KEYWORDS = [
+  "키스킨",
+  "키커버",
+  "케이스",
+  "보호필름",
+  "필름",
+  "어댑터",
+  "충전기",
+  "케이블",
+  "파우치",
+  "가방",
+  "커버",
+  "덮개"
+] as const;
+
+const GPU_ACCESSORY_KEYWORDS = ["브라켓", "지지대", "안티 새깅", "라이저", "수직 거치", "쿨러"] as const;
+
+const COMPLETE_PC_KEYWORDS = [
+  "조립PC",
+  "게이밍PC",
+  "게이밍 컴퓨터",
+  "게이밍컴퓨터",
+  "컴퓨터 본체",
+  "컴퓨터본체",
+  "완본체",
+  "데스크탑",
+  "데스크톱",
+  "PC본체"
+] as const;
+
+const RENTAL_KEYWORDS = ["렌탈", "대여", "임대", "월렌탈", "월 렌탈"] as const;
+
 const TRAILING_INTENT_PATTERNS = [
   /\s*(?:가격\s*비교(?:해)?\s*줘|비교(?:해)?\s*줘)\s*$/i,
   /\s*(?:가격\s*설명(?:해)?\s*줘|설명(?:해)?\s*줘)\s*$/i,
@@ -92,6 +149,43 @@ export function extractExactQueryModel(value: string): string | null {
   }
 
   return extractNormalizedModel(value);
+}
+
+export function isBroadExploratoryQuery(value: string): boolean {
+  return extractExactQueryModel(simplifyIntentQuery(value)) === null;
+}
+
+export function detectBroadQueryKind(value: string): "graphics-card" | "laptop" | "other" {
+  const normalizedQuery = normalizeQuery(simplifyIntentQuery(value));
+
+  if (NOTEBOOK_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))) {
+    return "laptop";
+  }
+
+  if (GRAPHICS_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))) {
+    return "graphics-card";
+  }
+
+  return "other";
+}
+
+export function classifyOfferTitle(value: string): {
+  isRental: boolean;
+  isDesktopPc: boolean;
+  isGpuAccessory: boolean;
+  isNotebookAccessory: boolean;
+} {
+  const normalizedTitle = normalizeQuery(value);
+
+  return {
+    isRental:
+      RENTAL_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword)) ||
+      ((normalizedTitle.includes("7일") || normalizedTitle.includes("30일")) &&
+        RENTAL_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))),
+    isDesktopPc: COMPLETE_PC_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword)),
+    isGpuAccessory: GPU_ACCESSORY_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword)),
+    isNotebookAccessory: NOTEBOOK_ACCESSORY_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))
+  };
 }
 
 export function simplifyIntentQuery(value: string): string {
