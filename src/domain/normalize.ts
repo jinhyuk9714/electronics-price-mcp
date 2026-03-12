@@ -1,14 +1,19 @@
 const BRAND_ALIASES: Record<string, string> = {
   "lg": "LG",
+  "엘지": "LG",
   "lg전자": "LG",
   "samsung": "Samsung",
   "삼성": "Samsung",
   "삼성전자": "Samsung",
   "asus": "ASUS",
+  "아수스": "ASUS",
+  "에이수스": "ASUS",
   "msi": "MSI",
+  "엠에스아이": "MSI",
   "hp": "HP",
   "dell": "Dell",
   "lenovo": "Lenovo",
+  "레노버": "Lenovo",
   "logitech": "Logitech",
   "zotac": "ZOTAC"
 };
@@ -95,15 +100,32 @@ const TRAILING_INTENT_PATTERNS = [
   /\s*(?:지금\s*사도\s*괜찮은?\s*가격대야|지금\s*사도\s*괜찮아|지금\s*사도\s*돼)\s*$/i
 ] as const;
 
-const NOTEBOOK_FAMILY_LINE_PATTERNS = [
-  { line: "GALAXYBOOK4 PRO 360", patterns: [/갤럭시북4\s*프로\s*360/i, /GALAXYBOOK\s*4\s*PRO\s*360/i] },
+type NotebookFamilyLinePattern = {
+  line: string;
+  patterns: readonly RegExp[];
+  brands?: readonly string[];
+};
+
+const NOTEBOOK_FAMILY_LINE_PATTERNS: readonly NotebookFamilyLinePattern[] = [
+  {
+    line: "GALAXYBOOK4 PRO 360",
+    patterns: [/갤럭시북4\s*프로\s*360/i, /GALAXYBOOK\s*4\s*PRO\s*360/i]
+  },
   { line: "GALAXYBOOK4 PRO", patterns: [/갤럭시북4\s*프로/i, /GALAXYBOOK\s*4\s*PRO/i] },
   { line: "GRAM PRO", patterns: [/그램\s*프로/i, /GRAM\s*PRO/i] },
+  { line: "ROG ZEPHYRUS", patterns: [/ROG\s*ZEPHYRUS/i], brands: ["ASUS"] },
+  { line: "ROG STRIX", patterns: [/ROG\s*STRIX/i], brands: ["ASUS"] },
   { line: "GRAM", patterns: [/그램/i, /GRAM/i] },
-  { line: "VICTUS", patterns: [/빅터스/i, /VICTUS/i] },
-  { line: "OMEN", patterns: [/OMEN/i] },
-  { line: "LEGION", patterns: [/리전/i, /LEGION/i] }
-] as const;
+  { line: "CYBORG", patterns: [/\bCYBORG\b/i], brands: ["MSI"] },
+  { line: "KATANA", patterns: [/\bKATANA\b/i], brands: ["MSI"] },
+  { line: "SWORD", patterns: [/\bSWORD\b/i], brands: ["MSI"] },
+  { line: "THIN", patterns: [/\bTHIN\b/i, /\bGF63\s*THIN\b/i], brands: ["MSI"] },
+  { line: "VICTUS", patterns: [/빅터스/i, /VICTUS/i], brands: ["HP"] },
+  { line: "OMEN", patterns: [/OMEN/i], brands: ["HP"] },
+  { line: "TUF", patterns: [/\bTUF(?:\s*GAMING)?\b/i], brands: ["ASUS"] },
+  { line: "LOQ", patterns: [/\bLOQ\b/i], brands: ["LENOVO"] },
+  { line: "LEGION", patterns: [/리전/i, /LEGION/i], brands: ["LENOVO"] }
+];
 
 export function stripHtml(value: string): string {
   const withoutTags = value.replace(/<[^>]+>/g, " ");
@@ -250,7 +272,7 @@ export function extractNotebookFamilyKey(query: string, title: string, brand?: s
     return null;
   }
 
-  const line = extractNotebookFamilyLine(title);
+  const line = extractNotebookFamilyLine(title, brand);
   if (!line) {
     return null;
   }
@@ -381,11 +403,24 @@ function isGpuModel(value: string): boolean {
   return value.startsWith("RTX ") || value.startsWith("RX ");
 }
 
-function extractNotebookFamilyLine(value: string): string | null {
+function extractNotebookFamilyLine(value: string, brand?: string | null): string | null {
+  const normalizedTitle = normalizeQuery(value);
+  const normalizedBrand = normalizeBrand(brand);
+  const canonicalBrand = normalizedBrand ? normalizeQuery(normalizedBrand) : null;
+
   for (const entry of NOTEBOOK_FAMILY_LINE_PATTERNS) {
-    if (entry.patterns.some((pattern) => pattern.test(value))) {
-      return entry.line;
+    if (!entry.patterns.some((pattern) => pattern.test(value))) {
+      continue;
     }
+
+    if (
+      entry.brands &&
+      !entry.brands.some((requiredBrand) => requiredBrand === canonicalBrand || normalizedTitle.includes(requiredBrand))
+    ) {
+      continue;
+    }
+
+      return entry.line;
   }
 
   return null;
@@ -404,16 +439,38 @@ function resolveNotebookFamilyBrand(brand: string | null | undefined, title: str
     return "HP";
   }
 
-  if (normalizedTitle.includes("LENOVO") || line === "LEGION") {
+  if (normalizedTitle.includes("LENOVO") || normalizedTitle.includes("레노버") || line === "LEGION" || line === "LOQ") {
     return "LENOVO";
   }
 
-  if (normalizedTitle.includes("LG") || line === "GRAM" || line === "GRAM PRO") {
+  if (normalizedTitle.includes("LG") || normalizedTitle.includes("엘지") || line === "GRAM" || line === "GRAM PRO") {
     return "LG";
   }
 
   if (normalizedTitle.includes("SAMSUNG") || line.startsWith("GALAXYBOOK")) {
     return "SAMSUNG";
+  }
+
+  if (
+    normalizedTitle.includes("ASUS") ||
+    normalizedTitle.includes("아수스") ||
+    normalizedTitle.includes("에이수스") ||
+    line === "TUF" ||
+    line === "ROG STRIX" ||
+    line === "ROG ZEPHYRUS"
+  ) {
+    return "ASUS";
+  }
+
+  if (
+    normalizedTitle.includes("MSI") ||
+    normalizedTitle.includes("엠에스아이") ||
+    line === "CYBORG" ||
+    line === "KATANA" ||
+    line === "SWORD" ||
+    line === "THIN"
+  ) {
+    return "MSI";
   }
 
   return null;

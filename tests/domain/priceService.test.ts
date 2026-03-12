@@ -886,6 +886,153 @@ describe("PriceService", () => {
     expect(result.groups[2]?.normalizedModel).toBeNull();
   });
 
+  test("searchProducts groups MSI and ASUS marketing titles by their notebook families", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "MSI Cyborg 15 게이밍 노트북 RTX 4060 대학생 입문용",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 1449000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "MSI Cyborg 15 고성능 게이밍 노트북 RTX 4060 영상편집",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 1499000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "MSI Katana 17 게이밍 노트북 RTX 4060 윈도우11",
+            brand: "MSI",
+            mallName: "몰C",
+            price: 1699000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "ASUS TUF Gaming A15 RTX 4060 게이밍 노트북",
+            brand: "ASUS",
+            mallName: "몰D",
+            price: 1749000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "104",
+            title: "ASUS TUF Gaming RTX 4060 노트북 영상편집",
+            brand: "ASUS",
+            mallName: "몰E",
+            price: 1799000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.groups).toHaveLength(4);
+    expect(result.groups.map((group) => group.offerCount).sort((left, right) => right - left)).toEqual([2, 1, 1, 1]);
+    expect(result.groups.some((group) => group.offerCount === 2 && group.title.includes("Cyborg 15"))).toBe(true);
+
+    const cyborgIds = result.offers
+      .filter((offer) => offer.title.includes("Cyborg 15"))
+      .map((offer) => offer.productId);
+
+    expect(new Set(cyborgIds).size).toBe(1);
+    expect(result.offers.find((offer) => offer.title.includes("Katana 17"))?.productId).not.toBe(cyborgIds[0]);
+
+    const tufIds = result.offers
+      .filter((offer) => offer.title.includes("ASUS TUF"))
+      .map((offer) => offer.productId);
+
+    expect(new Set(tufIds).size).toBe(2);
+  });
+
+  test("searchProducts keeps ROG sub-lines and LOQ exact codes separate", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ASUS ROG Strix G16 RTX 4060 게이밍 노트북",
+            brand: "ASUS",
+            mallName: "몰A",
+            price: 2049000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "ASUS ROG Zephyrus G16 RTX 4060 크리에이터 노트북",
+            brand: "ASUS",
+            mallName: "몰B",
+            price: 2149000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "레노버 LOQ 게이밍 노트북 RTX 4060 대학생 입문용",
+            brand: "레노버",
+            mallName: "몰C",
+            price: 1549000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "레노버 LOQ 15ARP9 R7 4060 12GB, 512GB",
+            brand: "레노버",
+            mallName: "몰D",
+            price: 1916900,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.groups).toHaveLength(4);
+    expect(result.groups.some((group) => group.title.includes("ROG Strix"))).toBe(true);
+    expect(result.groups.some((group) => group.title.includes("ROG Zephyrus"))).toBe(true);
+    expect(result.groups.some((group) => group.normalizedModel === "15ARP9")).toBe(true);
+    expect(result.groups.some((group) => group.title.includes("LOQ 게이밍"))).toBe(true);
+  });
+
   test("searchProducts removes GPU accessories and complete PCs from broad graphics searches", async () => {
     const service = new PriceService({
       provider: createProvider({

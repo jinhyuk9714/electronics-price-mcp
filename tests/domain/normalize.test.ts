@@ -89,6 +89,27 @@ describe("normalize helpers", () => {
     ).toBe("NOTEBOOK_FAMILY|LENOVO|LEGION|RTX 4060");
   });
 
+  test("extractNotebookFamilyKey recognizes additional MSI, ASUS, ROG, and LOQ families", () => {
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "MSI Cyborg 15 게이밍 노트북 RTX 4060", "MSI")
+    ).toBe("NOTEBOOK_FAMILY|MSI|CYBORG|15|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "MSI Katana 17 고성능 게이밍 노트북 RTX 4060", "MSI")
+    ).toBe("NOTEBOOK_FAMILY|MSI|KATANA|17|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "ASUS TUF Gaming A15 RTX 4060 게이밍 노트북", "ASUS")
+    ).toBe("NOTEBOOK_FAMILY|ASUS|TUF|15|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "ASUS ROG Strix G16 RTX 4060 게이밍 노트북", "ASUS")
+    ).toBe("NOTEBOOK_FAMILY|ASUS|ROG STRIX|16|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "ASUS ROG Zephyrus G16 RTX 4060 크리에이터 노트북", "ASUS")
+    ).toBe("NOTEBOOK_FAMILY|ASUS|ROG ZEPHYRUS|16|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "레노버 LOQ 게이밍 노트북 RTX 4060 대학생", "Lenovo")
+    ).toBe("NOTEBOOK_FAMILY|LENOVO|LOQ|RTX 4060");
+  });
+
   test("extractNormalizedModel does not treat line names as exact notebook models", () => {
     expect(extractNormalizedModel("LG 그램 16 2025")).toBeNull();
     expect(extractNormalizedModel("삼성 갤럭시북4 프로 16")).toBeNull();
