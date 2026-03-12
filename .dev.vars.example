@@ -1,0 +1,4 @@
+NAVER_CLIENT_ID=your_naver_client_id
+NAVER_CLIENT_SECRET=your_naver_client_secret
+REQUEST_TIMEOUT_MS=8000
+CACHE_TTL_MS=300000
