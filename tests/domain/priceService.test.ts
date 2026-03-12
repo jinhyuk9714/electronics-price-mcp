@@ -110,6 +110,300 @@ describe("PriceService", () => {
     expect(result.groups).toHaveLength(1);
   });
 
+  test("searchProducts keeps only exact GPU model matches for exact queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge",
+            brand: "ZOTAC",
+            mallName: "몰A",
+            price: 799000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "MSI GeForce RTX 5070 Gaming Trio",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 829000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ASUS PRIME GeForce RTX 5060 OC 8GB",
+            brand: "ASUS",
+            mallName: "몰C",
+            price: 699000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "GIGABYTE GeForce RTX 5070 Ti Windforce OC",
+            brand: "GIGABYTE",
+            mallName: "몰D",
+            price: 999000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "RTX 5070",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.every((offer) => offer.normalizedModel === "RTX 5070")).toBe(true);
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]?.normalizedModel).toBe("RTX 5070");
+  });
+
+  test("searchProducts removes config variants but keeps exact notebook device offers", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "NT960XGQ-A51A",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰A",
+            price: 2498900,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ - A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰B",
+            price: 2510000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "FINE NT960XGQ-A51A + NVME 1TB 추가 (무선광+파우치)",
+            brand: "Samsung",
+            mallName: "몰C",
+            price: 3800000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "NT960XGQ-A51A",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.some((offer) => offer.title.includes("추가"))).toBe(false);
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]?.normalizedModel).toBe("NT960XGQ-A51A");
+  });
+
+  test("searchProducts returns an empty result with a warning when exact notebook queries only match accessories", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "LG 그램 16 16Z90T-GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG그램 AI 16Z90T-GA5CK 노트북 키스킨 키커버",
+            brand: "LG",
+            mallName: "몰A",
+            price: 8000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG그램 AI 16Z90T-GA5CK 노트북 키스킨 커버 덮개",
+            brand: "LG",
+            mallName: "몰B",
+            price: 13000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "LG 그램 16 16Z90T-GA5CK",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.summary).toBe("검색 결과가 없습니다: LG 그램 16 16Z90T-GA5CK");
+    expect(result.warning).toContain("액세서리");
+    expect(result.offers).toHaveLength(0);
+    expect(result.groups).toHaveLength(0);
+  });
+
+  test("searchProducts returns an empty result with a warning when exact GPU queries only match other variants", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ASUS PRIME GeForce RTX 5060 OC 8GB",
+            brand: "ASUS",
+            mallName: "몰A",
+            price: 699000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "GIGABYTE GeForce RTX 5070 Ti Windforce OC",
+            brand: "GIGABYTE",
+            mallName: "몰B",
+            price: 999000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "RTX 5070",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.summary).toBe("검색 결과가 없습니다: RTX 5070");
+    expect(result.warning).toContain("변형");
+    expect(result.offers).toHaveLength(0);
+    expect(result.groups).toHaveLength(0);
+  });
+
+  test("searchProducts normalizes spaced notebook model queries before exact filtering", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "16Z90T GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램 16Z90T - GA5CK 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1999000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 그램 16Z90T-GA5CK 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰B",
+            price: 2050000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "LG그램 16Z90T-GA5CK 키스킨 키커버",
+            brand: "LG",
+            mallName: "몰C",
+            price: 9000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "16Z90T GA5CK",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.every((offer) => offer.normalizedModel === "16Z90T-GA5CK")).toBe(true);
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]?.normalizedModel).toBe("16Z90T-GA5CK");
+  });
+
+  test("searchProducts keeps broad notebook queries exploratory", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "그램 16",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램16 16ZD90Q-GX36K RAM 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1399000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "160만+ LG 그램 16 인텔 루나레이크 U5 영상편집 가벼운 노트북",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1999000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "그램 16",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.warning).toBeUndefined();
+    expect(result.offers).toHaveLength(2);
+    expect(result.groups).toHaveLength(2);
+  });
+
   test("compareProductPrices keeps only exact GPU model matches for exact model queries", async () => {
     const service = new PriceService({
       provider: createProvider({

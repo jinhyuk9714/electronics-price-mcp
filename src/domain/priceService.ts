@@ -32,6 +32,11 @@ interface NormalizedSearchResult {
   offers: ProductOffer[];
 }
 
+interface SearchSelection {
+  offers: ProductOffer[];
+  warning?: string;
+}
+
 type ComparisonTarget =
   | {
       status: "ok";
@@ -68,13 +73,12 @@ export class PriceService {
       limit: input.limit
     });
 
-    const offers = filterUnsafeComparisonOffers(
-      providerResult.query,
-      providerResult.offers
-    ).filter((offer) =>
+    const searchSelection = selectSearchOffers(providerResult.query, providerResult.offers);
+    const offers = searchSelection.offers.filter((offer) =>
       typeof input.budgetMax === "number" ? offer.price <= input.budgetMax : true
     );
     const groups = buildGroups(offers);
+    const warning = offers.length === 0 && searchSelection.offers.length === 0 ? searchSelection.warning : undefined;
 
     for (const group of groups) {
       const relatedOffers = offers.filter((offer) => offer.productId === group.productId);
@@ -92,6 +96,7 @@ export class PriceService {
         groups.length === 0
           ? `검색 결과가 없습니다: ${providerResult.query}`
           : `${providerResult.query} 기준 ${groups.length}개 모델, ${offers.length}개 판매처를 찾았습니다.`,
+      ...(warning ? { warning } : {}),
       offers,
       groups
     };
@@ -300,6 +305,44 @@ function resolveComparisonTarget(options: {
   };
 }
 
+function selectSearchOffers(query: string, offers: ProductOffer[]): SearchSelection {
+  const exactQueryModel = extractExactQueryModel(query);
+
+  if (!exactQueryModel) {
+    return {
+      offers: filterUnsafeComparisonOffers(query, offers)
+    };
+  }
+
+  const exactModelOffers = offers.filter((offer) => offer.normalizedModel === exactQueryModel);
+  const filteredOffers = filterComparisonCandidates(query, offers, exactQueryModel);
+
+  if (filteredOffers.length > 0) {
+    return {
+      offers: filteredOffers
+    };
+  }
+
+  if (exactModelOffers.length > 0) {
+    return {
+      offers: [],
+      warning: "본체가 아닌 액세서리나 구성변형만 확인되어 검색 결과를 비웠습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
+    };
+  }
+
+  if (hasCompetingExactModelOffers(offers, exactQueryModel)) {
+    return {
+      offers: [],
+      warning: "정확한 모델과 일치하지 않는 변형이나 다른 세대가 섞여 검색 결과를 비웠습니다. 모델 코드나 변형명까지 포함해 다시 검색해 주세요."
+    };
+  }
+
+  return {
+    offers: [],
+    warning: "정확한 모델과 일치하는 본체 상품을 찾지 못했습니다. 모델 코드나 변형명까지 포함해 다시 검색해 주세요."
+  };
+}
+
 function dedupeOffers(offers: ProductOffer[]): ProductOffer[] {
   const seen = new Set<string>();
   const deduped: ProductOffer[] = [];
@@ -503,6 +546,10 @@ function hasOnlyUnsafeExactModelOffers(offers: ProductOffer[], exactQueryModel: 
   const matchingOffers = offers.filter((offer) => offer.normalizedModel === exactQueryModel);
 
   return matchingOffers.length > 0 && matchingOffers.every((offer) => isComparisonExcludedOffer(exactQueryModel, offer));
+}
+
+function hasCompetingExactModelOffers(offers: ProductOffer[], exactQueryModel: string): boolean {
+  return offers.some((offer) => offer.normalizedModel && offer.normalizedModel !== exactQueryModel);
 }
 
 function createAmbiguousWarning(offers: ProductOffer[]): string {

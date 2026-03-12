@@ -61,6 +61,7 @@ export interface SearchProductsResult {
   [key: string]: unknown;
   query: string;
   summary: string;
+  warning?: string;
   offers: ProductOffer[];
   groups: ProductGroup[];
 }

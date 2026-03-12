@@ -171,6 +171,40 @@ describe("createApp", () => {
     });
   });
 
+  test("preserves optional search warnings through the public search api", async () => {
+    const app = createApp({
+      service: {
+        ...createService(),
+        async searchProducts(): Promise<SearchProductsResult> {
+          return {
+            query: "LG 그램 16 16Z90T-GA5CK",
+            summary: "검색 결과가 없습니다: LG 그램 16 16Z90T-GA5CK",
+            warning: "본체가 아닌 액세서리나 구성변형만 확인되어 검색 결과를 비웠습니다. 정확한 본체 상품명으로 다시 검색해 주세요.",
+            offers: [],
+            groups: []
+          };
+        }
+      }
+    });
+
+    const response = await app.request(
+      "https://example.com/api/search?query=LG%20%EA%B7%B8%EB%9E%A8%2016%2016Z90T-GA5CK&sort=relevance&excludeUsed=true&limit=10"
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      success: true,
+      data: {
+        query: "LG 그램 16 16Z90T-GA5CK",
+        summary: "검색 결과가 없습니다: LG 그램 16 16Z90T-GA5CK",
+        warning: "본체가 아닌 액세서리나 구성변형만 확인되어 검색 결과를 비웠습니다. 정확한 본체 상품명으로 다시 검색해 주세요.",
+        offers: [],
+        groups: []
+      }
+    });
+  });
+
   test("serves a public compare api and preserves ambiguity warnings", async () => {
     const app = createApp({
       service: createService()
