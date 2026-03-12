@@ -80,6 +80,15 @@ describe("normalize helpers", () => {
     ).toBeNull();
   });
 
+  test("extractNotebookFamilyKey keeps generic notebook family fallbacks stable without forcing a size", () => {
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집", "HP")
+    ).toBe("NOTEBOOK_FAMILY|HP|VICTUS|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "레노버 리전 고성능 게이밍 노트북 RTX 4060 대학생", "Lenovo")
+    ).toBe("NOTEBOOK_FAMILY|LENOVO|LEGION|RTX 4060");
+  });
+
   test("extractNormalizedModel does not treat line names as exact notebook models", () => {
     expect(extractNormalizedModel("LG 그램 16 2025")).toBeNull();
     expect(extractNormalizedModel("삼성 갤럭시북4 프로 16")).toBeNull();

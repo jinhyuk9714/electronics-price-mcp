@@ -440,7 +440,20 @@ function buildGroups(offers: ProductOffer[]): ProductGroup[] {
         matchConfidence: Math.max(...bucket.map((offer) => offer.matchConfidence))
       };
     })
-    .sort((left, right) => left.minPrice - right.minPrice);
+    .sort((left, right) => {
+      const leftRank = getGroupSortRank(left);
+      const rightRank = getGroupSortRank(right);
+
+      if (leftRank !== rightRank) {
+        return leftRank - rightRank;
+      }
+
+      if (left.minPrice !== right.minPrice) {
+        return left.minPrice - right.minPrice;
+      }
+
+      return left.title.localeCompare(right.title);
+    });
 }
 
 function createSuggestedQueries(
@@ -533,6 +546,18 @@ function createProductId(seed: string): string {
     .replace(/^-+|-+$/g, "");
 
   return normalized || "unclassified-product";
+}
+
+function getGroupSortRank(group: ProductGroup): number {
+  if (group.normalizedModel) {
+    return 0;
+  }
+
+  if (group.productId.startsWith("notebook-family-")) {
+    return 1;
+  }
+
+  return 2;
 }
 
 function applyMaxOffers(offers: ProductOffer[], maxOffers?: number): ProductOffer[] {

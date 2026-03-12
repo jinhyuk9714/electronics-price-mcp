@@ -514,9 +514,9 @@ describe("PriceService", () => {
 
     expect(result.groups.map((group) => group.normalizedModel)).toEqual([
       "15-FB2061AX",
-      null,
       "15IRX9",
-      "16-XF0052AX"
+      "16-XF0052AX",
+      null
     ]);
     expect(result.offers.filter((offer) => offer.normalizedModel === "RTX 4060")).toHaveLength(0);
   });
@@ -669,14 +669,83 @@ describe("PriceService", () => {
     });
 
     expect(result.groups).toHaveLength(4);
-    expect(result.groups.map((group) => group.offerCount)).toEqual([2, 1, 1, 1]);
-    expect(result.groups.map((group) => group.normalizedModel)).toEqual([null, null, "15IRX9", null]);
-    expect(result.groups[0]?.title).toContain("빅터스 15");
-    expect(result.groups[1]?.title).toContain("빅터스 16");
-    expect(result.groups[2]?.normalizedModel).toBe("15IRX9");
+    expect(result.groups.map((group) => group.offerCount)).toEqual([1, 2, 1, 1]);
+    expect(result.groups.map((group) => group.normalizedModel)).toEqual(["15IRX9", null, null, null]);
+    expect(result.groups[0]?.normalizedModel).toBe("15IRX9");
+    expect(result.groups[1]?.title).toContain("빅터스 15");
+    expect(result.groups[2]?.title).toContain("빅터스 16");
     expect(result.groups[3]?.title).toContain("MSI");
     expect(result.offers.filter((offer) => offer.title.includes("빅터스 15")).map((offer) => offer.productId)).toHaveLength(2);
     expect(new Set(result.offers.filter((offer) => offer.title.includes("빅터스 15")).map((offer) => offer.productId)).size).toBe(1);
+  });
+
+  test("searchProducts keeps size-less notebook family fallbacks separate from sized families", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1449000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "HP 빅터스 고성능 노트북 RTX 4060 대학생 입문용",
+            brand: "HP",
+            mallName: "몰B",
+            price: 1479000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "HP 빅터스 15 게이밍 노트북 RTX 4060",
+            brand: "HP",
+            mallName: "몰C",
+            price: 1499000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "HP 빅터스 16 게이밍 노트북 RTX 4060",
+            brand: "HP",
+            mallName: "몰D",
+            price: 1599000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.groups).toHaveLength(3);
+    expect(result.groups.map((group) => group.offerCount).sort((left, right) => right - left)).toEqual([2, 1, 1]);
+    expect(result.groups.some((group) => group.offerCount === 2 && group.title.includes("빅터스"))).toBe(true);
+
+    const genericVictusIds = result.offers
+      .filter((offer) => offer.title.includes("빅터스 게이밍") || offer.title.includes("빅터스 고성능"))
+      .map((offer) => offer.productId);
+
+    expect(new Set(genericVictusIds).size).toBe(1);
+    expect(result.offers.find((offer) => offer.title.includes("빅터스 15"))?.productId).not.toBe(genericVictusIds[0]);
+    expect(result.offers.find((offer) => offer.title.includes("빅터스 16"))?.productId).not.toBe(genericVictusIds[0]);
   });
 
   test("searchProducts keeps gram and gram pro families separate for broad notebook queries", async () => {
@@ -761,6 +830,60 @@ describe("PriceService", () => {
     expect(result.groups[0]?.title).toContain("갤럭시북4 프로 16");
     expect(result.groups[1]?.title).toContain("갤럭시북4 프로 360 16");
     expect(result.groups.every((group) => group.normalizedModel === null)).toBe(true);
+  });
+
+  test("searchProducts orders broad notebook groups as exact codes, then family fallbacks, then unknown titles", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1449000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "MSI 게이밍 노트북 RTX 4060 윈11 영상편집 포토샵",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 1499000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB",
+            brand: "Lenovo",
+            mallName: "몰C",
+            price: 1644000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.groups).toHaveLength(3);
+    expect(result.groups[0]?.normalizedModel).toBe("15IRX9");
+    expect(result.groups[1]?.title).toContain("빅터스");
+    expect(result.groups[1]?.normalizedModel).toBeNull();
+    expect(result.groups[2]?.title).toContain("MSI");
+    expect(result.groups[2]?.normalizedModel).toBeNull();
   });
 
   test("searchProducts removes GPU accessories and complete PCs from broad graphics searches", async () => {
