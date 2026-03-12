@@ -75,7 +75,7 @@ function createService() {
 }
 
 describe("createApp", () => {
-  test("serves root metadata and health endpoints", async () => {
+  test("serves expanded root metadata and health endpoints", async () => {
     const app = createApp({
       service: createService()
     });
@@ -88,12 +88,107 @@ describe("createApp", () => {
       name: "electronics-price-mcp",
       endpoints: {
         mcp: "/mcp",
-        health: "/health"
+        health: "/health",
+        prompt: "/prompt",
+        openapi: "/openapi.json",
+        privacy: "/privacy"
+      },
+      exampleQuestions: expect.arrayContaining(["그램 16 검색해 줘", "RTX 5070 가격 비교해 줘"]),
+      links: {
+        homepage: "https://electronics-price-mcp.jinhyuk9714.workers.dev",
+        mcp: "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
+        prompt: "https://electronics-price-mcp.jinhyuk9714.workers.dev/prompt"
       }
     });
     expect(healthResponse.status).toBe(200);
     expect(await healthResponse.json()).toEqual({
       status: "ok"
+    });
+  });
+
+  test("serves a prompt page with base-url-specific HTTP instructions", async () => {
+    const app = createApp({
+      service: createService()
+    });
+
+    const response = await app.request("https://example.com/prompt");
+    const body = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(body).toContain("https://example.com/api/search?query={검색어}");
+    expect(body).toContain("https://example.com/api/compare?query={검색어}");
+    expect(body).toContain("GET 방식");
+  });
+
+  test("serves openapi and privacy documents", async () => {
+    const app = createApp({
+      service: createService()
+    });
+
+    const openApiResponse = await app.request("https://example.com/openapi.json");
+    const openApi = (await openApiResponse.json()) as { paths: Record<string, unknown> };
+    const openApiYamlResponse = await app.request("https://example.com/openapi.yaml");
+    const openApiYaml = await openApiYamlResponse.text();
+    const privacyResponse = await app.request("https://example.com/privacy");
+    const privacyText = await privacyResponse.text();
+
+    expect(openApiResponse.status).toBe(200);
+    expect((openApi as { servers?: Array<{ url: string }> }).servers?.[0]?.url).toBe("https://example.com");
+    expect(openApi.paths).toMatchObject({
+      "/api/search": expect.any(Object),
+      "/api/compare": expect.any(Object),
+      "/health": expect.any(Object)
+    });
+    expect(openApi.paths["/mcp"]).toBeUndefined();
+    expect(openApiYamlResponse.status).toBe(200);
+    expect(openApiYaml).toContain('/api/search');
+    expect(openApiYaml).toContain('"https://example.com"');
+    expect(privacyResponse.status).toBe(200);
+    expect(privacyText).toContain("네이버 쇼핑 검색 API");
+    expect(privacyText).toContain("읽기 전용");
+  });
+
+  test("serves a public search api with reader-friendly wrapping", async () => {
+    const app = createApp({
+      service: createService()
+    });
+
+    const response = await app.request(
+      "https://example.com/api/search?query=%EA%B7%B8%EB%9E%A816&sort=relevance&excludeUsed=true&limit=10"
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      success: true,
+      data: {
+        query: "그램 16",
+        summary: "그램 16 기준 1개 모델, 2개 판매처를 찾았습니다."
+      },
+      meta: {
+        tool: "search_products"
+      }
+    });
+  });
+
+  test("serves a public compare api and preserves ambiguity warnings", async () => {
+    const app = createApp({
+      service: createService()
+    });
+
+    const response = await app.request("https://example.com/api/compare?query=rtx%205070");
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      success: true,
+      data: {
+        status: "ambiguous",
+        summary: "정확히 같은 모델만 비교할 수 있습니다."
+      },
+      meta: {
+        tool: "compare_product_prices"
+      }
     });
   });
 
@@ -160,5 +255,22 @@ describe("createApp", () => {
     expect(typedResult.content[0]?.text).toContain("NAVER_CLIENT_ID");
 
     await client.close();
+  });
+
+  test("returns a friendly http error payload when Naver credentials are missing", async () => {
+    const app = createApp({
+      env: {}
+    });
+
+    const response = await app.request("https://example.com/api/search?query=%EA%B7%B8%EB%9E%A816");
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body).toMatchObject({
+      success: false,
+      error: {
+        message: expect.stringContaining("NAVER_CLIENT_ID")
+      }
+    });
   });
 });

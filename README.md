@@ -5,6 +5,60 @@
 
 현재 v1은 공식 [네이버 쇼핑 검색 API](https://developers.naver.com/docs/serviceapi/search/shopping/shopping.md)만 사용합니다.
 
+## 바로 연결하기
+
+배포된 원격 MCP 주소:
+
+```text
+https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
+```
+
+체험용 HTTP API:
+
+```text
+https://electronics-price-mcp.jinhyuk9714.workers.dev/api/search?query=그램 16
+https://electronics-price-mcp.jinhyuk9714.workers.dev/api/compare?query=rtx 5070
+```
+
+문서형 엔드포인트:
+
+```text
+https://electronics-price-mcp.jinhyuk9714.workers.dev/prompt
+https://electronics-price-mcp.jinhyuk9714.workers.dev/openapi.json
+https://electronics-price-mcp.jinhyuk9714.workers.dev/openapi.yaml
+https://electronics-price-mcp.jinhyuk9714.workers.dev/privacy
+```
+
+## 앱별 가이드
+
+### ChatGPT
+
+ChatGPT에서 원격 MCP 서버를 추가할 수 있는 화면이 보이면 위 MCP 주소를 그대로 넣으면 됩니다.
+화면 이름은 버전에 따라 조금 다를 수 있으니 `MCP`, `Connector`, `Server` 같은 항목을 찾으면 됩니다.
+
+`GPT 앱` 진입점은 아직 고정 URL을 공개하지 않았습니다. 지금은 원격 MCP 주소로 연결하는 방식이 가장 빠릅니다.
+
+### Claude Desktop
+
+원격 MCP를 직접 추가할 수 있는 환경이라면 같은 주소를 사용하면 됩니다.
+
+### Claude Code
+
+```bash
+claude mcp add electronics-price-mcp https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp --transport http
+```
+
+### MCP를 못 쓰는 환경
+
+`/prompt` 페이지를 읽게 한 뒤, `GET /api/search` 또는 `GET /api/compare`를 호출하게 하면 됩니다.
+
+## 바로 써볼 질문
+
+- `그램 16 검색해 줘`
+- `RTX 5070 가격 비교해 줘`
+- `무선 기계식 키보드 검색해 줘`
+- `이 모델 지금 바로 사도 괜찮은 가격대인지 설명해 줘`
+
 ## 이 MCP로 할 수 있는 일
 
 - `search_products`
@@ -15,13 +69,6 @@
   - 검색 결과에 다른 모델이 섞이면 비교를 멈추고 더 구체적인 검색어를 안내합니다.
 - `explain_purchase_options`
   - 지금 검색된 결과 안에서 최저가 기준으로 어떤 선택이 유리한지 짧게 설명합니다.
-
-## 예시 질문
-
-- `그램 16 지금 얼마에 팔아?`
-- `RTX 5070 최저가 비교해 줘`
-- `무선 기계식 키보드 검색해 줘`
-- `이 모델 지금 바로 사도 괜찮은 가격대인지 설명해 줘`
 
 ## 환경 변수
 
@@ -54,35 +101,6 @@ npm run dev
 ```
 
 기본 MCP 주소는 `http://127.0.0.1:8787/mcp`입니다.
-
-## 바로 연결하기
-
-배포된 원격 MCP 주소는 아래와 같습니다.
-
-```text
-https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-```
-
-### ChatGPT
-
-ChatGPT에서 원격 MCP 서버를 추가할 수 있는 화면이 보이면 위 주소를 그대로 넣으면 됩니다.
-화면 이름은 제품 버전에 따라 조금 달라질 수 있으니, `MCP`, `Connector`, `Server` 같은 항목을 찾으면 됩니다.
-
-### Claude Desktop
-
-원격 MCP를 직접 추가할 수 있는 환경이라면 같은 주소를 사용하면 됩니다.
-
-### Claude Code
-
-```bash
-claude mcp add electronics-price-mcp https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp --transport http
-```
-
-### 연결 확인용 질문
-
-- `그램 16 검색해 줘`
-- `RTX 5070 가격 비교해 줘`
-- `무선 기계식 키보드 중에서 현재 가격대 보여 줘`
 
 ## 배포하기
 
@@ -136,3 +154,5 @@ https://electronics-price-mcp.<subdomain>.workers.dev/mcp
 - 역대 최저가, 실시간 재고, 배송 예정일은 다루지 않습니다.
 - 상세 스펙 표를 만들지 않고, 상품 제목에서 읽히는 모델명만 사용합니다.
 - `RTX 5070`과 `RTX 5070 Ti`처럼 다른 모델이 섞이면 비교를 거부합니다.
+- 체험용 HTTP API는 읽기 전용이며 `search`, `compare`만 공개합니다.
+- GPT 앱 링크는 별도 운영 단계에서 추가할 예정입니다.
