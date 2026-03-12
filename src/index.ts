@@ -32,7 +32,7 @@ export function createApp(options?: AppOptions) {
     c.json({
       name: SERVER_NAME,
       version: SERVER_VERSION,
-      description: "Remote MCP server for Korean electronics product search and price comparison",
+      description: "한국 전자기기 검색과 현재 가격 비교를 위한 원격 MCP 서버",
       endpoints: {
         mcp: "/mcp",
         health: "/health"
