@@ -3,8 +3,11 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { NaverShoppingClient } from "../../src/providers/naverShoppingClient.js";
 
 describe("NaverShoppingClient", () => {
+  const originalFetch = globalThis.fetch;
+
   afterEach(() => {
     vi.restoreAllMocks();
+    globalThis.fetch = originalFetch;
   });
 
   test("maps Naver shopping results into provider offers", async () => {
@@ -81,5 +84,54 @@ describe("NaverShoppingClient", () => {
         limit: 10
       })
     ).rejects.toThrow(/NAVER_CLIENT_ID|NAVER_CLIENT_SECRET/);
+  });
+
+  test("uses global fetch with the correct this binding in worker-like environments", async () => {
+    const workerLikeFetch = vi.fn(function (this: typeof globalThis) {
+      if (this !== globalThis) {
+        throw new TypeError("Illegal invocation");
+      }
+
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            items: [
+              {
+                productId: "12345",
+                title: "LG 그램 16 16Z90T-GA5CK",
+                link: "https://example.com/product",
+                image: "https://example.com/product.jpg",
+                lprice: "1499000",
+                mallName: "몰A",
+                brand: "LG전자"
+              }
+            ]
+          }),
+          {
+            status: 200,
+            headers: {
+              "content-type": "application/json"
+            }
+          }
+        )
+      );
+    });
+
+    globalThis.fetch = workerLikeFetch as typeof fetch;
+
+    const client = new NaverShoppingClient({
+      clientId: "client-id",
+      clientSecret: "client-secret"
+    });
+
+    const result = await client.searchProducts({
+      query: "그램 16",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(workerLikeFetch).toHaveBeenCalledOnce();
+    expect(result.offers).toHaveLength(1);
   });
 });

@@ -15,7 +15,9 @@ export class NaverShoppingClient implements SearchProvider {
   }) {
     this.clientId = options.clientId;
     this.clientSecret = options.clientSecret;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn =
+      options.fetchFn ??
+      ((input, init) => globalThis.fetch(input, init));
     this.timeoutMs = options.timeoutMs ?? 8000;
   }
 
