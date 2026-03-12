@@ -78,6 +78,7 @@ export interface CompareProductPricesResult {
   status: "ok" | "ambiguous" | "not_found";
   summary: string;
   warning?: string;
+  suggestedQueries?: string[];
   selectedProductId: string | null;
   offers: ProductOffer[];
   comparison?: {
@@ -101,6 +102,7 @@ export interface ExplainPurchaseOptionsResult {
   status: "ok" | "ambiguous" | "not_found";
   summary: string;
   warning?: string;
+  suggestedQueries?: string[];
   selectedProductId: string | null;
   offers: ProductOffer[];
   insight?: {

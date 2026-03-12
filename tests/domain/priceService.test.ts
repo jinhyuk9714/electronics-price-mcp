@@ -498,6 +498,7 @@ describe("PriceService", () => {
 
     expect(result.status).toBe("ambiguous");
     expect(result.warning).toContain("모델 코드");
+    expect(result.suggestedQueries).toEqual(["RX 9070 가격 비교해 줘", "RX 9070 XT 가격 비교해 줘"]);
   });
 
   test("compareProductPrices keeps notebook line-name searches ambiguous when exact models are mixed", async () => {
@@ -621,6 +622,7 @@ describe("PriceService", () => {
     expect(result.status).toBe("ambiguous");
     expect(result.summary).toContain("비교를 중단");
     expect(result.warning).toContain("액세서리");
+    expect(result.suggestedQueries).toBeUndefined();
   });
 
   test("compareProductPrices filters config bundles but keeps base notebook offers", async () => {
@@ -759,6 +761,7 @@ describe("PriceService", () => {
     expect(result.status).toBe("ok");
     expect(result.insight?.focus).toBe("lowest_price");
     expect(result.summary).toContain("1499000");
+    expect(result.suggestedQueries).toBeUndefined();
   });
 
   test("explainPurchaseOptions surfaces the accessory/config warning for exact-model queries without clean device offers", async () => {
@@ -788,5 +791,197 @@ describe("PriceService", () => {
     expect(result.status).toBe("ambiguous");
     expect(result.summary).toContain("비교를 중단");
     expect(result.warning).toContain("액세서리");
+    expect(result.suggestedQueries).toBeUndefined();
+  });
+
+  test("explainPurchaseOptions suggests more specific follow-up queries for ambiguous broad notebook searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "그램 16",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램16 16ZD90Q-GX36K RAM 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1399000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 그램16 16ZD90RU-GX54K RAM 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1499000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "2026 LG그램 프로 16 윈도우11 엘지 사무용 노트북",
+            brand: "LG",
+            mallName: "몰C",
+            price: 2433000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "그램 16",
+      focus: "lowest_price"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("바로 판단할 수 없습니다");
+    expect(result.warning).toContain("추천 검색어");
+    expect(result.suggestedQueries).toEqual([
+      "16ZD90Q-GX36K 지금 사도 괜찮은 가격대야?",
+      "16ZD90RU-GX54K 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("compareProductPrices suggests more specific follow-up queries for ambiguous broad GPU searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge",
+            brand: "ZOTAC",
+            mallName: "몰A",
+            price: 799000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "MSI GeForce RTX 5070 Ti Ventus 2X OC D7 12GB",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 999000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "세탁기 부품 AP5781465-PS8690623",
+            brand: null,
+            mallName: "몰C",
+            price: 15000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "RTX 5070 시리즈"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("바로 판단할 수 없습니다");
+    expect(result.warning).toContain("추천 검색어");
+    expect(result.suggestedQueries).toEqual([
+      "RTX 5070 가격 비교해 줘",
+      "RTX 5070 TI 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices trims comparison phrasing before calling the provider", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge",
+                brand: "ZOTAC",
+                mallName: "몰A",
+                price: 799000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "MSI GeForce RTX 5070 Ti Ventus 2X OC D7 12GB",
+                brand: "MSI",
+                mallName: "몰B",
+                price: 999000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    await service.compareProductPrices({
+      query: "RTX 5070 시리즈 가격 비교해 줘"
+    });
+
+    expect(receivedQuery).toBe("RTX 5070 시리즈");
+  });
+
+  test("explainPurchaseOptions trims purchase-intent phrasing before calling the provider", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "LG전자 그램16 16ZD90Q-GX36K RAM 16GB, 256GB",
+                brand: "LG",
+                mallName: "몰A",
+                price: 1399000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "LG전자 그램16 16ZD90RU-GX54K RAM 16GB, 256GB",
+                brand: "LG",
+                mallName: "몰B",
+                price: 1499000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    await service.explainPurchaseOptions({
+      query: "그램 16 지금 사도 괜찮아?"
+    });
+
+    expect(receivedQuery).toBe("그램 16");
   });
 });

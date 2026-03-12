@@ -52,8 +52,9 @@ function createService() {
       return {
         query: "rtx 5070",
         status: "ambiguous",
-        summary: "정확히 같은 모델만 비교할 수 있습니다.",
-        warning: "정확히 같은 모델이 섞이지 않도록 더 구체적인 모델명을 입력해 주세요.",
+        summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+        warning: "정확한 모델이 여러 개 섞여 있어 바로 판단할 수 없습니다. 모델 코드나 변형명까지 포함해 다시 검색해 주세요. 아래 추천 검색어를 바로 써보세요.",
+        suggestedQueries: ["RTX 5070 가격 비교해 줘", "RTX 5070 TI 가격 비교해 줘"],
         selectedProductId: null,
         offers: []
       };
@@ -218,7 +219,8 @@ describe("createApp", () => {
       success: true,
       data: {
         status: "ambiguous",
-        summary: "정확히 같은 모델만 비교할 수 있습니다."
+        summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+        suggestedQueries: ["RTX 5070 가격 비교해 줘", "RTX 5070 TI 가격 비교해 줘"]
       },
       meta: {
         tool: "compare_product_prices"
@@ -252,7 +254,7 @@ describe("createApp", () => {
     expect(tools.tools.map((tool) => tool.name)).toContain("search_products");
     expect(typedCompare.content[0]).toMatchObject({
       type: "text",
-      text: "정확히 같은 모델만 비교할 수 있습니다."
+      text: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     });
 
     await client.close();

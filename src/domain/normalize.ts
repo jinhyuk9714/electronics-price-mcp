@@ -29,6 +29,12 @@ const NOTEBOOK_MODEL_PATTERNS = [
 
 const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업"] as const;
 
+const TRAILING_INTENT_PATTERNS = [
+  /\s*(?:가격\s*비교(?:해)?\s*줘|비교(?:해)?\s*줘)\s*$/i,
+  /\s*(?:가격\s*설명(?:해)?\s*줘|설명(?:해)?\s*줘)\s*$/i,
+  /\s*(?:지금\s*사도\s*괜찮은?\s*가격대야|지금\s*사도\s*괜찮아|지금\s*사도\s*돼)\s*$/i
+] as const;
+
 export function stripHtml(value: string): string {
   const withoutTags = value.replace(/<[^>]+>/g, " ");
   const decoded = Object.entries(HTML_ENTITIES).reduce(
@@ -86,6 +92,26 @@ export function extractExactQueryModel(value: string): string | null {
   }
 
   return extractNormalizedModel(value);
+}
+
+export function simplifyIntentQuery(value: string): string {
+  const original = stripHtml(value).replace(DASH_CHARACTERS, "-").trim();
+  let simplified = original.replace(/[?？!]+$/g, "").trim();
+
+  while (true) {
+    const next = TRAILING_INTENT_PATTERNS.reduce(
+      (current, pattern) => current.replace(pattern, "").trim(),
+      simplified
+    ).replace(/[?？!]+$/g, "").trim();
+
+    if (next === simplified) {
+      break;
+    }
+
+    simplified = next;
+  }
+
+  return simplified || original;
 }
 
 export function isAmbiguousComparison(

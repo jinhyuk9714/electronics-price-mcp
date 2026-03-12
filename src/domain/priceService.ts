@@ -4,6 +4,7 @@ import {
   isAmbiguousComparison,
   normalizeBrand,
   normalizeQuery,
+  simplifyIntentQuery,
   stripHtml
 } from "./normalize.js";
 import type {
@@ -36,6 +37,8 @@ interface SearchSelection {
   offers: ProductOffer[];
   warning?: string;
 }
+
+const SUGGESTION_QUERY_STOPWORDS = new Set(["시리즈", "SERIES", "가격", "비교", "설명"]);
 
 type ComparisonTarget =
   | {
@@ -116,11 +119,14 @@ export class PriceService {
     }
 
     if (target.status === "ambiguous") {
+      const suggestedQueries = createSuggestedQueries(target.query, target.offers, "compare");
+
       return {
         query: target.query,
         status: "ambiguous",
         summary: target.summary,
-        warning: target.warning,
+        warning: withSuggestedQueryHint(target.warning, suggestedQueries),
+        ...(suggestedQueries ? { suggestedQueries } : {}),
         selectedProductId: null,
         offers: target.offers
       };
@@ -153,11 +159,20 @@ export class PriceService {
     });
 
     if (comparison.status !== "ok" || !comparison.comparison) {
+      const suggestedQueries =
+        comparison.status === "ambiguous"
+          ? createSuggestedQueries(comparison.query, comparison.offers, "explain")
+          : undefined;
+
       return {
         query: comparison.query,
         status: comparison.status,
-        summary: comparison.summary,
-        warning: comparison.warning,
+        summary:
+          comparison.status === "ambiguous" && suggestedQueries
+            ? "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+            : comparison.summary,
+        warning: withSuggestedQueryHint(comparison.warning, suggestedQueries),
+        ...(suggestedQueries ? { suggestedQueries } : {}),
         selectedProductId: comparison.selectedProductId,
         offers: comparison.offers
       };
@@ -235,8 +250,10 @@ export class PriceService {
       return null;
     }
 
+    const providerQuery = simplifyIntentQuery(query);
+
     const search = await this.fetchNormalizedOffers({
-      query,
+      query: providerQuery,
       sort: "relevance",
       excludeUsed: true,
       limit: 20
@@ -247,7 +264,7 @@ export class PriceService {
     }
 
     return resolveComparisonTarget({
-      query,
+      query: providerQuery,
       offers: search.offers
     });
   }
@@ -289,7 +306,7 @@ function resolveComparisonTarget(options: {
     return {
       status: "ambiguous",
       query: options.query,
-      summary: "정확히 같은 모델만 비교할 수 있습니다.",
+      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
     };
@@ -387,6 +404,66 @@ function buildGroups(offers: ProductOffer[]): ProductGroup[] {
       };
     })
     .sort((left, right) => left.minPrice - right.minPrice);
+}
+
+function createSuggestedQueries(
+  query: string,
+  offers: ProductOffer[],
+  mode: "compare" | "explain"
+): string[] | undefined {
+  const simplifiedQuery = simplifyIntentQuery(query);
+  if (extractExactQueryModel(simplifiedQuery)) {
+    return undefined;
+  }
+
+  const candidates = buildGroups(offers)
+    .filter((group): group is ProductGroup & { normalizedModel: string } => Boolean(group.normalizedModel))
+    .filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group))
+    .sort((left, right) => {
+      if (right.matchConfidence !== left.matchConfidence) {
+        return right.matchConfidence - left.matchConfidence;
+      }
+
+      return left.minPrice - right.minPrice;
+    });
+
+  const suggestions: string[] = [];
+  const seen = new Set<string>();
+
+  for (const group of candidates) {
+    const suggestion =
+      mode === "compare"
+        ? `${group.normalizedModel} 가격 비교해 줘`
+        : `${group.normalizedModel} 지금 사도 괜찮은 가격대야?`;
+
+    if (seen.has(suggestion)) {
+      continue;
+    }
+
+    seen.add(suggestion);
+    suggestions.push(suggestion);
+
+    if (suggestions.length === 3) {
+      break;
+    }
+  }
+
+  return suggestions.length > 0 ? suggestions : undefined;
+}
+
+function isSuggestedGroupRelevant(query: string, group: ProductGroup): boolean {
+  const tokens = normalizeQuery(query)
+    .split(" ")
+    .filter((token) => token.length > 1 && !SUGGESTION_QUERY_STOPWORDS.has(token));
+
+  if (tokens.length === 0) {
+    return true;
+  }
+
+  const haystack = normalizeQuery(`${group.title} ${group.normalizedModel ?? ""}`);
+  const matchCount = tokens.filter((token) => haystack.includes(token)).length;
+
+  return matchCount >= Math.min(2, tokens.length);
 }
 
 function calculateMatchConfidence(query: string, normalizedModel: string | null, title: string): number {
@@ -562,10 +639,22 @@ function createAmbiguousWarning(offers: ProductOffer[]): string {
   );
 
   if (hasGpuVariant) {
-    return "정확히 같은 모델만 비교할 수 있습니다. 모델 코드나 변형명(Ti, SUPER, XT 등)을 포함해 다시 검색해 주세요.";
+    return "정확한 모델이 여러 개 섞여 있어 바로 판단할 수 없습니다. 모델 코드나 변형명(Ti, SUPER, XT 등)을 포함해 다시 검색해 주세요.";
   }
 
-  return "정확히 같은 모델만 비교할 수 있습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.";
+  return "정확한 모델이 여러 개 섞여 있어 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.";
+}
+
+function withSuggestedQueryHint(warning: string | undefined, suggestedQueries: string[] | undefined): string | undefined {
+  if (!warning) {
+    return undefined;
+  }
+
+  if (!suggestedQueries || suggestedQueries.length === 0 || warning.includes("추천 검색어")) {
+    return warning;
+  }
+
+  return `${warning} 아래 추천 검색어를 바로 써보세요.`;
 }
 
 function pickRepresentativeOffer(offers: ProductOffer[]): ProductOffer {

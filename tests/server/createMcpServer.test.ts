@@ -11,7 +11,7 @@ import type {
 
 type ToolCallResult = {
   content: Array<{ type: string; text: string }>;
-  structuredContent: SearchProductsResult;
+  structuredContent: SearchProductsResult | CompareProductPricesResult | ExplainPurchaseOptionsResult;
 };
 
 function createService() {
@@ -53,8 +53,9 @@ function createService() {
       return {
         query: "rtx 5070",
         status: "ambiguous",
-        summary: "정확히 같은 모델만 비교할 수 있습니다.",
-        warning: "정확히 같은 모델이 섞이지 않도록 더 구체적인 모델명을 입력해 주세요.",
+        summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+        warning: "정확한 모델이 여러 개 섞여 있어 바로 판단할 수 없습니다. 모델 코드나 변형명까지 포함해 다시 검색해 주세요. 아래 추천 검색어를 바로 써보세요.",
+        suggestedQueries: ["RTX 5070 가격 비교해 줘", "RTX 5070 TI 가격 비교해 줘"],
         selectedProductId: null,
         offers: []
       };
@@ -129,12 +130,49 @@ describe("createMcpServer", () => {
     });
 
     const typedResult = result as unknown as ToolCallResult;
+    const structuredContent = typedResult.structuredContent as SearchProductsResult;
 
     expect(typedResult.content[0]).toMatchObject({
       type: "text",
       text: "그램 16 기준 1개 모델, 2개 판매처를 찾았습니다."
     });
-    expect(typedResult.structuredContent.groups[0]?.productId).toBe("gram-16z90t-ga5ck");
+    expect(structuredContent.groups[0]?.productId).toBe("gram-16z90t-ga5ck");
+
+    await client.close();
+    await server.close();
+  });
+
+  test("preserves suggestedQueries in ambiguous compare responses", async () => {
+    const server = await createMcpServer({
+      service: createService()
+    });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    const client = new Client({
+      name: "test-client",
+      version: "1.0.0"
+    });
+
+    await server.connect(serverTransport);
+    await client.connect(clientTransport);
+
+    const result = await client.callTool({
+      name: "compare_product_prices",
+      arguments: {
+        query: "rtx 5070 시리즈"
+      }
+    });
+
+    const typedResult = result as unknown as ToolCallResult;
+    const structuredContent = typedResult.structuredContent as CompareProductPricesResult;
+
+    expect(typedResult.content[0]).toMatchObject({
+      type: "text",
+      text: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+    });
+    expect(structuredContent.suggestedQueries).toEqual([
+      "RTX 5070 가격 비교해 줘",
+      "RTX 5070 TI 가격 비교해 줘"
+    ]);
 
     await client.close();
     await server.close();
