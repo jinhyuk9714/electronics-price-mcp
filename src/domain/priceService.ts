@@ -3,6 +3,7 @@ import {
   detectBroadQueryKind,
   extractExactQueryModel,
   extractGpuModel,
+  extractNotebookFamilyKey,
   extractRequestedNotebookGpuModel,
   isAmbiguousComparison,
   isBroadExploratoryQuery,
@@ -211,13 +212,15 @@ export class PriceService {
     const normalizedQuery = normalizeQuery(query);
 
     return offers.map((offer) => {
+      const brand = normalizeBrand(offer.brand);
       const normalizedModel = resolvePrimaryModelForQuery(query, offer.title);
-      const productId = createProductId(normalizedModel ?? offer.title);
+      const notebookFamilyKey = normalizedModel ? null : extractNotebookFamilyKey(query, offer.title, brand);
+      const productId = createProductId(normalizedModel ?? notebookFamilyKey ?? offer.title);
 
       return {
         ...offer,
         title: stripHtml(offer.title),
-        brand: normalizeBrand(offer.brand),
+        brand,
         productId,
         normalizedModel,
         matchConfidence: calculateMatchConfidence(normalizedQuery, normalizedModel, offer.title)
@@ -316,6 +319,16 @@ function resolveComparisonTarget(options: {
         ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
         : createAmbiguousWarning(scopedOffers),
       offers: scopedOffers
+    };
+  }
+
+  if (!exactQueryModel && detectBroadQueryKind(options.query) === "laptop") {
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      warning: createAmbiguousWarning(comparisonOffers),
+      offers: comparisonOffers
     };
   }
 

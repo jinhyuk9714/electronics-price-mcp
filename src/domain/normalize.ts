@@ -95,6 +95,16 @@ const TRAILING_INTENT_PATTERNS = [
   /\s*(?:지금\s*사도\s*괜찮은?\s*가격대야|지금\s*사도\s*괜찮아|지금\s*사도\s*돼)\s*$/i
 ] as const;
 
+const NOTEBOOK_FAMILY_LINE_PATTERNS = [
+  { line: "GALAXYBOOK4 PRO 360", patterns: [/갤럭시북4\s*프로\s*360/i, /GALAXYBOOK\s*4\s*PRO\s*360/i] },
+  { line: "GALAXYBOOK4 PRO", patterns: [/갤럭시북4\s*프로/i, /GALAXYBOOK\s*4\s*PRO/i] },
+  { line: "GRAM PRO", patterns: [/그램\s*프로/i, /GRAM\s*PRO/i] },
+  { line: "GRAM", patterns: [/그램/i, /GRAM/i] },
+  { line: "VICTUS", patterns: [/빅터스/i, /VICTUS/i] },
+  { line: "OMEN", patterns: [/OMEN/i] },
+  { line: "LEGION", patterns: [/리전/i, /LEGION/i] }
+] as const;
+
 export function stripHtml(value: string): string {
   const withoutTags = value.replace(/<[^>]+>/g, " ");
   const decoded = Object.entries(HTML_ENTITIES).reduce(
@@ -229,6 +239,42 @@ export function extractRequestedNotebookGpuModel(value: string): string | null {
   return extractGpuModel(simplifiedQuery);
 }
 
+export function extractNotebookFamilyKey(query: string, title: string, brand?: string | null): string | null {
+  const simplifiedQuery = simplifyIntentQuery(query);
+
+  if (detectBroadQueryKind(simplifiedQuery) !== "laptop") {
+    return null;
+  }
+
+  if (extractNotebookModelCode(title)) {
+    return null;
+  }
+
+  const line = extractNotebookFamilyLine(title);
+  if (!line) {
+    return null;
+  }
+
+  const familyBrand = resolveNotebookFamilyBrand(brand, title, line);
+  if (!familyBrand) {
+    return null;
+  }
+
+  const size = extractNotebookFamilySize(title, simplifiedQuery, line);
+  const requestedGpuModel = extractRequestedNotebookGpuModel(simplifiedQuery);
+  const parts = ["NOTEBOOK_FAMILY", familyBrand, line];
+
+  if (size) {
+    parts.push(size);
+  }
+
+  if (requestedGpuModel) {
+    parts.push(requestedGpuModel);
+  }
+
+  return parts.join("|");
+}
+
 export function resolvePrimaryModelForQuery(query: string, title: string): string | null {
   const simplifiedQuery = simplifyIntentQuery(query);
   const exactQueryModel = extractExactQueryModel(simplifiedQuery);
@@ -333,6 +379,74 @@ function isNotebookSizePrefix(value: string): boolean {
 
 function isGpuModel(value: string): boolean {
   return value.startsWith("RTX ") || value.startsWith("RX ");
+}
+
+function extractNotebookFamilyLine(value: string): string | null {
+  for (const entry of NOTEBOOK_FAMILY_LINE_PATTERNS) {
+    if (entry.patterns.some((pattern) => pattern.test(value))) {
+      return entry.line;
+    }
+  }
+
+  return null;
+}
+
+function resolveNotebookFamilyBrand(brand: string | null | undefined, title: string, line: string): string | null {
+  const normalizedBrand = normalizeBrand(brand);
+  const canonicalBrand = normalizedBrand ? normalizeQuery(normalizedBrand) : null;
+  if (canonicalBrand && ["LG", "SAMSUNG", "HP", "LENOVO", "MSI", "ASUS", "DELL"].includes(canonicalBrand)) {
+    return canonicalBrand;
+  }
+
+  const normalizedTitle = normalizeQuery(title);
+
+  if (normalizedTitle.includes("HP") || line === "VICTUS" || line === "OMEN") {
+    return "HP";
+  }
+
+  if (normalizedTitle.includes("LENOVO") || line === "LEGION") {
+    return "LENOVO";
+  }
+
+  if (normalizedTitle.includes("LG") || line === "GRAM" || line === "GRAM PRO") {
+    return "LG";
+  }
+
+  if (normalizedTitle.includes("SAMSUNG") || line.startsWith("GALAXYBOOK")) {
+    return "SAMSUNG";
+  }
+
+  return null;
+}
+
+function extractNotebookFamilySize(title: string, query: string, line: string): string | null {
+  const titleSize = extractFamilySizeFromText(title, line);
+  if (titleSize) {
+    return titleSize;
+  }
+
+  return extractFamilySizeFromText(query, line);
+}
+
+function extractFamilySizeFromText(value: string, line: string): string | null {
+  const normalizedValue = normalizeQuery(value);
+  const linePattern = line
+    .replace(/\s+/g, "\\s*")
+    .replace("GRAM\\s*PRO", "GRAM\\s*PRO")
+    .replace("GALAXYBOOK4\\s*PRO\\s*360", "GALAXYBOOK\\s*4\\s*PRO\\s*360")
+    .replace("GALAXYBOOK4\\s*PRO", "GALAXYBOOK\\s*4\\s*PRO");
+
+  const sizeMatch = normalizedValue.match(new RegExp(`${linePattern}\\s*(13|14|15|16|17|18)`));
+  if (sizeMatch?.[1]) {
+    return sizeMatch[1];
+  }
+
+  const bareSizeMatch = normalizedValue.match(/(?:^|[^0-9])(13|14|15|16|17|18)(?![0-9])/);
+  if (bareSizeMatch?.[1]) {
+    return bareSizeMatch[1];
+  }
+
+  return null;
 }
 
 function normalizeModelText(value: string): string {

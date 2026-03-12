@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import {
   extractGpuModel,
   extractExactQueryModel,
+  extractNotebookFamilyKey,
   extractNormalizedModel,
   extractNotebookModelCode,
   extractRequestedNotebookGpuModel,
@@ -56,6 +57,27 @@ describe("normalize helpers", () => {
     expect(extractRequestedNotebookGpuModel("4060 노트북")).toBe("RTX 4060");
     expect(extractRequestedNotebookGpuModel("RTX 4070 노트북")).toBe("RTX 4070");
     expect(extractRequestedNotebookGpuModel("그램 16")).toBeNull();
+  });
+
+  test("extractNotebookFamilyKey creates safe fallback groups for broad notebook queries", () => {
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "HP 빅터스 15 게이밍 노트북 라이젠7 RTX 4060 영상편집", "HP")
+    ).toBe("NOTEBOOK_FAMILY|HP|VICTUS|15|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "HP 빅터스 16 게이밍 노트북 라이젠7 RTX 4060 영상편집", "HP")
+    ).toBe("NOTEBOOK_FAMILY|HP|VICTUS|16|RTX 4060");
+    expect(
+      extractNotebookFamilyKey("그램 16", "LG 그램 프로 16 윈도우11 사무용 노트북", "LG")
+    ).toBe("NOTEBOOK_FAMILY|LG|GRAM PRO|16");
+    expect(
+      extractNotebookFamilyKey("그램 16", "2026 LG그램 프로 16 윈도우11 엘지 사무용 노트북", "그램16")
+    ).toBe("NOTEBOOK_FAMILY|LG|GRAM PRO|16");
+    expect(
+      extractNotebookFamilyKey("갤럭시북4 프로 16", "삼성 갤럭시북4 프로 360 16 크리에이터 노트북", "Samsung")
+    ).toBe("NOTEBOOK_FAMILY|SAMSUNG|GALAXYBOOK4 PRO 360|16");
+    expect(
+      extractNotebookFamilyKey("4060 노트북", "MSI 게이밍 노트북 RTX 4060 윈11 영상편집", "MSI")
+    ).toBeNull();
   });
 
   test("extractNormalizedModel does not treat line names as exact notebook models", () => {
