@@ -20,6 +20,11 @@ const HTML_ENTITIES: Record<string, string> = {
   "&#39;": "'"
 };
 
+const NOTEBOOK_MODEL_PATTERNS = [
+  /\b(\d{2}Z[A-Z0-9]{3,})\s*[- ]\s*([A-Z0-9]{4,})\b/g,
+  /\b([A-Z]{1,3}\d{3,}[A-Z0-9]{2,})\s*[- ]\s*([A-Z0-9]{3,})\b/g
+] as const;
+
 export function stripHtml(value: string): string {
   const withoutTags = value.replace(/<[^>]+>/g, " ");
   const decoded = Object.entries(HTML_ENTITIES).reduce(
@@ -62,9 +67,9 @@ export function extractNormalizedModel(value: string): string | null {
     return `RX ${rxMatch[1]}${variant}`;
   }
 
-  const modelCodeMatch = normalized.match(/\b[0-9]{2}[A-Z0-9]{3,}-[A-Z0-9]{4,}\b/);
-  if (modelCodeMatch) {
-    return modelCodeMatch[0];
+  const notebookModelCode = extractNotebookModelCode(normalized);
+  if (notebookModelCode) {
+    return notebookModelCode;
   }
 
   return null;
@@ -93,4 +98,27 @@ export function isAmbiguousComparison(
 
 export function normalizeQuery(value: string): string {
   return stripHtml(value).toUpperCase().replace(/\s+/g, " ").trim();
+}
+
+function extractNotebookModelCode(value: string): string | null {
+  for (const pattern of NOTEBOOK_MODEL_PATTERNS) {
+    for (const match of value.matchAll(pattern)) {
+      const prefix = normalizeModelPart(match[1]);
+      const suffix = normalizeModelPart(match[2]);
+
+      if (isNotebookModelPart(prefix) && isNotebookModelPart(suffix)) {
+        return `${prefix}-${suffix}`;
+      }
+    }
+  }
+
+  return null;
+}
+
+function normalizeModelPart(value: string): string {
+  return value.replace(/[^A-Z0-9]/g, "");
+}
+
+function isNotebookModelPart(value: string): boolean {
+  return value.length >= 4 && /[A-Z]/.test(value) && /\d/.test(value);
 }

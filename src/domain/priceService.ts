@@ -46,7 +46,10 @@ export class PriceService {
       limit: input.limit
     });
 
-    const offers = this.normalizeOffers(providerResult.query, providerResult.offers).filter((offer) =>
+    const offers = filterUnsafeComparisonOffers(
+      providerResult.query,
+      this.normalizeOffers(providerResult.query, providerResult.offers)
+    ).filter((offer) =>
       typeof input.budgetMax === "number" ? offer.price <= input.budgetMax : true
     );
     const dedupedOffers = dedupeOffers(offers);
@@ -91,7 +94,7 @@ export class PriceService {
         query: target.query,
         status: "ambiguous",
         summary: "정확히 같은 모델만 비교할 수 있습니다.",
-        warning: "정확히 같은 모델이 섞이지 않도록 더 구체적인 모델명을 입력해 주세요.",
+        warning: createAmbiguousWarning(target.offers),
         selectedProductId: null,
         offers: target.offers
       };
@@ -270,7 +273,7 @@ function buildGroups(offers: ProductOffer[]): ProductGroup[] {
     .map(([productId, bucket]) => {
       const minPrice = Math.min(...bucket.map((offer) => offer.price));
       const maxPrice = Math.max(...bucket.map((offer) => offer.price));
-      const representative = bucket[0]!;
+      const representative = pickRepresentativeOffer(bucket);
 
       return {
         productId,
@@ -287,8 +290,10 @@ function buildGroups(offers: ProductOffer[]): ProductGroup[] {
 }
 
 function calculateMatchConfidence(query: string, normalizedModel: string | null, title: string): number {
+  const normalizedTitle = normalizeQuery(title);
+
   if (normalizedModel && query.includes(normalizedModel)) {
-    return 1;
+    return normalizedTitle.includes(normalizedModel) ? 1 : 0.98;
   }
 
   if (normalizedModel) {
@@ -301,7 +306,6 @@ function calculateMatchConfidence(query: string, normalizedModel: string | null,
     return 0.8;
   }
 
-  const normalizedTitle = normalizeQuery(title);
   return normalizedTitle.includes(query) ? 0.6 : 0.4;
 }
 
@@ -343,4 +347,91 @@ function createInsight(focus: ExplainFocus, minPrice: number, maxPrice: number, 
         message: `현재 최저가는 ${minPrice}원이고 최고가와의 차이는 ${spread}원입니다.`
       };
   }
+}
+
+const ACCESSORY_KEYWORDS = [
+  "케이스",
+  "보호필름",
+  "필름",
+  "어댑터",
+  "충전기",
+  "파우치",
+  "가방",
+  "거치대",
+  "스탠드",
+  "커버",
+  "키스킨",
+  "번들",
+  "패키지",
+  "BUNDLE"
+] as const;
+
+const DEVICE_SERIES_CUES = [
+  "그램",
+  "GALAXYBOOK",
+  "갤럭시북",
+  "MACBOOK",
+  "맥북",
+  "VIVOBOOK",
+  "ZENBOOK",
+  "THINKPAD",
+  "IDEAPAD",
+  "INSPIRON",
+  "PAVILION",
+  "RTX",
+  "RX",
+  "GEFORCE",
+  "RADEON"
+] as const;
+
+function filterUnsafeComparisonOffers(query: string, offers: ProductOffer[]): ProductOffer[] {
+  return offers.filter((offer) => !isAccessoryLikeOffer(query, offer));
+}
+
+function isAccessoryLikeOffer(query: string, offer: ProductOffer): boolean {
+  const normalizedTitle = normalizeQuery(offer.title);
+  const normalizedQuery = normalizeQuery(query);
+
+  const hasAccessoryKeyword = ACCESSORY_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword));
+  if (!hasAccessoryKeyword) {
+    return false;
+  }
+
+  if (offer.normalizedModel) {
+    return true;
+  }
+
+  return DEVICE_SERIES_CUES.some(
+    (cue) => normalizedTitle.includes(cue) || normalizedQuery.includes(cue)
+  );
+}
+
+function createAmbiguousWarning(offers: ProductOffer[]): string {
+  const hasGpuVariant = offers.some(
+    (offer) =>
+      offer.normalizedModel?.includes(" TI") ||
+      offer.normalizedModel?.includes(" SUPER") ||
+      offer.normalizedModel?.includes(" XT") ||
+      offer.normalizedModel?.includes(" GRE")
+  );
+
+  if (hasGpuVariant) {
+    return "정확히 같은 모델만 비교할 수 있습니다. 모델 코드나 변형명(Ti, SUPER, XT 등)을 포함해 다시 검색해 주세요.";
+  }
+
+  return "정확히 같은 모델만 비교할 수 있습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.";
+}
+
+function pickRepresentativeOffer(offers: ProductOffer[]): ProductOffer {
+  return [...offers].sort((left, right) => {
+    if (right.matchConfidence !== left.matchConfidence) {
+      return right.matchConfidence - left.matchConfidence;
+    }
+
+    if (left.price !== right.price) {
+      return left.price - right.price;
+    }
+
+    return left.title.localeCompare(right.title);
+  })[0]!;
 }

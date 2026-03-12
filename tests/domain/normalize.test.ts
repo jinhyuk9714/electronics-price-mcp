@@ -23,6 +23,16 @@ describe("normalize helpers", () => {
     expect(extractNormalizedModel("ZOTAC GAMING GeForce RTX 5070 Twin Edge")).toBe("RTX 5070");
   });
 
+  test("extractNormalizedModel normalizes notebook model codes with or without hyphens", () => {
+    expect(extractNormalizedModel("LG 그램 16 16Z90T GA5CK")).toBe("16Z90T-GA5CK");
+    expect(extractNormalizedModel("삼성 갤럭시북4 프로 NT960XGQ-A51A")).toBe("NT960XGQ-A51A");
+  });
+
+  test("extractNormalizedModel does not treat line names as exact notebook models", () => {
+    expect(extractNormalizedModel("LG 그램 16 2025")).toBeNull();
+    expect(extractNormalizedModel("삼성 갤럭시북4 프로 16")).toBeNull();
+  });
+
   test("isAmbiguousComparison flags mixed model families", () => {
     expect(
       isAmbiguousComparison("rtx 5070", [
