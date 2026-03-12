@@ -456,6 +456,152 @@ describe("PriceService", () => {
     expect(result.offers.some((offer) => offer.title.includes("대여"))).toBe(false);
   });
 
+  test("searchProducts groups broad notebook searches by notebook model code instead of GPU name", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 15-fb2061AX 윈도우11 16GB 라이젠5 8000 시리즈 지포스 RTX 4060 게이밍 노트북",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1480000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "HP OMEN 16-xf0052ax 16GB, 512GB RTX 4060",
+            brand: "HP",
+            mallName: "몰B",
+            price: 1859000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB",
+            brand: "Lenovo",
+            mallName: "몰C",
+            price: 1644000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "103",
+            title: "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집 코딩 배틀그라운드 포토샵 8GB 512GB",
+            brand: "HP",
+            mallName: "몰D",
+            price: 1549000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.groups.map((group) => group.normalizedModel)).toEqual([
+      "15-FB2061AX",
+      null,
+      "15IRX9",
+      "16-XF0052AX"
+    ]);
+    expect(result.offers.filter((offer) => offer.normalizedModel === "RTX 4060")).toHaveLength(0);
+  });
+
+  test("searchProducts excludes other GPU generations from broad notebook queries with a requested GPU", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 15-fb2061AX 윈도우11 16GB 지포스 RTX 4060 게이밍 노트북",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1480000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "HP 빅터스 15 게이밍 노트북 인텔i5 RTX4050 대학생 고사양",
+            brand: "HP",
+            mallName: "몰B",
+            price: 1280000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "HP OMEN 16-xf0052ax 16GB, 512GB RTX 4060",
+            brand: "HP",
+            mallName: "몰C",
+            price: 1859000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.some((offer) => offer.title.includes("RTX4050"))).toBe(false);
+  });
+
+  test("searchProducts keeps broad notebook marketing titles exploratory without forcing GPU-only normalized models", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집 코딩 배틀그라운드 포토샵 8GB 512GB",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1549000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "4060 노트북",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.normalizedModel).toBeNull();
+    expect(result.groups[0]?.normalizedModel).toBeNull();
+  });
+
   test("searchProducts removes GPU accessories and complete PCs from broad graphics searches", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -710,6 +856,54 @@ describe("PriceService", () => {
 
     expect(result.status).toBe("ambiguous");
     expect(result.warning).toContain("모델 코드");
+  });
+
+  test("compareProductPrices suggests notebook model-code follow-ups for broad notebook queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 15-fb2061AX 윈도우11 16GB 지포스 RTX 4060 게이밍 노트북",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1480000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB",
+            brand: "Lenovo",
+            mallName: "몰B",
+            price: 1644000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "HP 빅터스 게이밍 노트북 라이젠7 RTX 4060 영상편집 코딩 배틀그라운드 포토샵 8GB 512GB",
+            brand: "HP",
+            mallName: "몰C",
+            price: 1549000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "4060 노트북 지금 사도 돼?"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual(["15-FB2061AX 가격 비교해 줘", "15IRX9 가격 비교해 줘"]);
+    expect(result.suggestedQueries?.some((query) => query.includes("RTX 4060"))).toBe(false);
   });
 
   test("searchProducts normalizes notebook model codes and prefers the highest-confidence group title", async () => {

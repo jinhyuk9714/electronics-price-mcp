@@ -1,8 +1,12 @@
 import { describe, expect, test } from "vitest";
 
 import {
+  extractGpuModel,
   extractExactQueryModel,
   extractNormalizedModel,
+  extractNotebookModelCode,
+  extractRequestedNotebookGpuModel,
+  resolvePrimaryModelForQuery,
   isAmbiguousComparison,
   normalizeBrand,
   stripHtml
@@ -29,6 +33,29 @@ describe("normalize helpers", () => {
     expect(extractNormalizedModel("LG 그램 16 16Z90T - GA5CK")).toBe("16Z90T-GA5CK");
     expect(extractNormalizedModel("삼성 갤럭시북4 프로 NT960XGQ-A51A")).toBe("NT960XGQ-A51A");
     expect(extractNormalizedModel("삼성 갤럭시북4 프로 NT960XGQ - A51A")).toBe("NT960XGQ-A51A");
+  });
+
+  test("extractNotebookModelCode recognizes additional broad notebook model families", () => {
+    expect(extractNotebookModelCode("HP 빅터스 15-fb2061AX 윈도우11 16GB")).toBe("15-FB2061AX");
+    expect(extractNotebookModelCode("HP OMEN 16-xf0052ax 16GB, 512GB")).toBe("16-XF0052AX");
+    expect(extractNotebookModelCode("레노버 리전 5i 15IRX9 코어i7 인텔 13세대")).toBe("15IRX9");
+  });
+
+  test("extractGpuModel can infer bare notebook GPU generations from broad titles", () => {
+    expect(extractGpuModel("레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB")).toBe("RTX 4060");
+    expect(extractGpuModel("HP Victus Gaming Laptop RTX 4050")).toBe("RTX 4050");
+  });
+
+  test("resolvePrimaryModelForQuery prefers notebook model codes for broad notebook queries", () => {
+    expect(resolvePrimaryModelForQuery("4060 노트북", "HP OMEN 16-xf0052ax RTX 4060 16GB, 512GB")).toBe("16-XF0052AX");
+    expect(resolvePrimaryModelForQuery("4060 노트북", "HP 빅터스 게이밍 노트북 RTX 4060 영상편집")).toBeNull();
+    expect(resolvePrimaryModelForQuery("RTX 5070 시리즈", "ZOTAC GAMING GeForce RTX 5070 Twin Edge")).toBe("RTX 5070");
+  });
+
+  test("extractRequestedNotebookGpuModel normalizes bare GPU generations in notebook queries", () => {
+    expect(extractRequestedNotebookGpuModel("4060 노트북")).toBe("RTX 4060");
+    expect(extractRequestedNotebookGpuModel("RTX 4070 노트북")).toBe("RTX 4070");
+    expect(extractRequestedNotebookGpuModel("그램 16")).toBeNull();
   });
 
   test("extractNormalizedModel does not treat line names as exact notebook models", () => {

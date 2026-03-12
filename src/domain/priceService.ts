@@ -2,11 +2,13 @@ import {
   classifyOfferTitle,
   detectBroadQueryKind,
   extractExactQueryModel,
-  extractNormalizedModel,
+  extractGpuModel,
+  extractRequestedNotebookGpuModel,
   isAmbiguousComparison,
   isBroadExploratoryQuery,
   normalizeBrand,
   normalizeQuery,
+  resolvePrimaryModelForQuery,
   simplifyIntentQuery,
   stripHtml
 } from "./normalize.js";
@@ -41,7 +43,7 @@ interface SearchSelection {
   warning?: string;
 }
 
-const SUGGESTION_QUERY_STOPWORDS = new Set(["시리즈", "SERIES", "가격", "비교", "설명"]);
+const SUGGESTION_QUERY_STOPWORDS = new Set(["시리즈", "SERIES", "가격", "비교", "설명", "노트북", "LAPTOP"]);
 
 type ComparisonTarget =
   | {
@@ -209,7 +211,7 @@ export class PriceService {
     const normalizedQuery = normalizeQuery(query);
 
     return offers.map((offer) => {
-      const normalizedModel = extractNormalizedModel(offer.title);
+      const normalizedModel = resolvePrimaryModelForQuery(query, offer.title);
       const productId = createProductId(normalizedModel ?? offer.title);
 
       return {
@@ -440,6 +442,9 @@ function createSuggestedQueries(
 
   const candidates = buildGroups(offers)
     .filter((group): group is ProductGroup & { normalizedModel: string } => Boolean(group.normalizedModel))
+    .filter((group) =>
+      detectBroadQueryKind(simplifiedQuery) === "laptop" ? !isGpuLikeModel(group.normalizedModel) : true
+    )
     .filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group))
     .sort((left, right) => {
       if (right.matchConfidence !== left.matchConfidence) {
@@ -661,6 +666,13 @@ function isBroadSearchExcludedOffer(
   }
 
   if (broadQueryKind === "laptop") {
+    const requestedGpuModel = extractRequestedNotebookGpuModel(query);
+    const offerGpuModel = extractGpuModel(offer.title);
+
+    if (requestedGpuModel && offerGpuModel && requestedGpuModel !== offerGpuModel) {
+      return true;
+    }
+
     return keywordFlags.isNotebookAccessory;
   }
 
@@ -675,6 +687,10 @@ function isConfigVariantOffer(title: string): boolean {
       normalizedTitle
     ) || CONFIG_VARIANT_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))
   );
+}
+
+function isGpuLikeModel(value: string): boolean {
+  return value.startsWith("RTX ") || value.startsWith("RX ");
 }
 
 function hasOnlyUnsafeExactModelOffers(offers: ProductOffer[], exactQueryModel: string): boolean {

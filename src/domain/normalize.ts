@@ -24,8 +24,11 @@ const DASH_CHARACTERS = /[‐‑‒–—−]/g;
 
 const NOTEBOOK_MODEL_PATTERNS = [
   /\b(\d{2}Z[A-Z0-9]{3,})\s*[- ]\s*([A-Z0-9]{4,})\b/g,
+  /\b(\d{2})\s*[- ]\s*([A-Z]{1,2}\d{4}[A-Z]{2})\b/g,
   /\b([A-Z]{1,3}\d{3,}[A-Z0-9]{2,})\s*[- ]\s*([A-Z0-9]{3,})\b/g
 ] as const;
+
+const NOTEBOOK_STANDALONE_MODEL_PATTERNS = [/\b([A-Z]{2}\d{4}[A-Z]{2})\b/g, /\b(\d{2}[A-Z]{3}\d{1,2})\b/g] as const;
 
 const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업"] as const;
 
@@ -120,21 +123,12 @@ export function normalizeBrand(value: string | null | undefined): string | null 
 }
 
 export function extractNormalizedModel(value: string): string | null {
-  const normalized = normalizeModelText(value);
-
-  const rtxMatch = normalized.match(/\bRTX\s*(\d{4})(?:\s*(TI|SUPER))?\b/);
-  if (rtxMatch) {
-    const variant = rtxMatch[2] ? ` ${rtxMatch[2]}` : "";
-    return `RTX ${rtxMatch[1]}${variant}`;
+  const gpuModel = extractGpuModel(value);
+  if (gpuModel) {
+    return gpuModel;
   }
 
-  const rxMatch = normalized.match(/\bRX\s*(\d{4})(?:\s*(XT|GRE))?\b/);
-  if (rxMatch) {
-    const variant = rxMatch[2] ? ` ${rxMatch[2]}` : "";
-    return `RX ${rxMatch[1]}${variant}`;
-  }
-
-  const notebookModelCode = extractNotebookModelCode(normalized);
+  const notebookModelCode = extractNotebookModelCode(value);
   if (notebookModelCode) {
     return notebookModelCode;
   }
@@ -143,12 +137,17 @@ export function extractNormalizedModel(value: string): string | null {
 }
 
 export function extractExactQueryModel(value: string): string | null {
-  const normalizedQuery = normalizeQuery(value);
+  const simplifiedQuery = simplifyIntentQuery(value);
+  const normalizedQuery = normalizeQuery(simplifiedQuery);
   if (BROAD_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))) {
     return null;
   }
 
-  return extractNormalizedModel(value);
+  if (detectBroadQueryKind(simplifiedQuery) === "laptop") {
+    return extractNotebookModelCode(simplifiedQuery);
+  }
+
+  return extractNormalizedModel(simplifiedQuery);
 }
 
 export function isBroadExploratoryQuery(value: string): boolean {
@@ -167,6 +166,89 @@ export function detectBroadQueryKind(value: string): "graphics-card" | "laptop" 
   }
 
   return "other";
+}
+
+export function extractGpuModel(value: string): string | null {
+  const normalized = normalizeModelText(value);
+
+  const rtxMatch = normalized.match(/\bRTX\s*(\d{4})(?:\s*(TI|SUPER))?\b/);
+  if (rtxMatch) {
+    const variant = rtxMatch[2] ? ` ${rtxMatch[2]}` : "";
+    return `RTX ${rtxMatch[1]}${variant}`;
+  }
+
+  const bareRtxMatch = normalized.match(/\b([4-5]0[5-9]0)(?:\s*(TI|SUPER))?\b/);
+  if (bareRtxMatch) {
+    const variant = bareRtxMatch[2] ? ` ${bareRtxMatch[2]}` : "";
+    return `RTX ${bareRtxMatch[1]}${variant}`;
+  }
+
+  const rxMatch = normalized.match(/\bRX\s*(\d{4})(?:\s*(XT|GRE))?\b/);
+  if (rxMatch) {
+    const variant = rxMatch[2] ? ` ${rxMatch[2]}` : "";
+    return `RX ${rxMatch[1]}${variant}`;
+  }
+
+  return null;
+}
+
+export function extractNotebookModelCode(value: string): string | null {
+  const normalized = normalizeModelText(value);
+
+  for (const pattern of NOTEBOOK_MODEL_PATTERNS) {
+    for (const match of normalized.matchAll(pattern)) {
+      const prefix = normalizeModelPart(match[1]);
+      const suffix = normalizeModelPart(match[2]);
+
+      if ((isNotebookModelPart(prefix) || isNotebookSizePrefix(prefix)) && isNotebookModelPart(suffix)) {
+        return `${prefix}-${suffix}`;
+      }
+    }
+  }
+
+  for (const pattern of NOTEBOOK_STANDALONE_MODEL_PATTERNS) {
+    for (const match of normalized.matchAll(pattern)) {
+      const standaloneModel = normalizeModelPart(match[1]);
+
+      if (isNotebookModelPart(standaloneModel)) {
+        return standaloneModel;
+      }
+    }
+  }
+
+  return null;
+}
+
+export function extractRequestedNotebookGpuModel(value: string): string | null {
+  const simplifiedQuery = simplifyIntentQuery(value);
+
+  if (detectBroadQueryKind(simplifiedQuery) !== "laptop") {
+    return null;
+  }
+
+  return extractGpuModel(simplifiedQuery);
+}
+
+export function resolvePrimaryModelForQuery(query: string, title: string): string | null {
+  const simplifiedQuery = simplifyIntentQuery(query);
+  const exactQueryModel = extractExactQueryModel(simplifiedQuery);
+  const broadQueryKind = detectBroadQueryKind(simplifiedQuery);
+  const notebookModelCode = extractNotebookModelCode(title);
+  const gpuModel = extractGpuModel(title);
+
+  if (exactQueryModel) {
+    return isGpuModel(exactQueryModel) ? gpuModel : notebookModelCode;
+  }
+
+  if (broadQueryKind === "laptop") {
+    return notebookModelCode;
+  }
+
+  if (broadQueryKind === "graphics-card") {
+    return gpuModel;
+  }
+
+  return notebookModelCode ?? gpuModel;
 }
 
 export function classifyOfferTitle(value: string): {
@@ -237,27 +319,20 @@ export function normalizeQuery(value: string): string {
     .trim();
 }
 
-function extractNotebookModelCode(value: string): string | null {
-  for (const pattern of NOTEBOOK_MODEL_PATTERNS) {
-    for (const match of value.matchAll(pattern)) {
-      const prefix = normalizeModelPart(match[1]);
-      const suffix = normalizeModelPart(match[2]);
-
-      if (isNotebookModelPart(prefix) && isNotebookModelPart(suffix)) {
-        return `${prefix}-${suffix}`;
-      }
-    }
-  }
-
-  return null;
-}
-
 function normalizeModelPart(value: string): string {
   return value.replace(/[^A-Z0-9]/g, "");
 }
 
 function isNotebookModelPart(value: string): boolean {
   return value.length >= 4 && /[A-Z]/.test(value) && /\d/.test(value);
+}
+
+function isNotebookSizePrefix(value: string): boolean {
+  return /^\d{2}$/.test(value);
+}
+
+function isGpuModel(value: string): boolean {
+  return value.startsWith("RTX ") || value.startsWith("RX ");
 }
 
 function normalizeModelText(value: string): string {
