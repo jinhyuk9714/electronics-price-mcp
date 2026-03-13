@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T03:29:46.712Z
+- 생성 시각: 2026-03-13T04:13:34.660Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -173,7 +173,7 @@
 ### graphics-card-broad-search-3 · pass
 - prompt: RX 9070 그래픽카드 찾아줘
 - expected_behavior: 라데온 broad search는 부속품과 완본체를 줄여야 한다.
-- observed_summary: RX 9070 기준 1개 모델, 3개 판매처를 찾았습니다.
+- observed_summary: RX 9070 기준 1개 모델, 2개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-broad-search-4 · pass
@@ -299,7 +299,7 @@
 ### keyboard-broad-search-4 · pass
 - prompt: 저소음 사무용 키보드 검색해 줘
 - expected_behavior: 사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.
-- observed_summary: 저소음 사무용 키보드 기준 2개 모델, 4개 판매처를 찾았습니다.
+- observed_summary: 저소음 사무용 키보드 기준 1개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-ish-search-1 · pass
@@ -335,7 +335,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: 로지텍 MX Mechanical Mini 가격 비교해 줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -347,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -389,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass
@@ -533,13 +533,13 @@
 ### pc-part-broad-search-3 · pass
 - prompt: DDR5 32GB 메모리 검색해 줘
 - expected_behavior: DDR5 32GB 메모리 broad search는 메모리 본품 중심이어야 한다.
-- observed_summary: DDR5 32GB 메모리 기준 8개 모델, 9개 판매처를 찾았습니다.
+- observed_summary: DDR5 32GB 메모리 기준 6개 모델, 7개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-4 · pass
 - prompt: NVMe SSD 2TB 찾아줘
 - expected_behavior: NVMe SSD broad search는 외장 저장장치나 완본체 노이즈를 줄여야 한다.
-- observed_summary: NVMe SSD 2TB 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: NVMe SSD 2TB 기준 9개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-ish-search-1 · pass
@@ -575,7 +575,7 @@
 ### pc-part-exact-compare-2 · pass
 - prompt: Ryzen 7 9800X3D 가격 비교해 줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-3 · pass
@@ -623,7 +623,7 @@
 ### pc-part-purchase-explain-2 · pass
 - prompt: Ryzen 7 9800X3D 지금 사도 괜찮아?
 - expected_behavior: CPU exact explain은 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667080원이고 최고가와의 차이는 646030원입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667070원이고 최고가와의 차이는 646040원입니다.
 - notes: (none)
 
 ### pc-part-purchase-explain-3 · pass

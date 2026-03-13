@@ -566,10 +566,15 @@ function createSuggestedQueries(
     )
     .filter((group) => isSuggestionCategoryCompatible(suggestionCategory, simplifiedQuery, group));
 
-  const candidates = (exactGroups.filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group, suggestionCategory)).length > 0
-    ? exactGroups.filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group, suggestionCategory))
-    : getSuggestedFallbackGroups(simplifiedQuery, suggestionCategory, exactGroups))
-    .sort((left, right) => {
+  const relevantGroups = exactGroups.filter((group) =>
+    isSuggestedGroupRelevant(simplifiedQuery, group, suggestionCategory)
+  );
+  const fallbackGroups = getSuggestedFallbackGroups(simplifiedQuery, suggestionCategory, exactGroups);
+  const candidates = Array.from(
+    new Map(
+      [...relevantGroups, ...fallbackGroups].map((group) => [group.normalizedModel, group] as const)
+    ).values()
+  ).sort((left, right) => {
       if (right.matchConfidence !== left.matchConfidence) {
         return right.matchConfidence - left.matchConfidence;
       }
@@ -1078,6 +1083,7 @@ function isBroadSearchExcludedOffer(
   }
 
   const keywordFlags = classifyOfferTitle(offer.title);
+  const supplementalQueryKind = detectSupplementalQueryKind(query);
 
   if (keywordFlags.isRental) {
     return true;
@@ -1096,6 +1102,10 @@ function isBroadSearchExcludedOffer(
     }
 
     return keywordFlags.isNotebookAccessory;
+  }
+
+  if (supplementalQueryKind === "pc-part") {
+    return keywordFlags.isDesktopPc;
   }
 
   return false;

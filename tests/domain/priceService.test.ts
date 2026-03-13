@@ -2409,6 +2409,96 @@ describe("PriceService", () => {
     ]);
   });
 
+  test("compareProductPrices suggests office-oriented keyboard models for broad natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "저소음 사무용 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 MX Mechanical Mini 무선 키보드",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 169000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "Logitech MX Mechanical tactile 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 179000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "DrunkDeer A75 PRO 게이밍 키보드 래피드트리거",
+            brand: "DrunkDeer",
+            mallName: "몰C",
+            price: 129000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH MX MECHANICAL MINI 가격 비교해 줘",
+      "LOGITECH MX MECHANICAL 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices suggests office keyboard model codes from broad office queries when search results are generic", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "저소음 사무용 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 K120 NEW Keyboard 블랙, 멤브레인",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 11400,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "앱코 MK108 저소음 멤브레인 키보드 오트밀, 멤브레인",
+            brand: "앱코",
+            mallName: "몰B",
+            price: 22900,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH K120 NEW 가격 비교해 줘",
+      "ABKO MK108 가격 비교해 줘"
+    ]);
+  });
+
   test("compareProductPrices suggests exact monitor models for size and resolution broad queries", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -2548,6 +2638,46 @@ describe("PriceService", () => {
       "LG 27US550 지금 사도 괜찮은 가격대야?",
       "MSI MD271UL 지금 사도 괜찮은 가격대야?"
     ]);
+  });
+
+  test("compareProductPrices keeps RX 9070 exact prompts on the non-XT model", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RX 9070",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "PowerColor Radeon RX 9070 Hellhound 16GB",
+            brand: "PowerColor",
+            mallName: "몰A",
+            price: 799000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "PowerColor Radeon RX 9070 XT Hellhound 16GB",
+            brand: "PowerColor",
+            mallName: "몰B",
+            price: 899000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "RX 9070 이건 XT 말고 일반형끼리만 비교해줘"
+    });
+
+    expect(result.status).toBe("ok");
+    expect(result.query).toBe("RX 9070");
+    expect(result.summary).toContain("RX 9070");
+    expect(result.summary).not.toContain("RX 9070 XT");
+    expect(result.offers.some((offer) => offer.title.includes("XT"))).toBe(false);
   });
 
   test("compareProductPrices suggests exact pc-part models for motherboard and memory spec queries", async () => {
@@ -2800,6 +2930,58 @@ describe("PriceService", () => {
       "GIGABYTE UD850GM PG5 지금 사도 괜찮은 가격대야?",
       "COOLERMASTER MWE GOLD 850 V3 지금 사도 괜찮은 가격대야?",
       "SUPERFLOWER SF-850F14XG 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("compareProductPrices keeps complete-PC noise out of broad power comparisons", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "850W 파워",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "기가바이트 UD850GM PG5 80PLUS GOLD 풀모듈러 ATX 3.0",
+            brand: "기가바이트",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "조립PC 850W 파워 포함 완본체 RTX 5070",
+            brand: "Custom",
+            mallName: "몰B",
+            price: 2199000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "SuperFlower SF-850F14XG LEADEX VII GOLD ATX3.1",
+            brand: "SuperFlower",
+            mallName: "몰C",
+            price: 179000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "850W 파워를 한 번에 비교하면 모델이 많을 것 같은데 가능 여부부터 봐줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.offers.some((offer) => offer.title.includes("조립PC"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("완본체"))).toBe(false);
+    expect(result.suggestedQueries).toEqual([
+      "GIGABYTE UD850GM PG5 가격 비교해 줘",
+      "SUPERFLOWER SF-850F14XG 가격 비교해 줘"
     ]);
   });
 

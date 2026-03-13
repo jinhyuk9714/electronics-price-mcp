@@ -289,11 +289,17 @@ const NATURAL_LANGUAGE_FILLER_PATTERNS = [
 const NATURAL_LANGUAGE_TAIL_PATTERNS = [
   /\s*(?:한\s*번에\s*)?비교하는\s*건.*$/iu,
   /\s*(?:바로\s*)?비교하는\s*건[^,]*$/iu,
+  /\s*도?\s*모델이\s*많으니.*$/iu,
+  /\s*모델이\s*많을\s*것\s*같아서.*$/iu,
+  /\s*모델이\s*많을\s*것\s*같은데.*$/iu,
+  /\s*정확히\s*못\s*고르면.*$/iu,
+  /\s*(?:를\s*)?한\s*번에\s*비교하면.*$/iu,
   /\s*가격\s*비교(?:는|를)?[^,]*$/iu,
   /\s*비교(?:를)?[^,]*$/iu,
+  /\s*지금\s*사도\s*될\s*가격인지.*$/iu,
   /\s*지금\s*사도\s*(?:될|돼|괜찮(?:아|은?\s*가격대야?))[^,]*$/iu,
-  /\s*지금\s*들어가도\s*될\s*가격인지[^,]*$/iu,
-  /\s*가격대인지[^,]*$/iu,
+  /\s*지금\s*들어가도\s*될\s*가격(?:대)?인지.*$/iu,
+  /\s*가격대인지.*$/iu,
   /\s*설명(?:해)?\s*줘?[^,]*$/iu
 ] as const;
 
@@ -989,8 +995,23 @@ function hasBroadGpuFamilyCue(value: string): boolean {
 
 function extractBroadKeyboardModel(value: string): string | null {
   const normalized = normalizeQuery(value);
+  const brand = extractCanonicalBrandFromText(normalized);
 
   if (!(normalized.includes("KEYCHRON") || normalized.includes("키크론"))) {
+    const genericPatterns = [
+      /\b(K120(?:\s+NEW)?)\b/,
+      /\b(MK\d{3})\b/,
+      /\b(PL\d{3}[A-Z]?)\b/,
+      /\b(SPK\d{2,3})\b/
+    ] as const;
+
+    for (const pattern of genericPatterns) {
+      const match = normalized.match(pattern);
+      if (match?.[1]) {
+        return brand ? `${brand} ${match[1]}` : match[1];
+      }
+    }
+
     return null;
   }
 
@@ -1407,6 +1428,8 @@ function normalizeNaturalLanguageShapes(value: string): string {
     .replace(/갤럭시북\s*4/giu, "갤럭시북4")
     .replace(/\b(RTX\s*\d{4}(?:\s*(?:TI|SUPER))?|RX\s*\d{4}(?:\s*(?:XT|GRE))?|\d{4})\s*들어간\s*노트북/giu, "$1 노트북")
     .replace(/\b(\d{4})\s*급\s*그래픽카드/giu, "$1 그래픽카드")
+    .replace(/\b((?:RTX|RX)\s*\d{4})\s*(?:이건|이거는|이거)?\s*(?:XT|TI|SUPER|GRE)\s*말고\s*일반형(?:끼리만?)?/giu, "$1")
+    .replace(/\b((?:RTX|RX)\s*\d{4})\s*(?:이건|이거는|이거)?\s*(?:XT|TI|SUPER|GRE)\s*말고/giu, "$1")
     .replace(/\b(RTX\s*\d{4}|RX\s*\d{4})\s*(?:XT|TI|SUPER|GRE)\s*말고/giu, "$1 ")
     .replace(/전체를/giu, "전체")
     .replace(/라인으로/giu, "라인")
@@ -1427,6 +1450,7 @@ function stripBroadNarrativeTail(value: string): string {
 function cleanupNaturalLanguageArtifacts(value: string): string {
   return value
     .replace(/\b(나|이나|같은\s*건|같은건|느낌\s*나는\s*건|느낌나는건)\b/giu, " ")
+    .replace(/(키보드|모니터|노트북|메인보드|파워|메모리|SSD|CPU)\s*도/giu, "$1")
     .replace(/\b(보고\s*싶은데|가능\s*여부|가능\s*여부부터|가능\s*여부먼저)\b/giu, " ")
     .replace(/RGB\s*번쩍이는/giu, " ")
     .replace(/보는데/giu, " ")

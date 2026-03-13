@@ -253,9 +253,34 @@ describe("normalize helpers", () => {
     expect(broadExplain.categoryHints.laptop).toBe(true);
   });
 
+  test("condenseNaturalLanguageQuery preserves broad keyboard monitor and pc-part base queries for advanced prompts", () => {
+    const officeKeyboard = condenseNaturalLanguageQuery(
+      "저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘"
+    );
+    const monitorExplain = condenseNaturalLanguageQuery(
+      "27인치 4K 모니터 지금 사도 될 가격인지 보고 싶은데, 애매하면 재질문도 같이 줘"
+    );
+    const powerCompare = condenseNaturalLanguageQuery(
+      "850W 파워를 한 번에 비교하면 모델이 많을 것 같은데 가능 여부부터 봐줘"
+    );
+    const powerExplain = condenseNaturalLanguageQuery(
+      "850W 파워 지금 들어가도 될 가격대인지 같이 봐줘, 애매하면 정확 모델도 알려줘"
+    );
+
+    expect(officeKeyboard.baseQuery).toBe("저소음 사무용 키보드");
+    expect(officeKeyboard.categoryHints.keyboard).toBe(true);
+    expect(monitorExplain.baseQuery).toBe("27인치 4K 모니터");
+    expect(monitorExplain.categoryHints.monitor).toBe(true);
+    expect(powerCompare.baseQuery).toBe("850W 파워");
+    expect(powerCompare.categoryHints.pcPart).toBe(true);
+    expect(powerExplain.baseQuery).toBe("850W 파워");
+    expect(powerExplain.categoryHints.pcPart).toBe(true);
+  });
+
   test("extractExactQueryModel preserves exact models inside longer prompts but keeps explicit family prompts broad", () => {
     expect(extractExactQueryModel("그램 16 중에서도 16Z90T GA5CK 이거 가격 비교만 딱 해줘")).toBe("16Z90T-GA5CK");
     expect(extractExactQueryModel("RTX 5070은 정확히 그 모델끼리만 가격 비교해줘")).toBe("RTX 5070");
+    expect(extractExactQueryModel("RX 9070 이건 XT 말고 일반형끼리만 비교해줘")).toBe("RX 9070");
     expect(extractExactQueryModel("MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘")).toBe(
       "LOGITECH MX MECHANICAL MINI"
     );

@@ -36,4 +36,35 @@ describe("service quality suite runner", () => {
     );
     expect(resolveServiceQualitySuiteName([], {})).toBe("service-quality-100");
   });
+
+  test("advanced suite can override expectations for mismatched prompts", () => {
+    const boardCompare = SERVICE_QUALITY_ADVANCED_100_CASES.find((item) => item.id === "pc-part-exact-compare-1");
+    const powerExplain = SERVICE_QUALITY_ADVANCED_100_CASES.find((item) => item.id === "pc-part-purchase-explain-2");
+    const cpuExplain = SERVICE_QUALITY_ADVANCED_100_CASES.find((item) => item.id === "pc-part-purchase-explain-3");
+    const ssdExplain = SERVICE_QUALITY_ADVANCED_100_CASES.find((item) => item.id === "pc-part-purchase-explain-4");
+
+    expect(boardCompare).toMatchObject({
+      prompt: "ASUS TUF B650M-PLUS는 정확 모델 기준으로 가격 비교해줘",
+      expectedStatus: "ok"
+    });
+    expect(boardCompare?.mustContain).toEqual(expect.arrayContaining(["B650M-PLUS", "ASUS"]));
+
+    expect(powerExplain).toMatchObject({
+      expectedStatus: "ambiguous",
+      needsSuggestedQueries: true
+    });
+    expect(powerExplain?.mustContain).toEqual(expect.arrayContaining(["정확히 같은 모델"]));
+
+    expect(cpuExplain).toMatchObject({
+      expectedStatus: "ok",
+      needsSuggestedQueries: false
+    });
+    expect(cpuExplain?.mustContain).toEqual(expect.arrayContaining(["9800X3D", "Ryzen"]));
+
+    expect(ssdExplain).toMatchObject({
+      expectedStatus: "ok",
+      needsSuggestedQueries: false
+    });
+    expect(ssdExplain?.mustContain).toEqual(expect.arrayContaining(["SN850X", "2TB"]));
+  });
 });

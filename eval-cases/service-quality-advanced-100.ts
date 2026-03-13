@@ -3,6 +3,12 @@ import type { ServiceQualityEvalCase } from "../src/eval/serviceQualityHarness.j
 
 interface AdvancedPromptOverride {
   prompt: string;
+  expectedStatus?: ServiceQualityEvalCase["expectedStatus"];
+  mustContain?: string[];
+  mustNotContain?: string[];
+  needsSuggestedQueries?: boolean;
+  expectedBehavior?: string;
+  notes?: string;
 }
 
 const ADVANCED_PROMPT_OVERRIDES: Record<string, AdvancedPromptOverride> = {
@@ -369,7 +375,12 @@ const ADVANCED_PROMPT_OVERRIDES: Record<string, AdvancedPromptOverride> = {
   },
   "pc-part-exact-compare-1": {
     prompt:
-      "B650M-PLUS는 정확 모델 기준으로 가격 비교해줘"
+      "ASUS TUF B650M-PLUS는 정확 모델 기준으로 가격 비교해줘",
+    expectedStatus: "ok",
+    mustContain: ["B650M-PLUS", "ASUS"],
+    mustNotContain: ["완본체", "조립PC"],
+    needsSuggestedQueries: false,
+    expectedBehavior: "ASUS TUF B650M-PLUS exact compare는 ok 상태를 목표로 한다."
   },
   "pc-part-exact-compare-2": {
     prompt:
@@ -405,15 +416,30 @@ const ADVANCED_PROMPT_OVERRIDES: Record<string, AdvancedPromptOverride> = {
   },
   "pc-part-purchase-explain-2": {
     prompt:
-      "850W 파워 지금 들어가도 될 가격대인지 같이 봐줘, 애매하면 정확 모델도 알려줘"
+      "850W 파워 지금 들어가도 될 가격대인지 같이 봐줘, 애매하면 정확 모델도 알려줘",
+    expectedStatus: "ambiguous",
+    mustContain: ["정확히 같은 모델"],
+    mustNotContain: ["완본체", "조립PC"],
+    needsSuggestedQueries: true,
+    expectedBehavior: "850W 파워 broad explain은 ambiguous로 멈추고 정확 모델 추천을 주는 편이 좋다."
   },
   "pc-part-purchase-explain-3": {
     prompt:
-      "9800X3D는 요즘 사도 괜찮은 가격인지 봐줘"
+      "9800X3D는 요즘 사도 괜찮은 가격인지 봐줘",
+    expectedStatus: "ok",
+    mustContain: ["9800X3D", "Ryzen"],
+    mustNotContain: ["완본체", "조립PC"],
+    needsSuggestedQueries: false,
+    expectedBehavior: "9800X3D exact explain은 ok 상태를 목표로 한다."
   },
   "pc-part-purchase-explain-4": {
     prompt:
-      "SN850X 2TB 지금 사도 무난한 가격인지 설명해줘"
+      "SN850X 2TB 지금 사도 무난한 가격인지 설명해줘",
+    expectedStatus: "ok",
+    mustContain: ["SN850X", "2TB"],
+    mustNotContain: ["외장", "완본체"],
+    needsSuggestedQueries: false,
+    expectedBehavior: "SN850X 2TB exact explain은 ok 상태를 목표로 한다."
   }
 };
 
@@ -464,7 +490,14 @@ export const SERVICE_QUALITY_ADVANCED_100_CASES: ServiceQualityEvalCase[] =
 
     return {
       ...item,
+      ...(override.expectedStatus !== undefined ? { expectedStatus: override.expectedStatus } : {}),
+      ...(override.mustContain ? { mustContain: override.mustContain } : {}),
+      ...(override.mustNotContain ? { mustNotContain: override.mustNotContain } : {}),
+      ...(override.needsSuggestedQueries !== undefined
+        ? { needsSuggestedQueries: override.needsSuggestedQueries }
+        : {}),
+      ...(override.expectedBehavior ? { expectedBehavior: override.expectedBehavior } : {}),
       prompt: override.prompt,
-      notes: `${item.notes}; ${buildAdvancedNotes(override.prompt)}`
+      notes: `${override.notes ?? item.notes}; ${buildAdvancedNotes(override.prompt)}`
     };
   });

@@ -1,20 +1,20 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-13T03:29:46.841Z
+- 생성 시각: 2026-03-13T04:14:04.270Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 92 pass / 4 soft_fail / 4 fail
-- 통과율: 92.0%
+- 전체 결과: 100 pass / 0 soft_fail / 0 fail
+- 통과율: 100.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 노트북 | 20 | 20 | 0 | 0 | 100.0% |
-| 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
-| 키보드 | 20 | 19 | 1 | 0 | 95.0% |
-| 모니터 | 20 | 19 | 1 | 0 | 95.0% |
-| PC 부품 | 20 | 15 | 1 | 4 | 75.0% |
+| 그래픽카드 | 20 | 20 | 0 | 0 | 100.0% |
+| 키보드 | 20 | 20 | 0 | 0 | 100.0% |
+| 모니터 | 20 | 20 | 0 | 0 | 100.0% |
+| PC 부품 | 20 | 20 | 0 | 0 | 100.0% |
 
 ## 의도별 통과율
 
@@ -22,23 +22,19 @@
 | --- | ---: | ---: | ---: | ---: | ---: |
 | broad search | 20 | 20 | 0 | 0 | 100.0% |
 | exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
-| exact compare | 20 | 18 | 1 | 1 | 90.0% |
-| broad ambiguous safety | 20 | 18 | 2 | 0 | 90.0% |
-| purchase/explain | 20 | 16 | 1 | 3 | 80.0% |
+| exact compare | 20 | 20 | 0 | 0 | 100.0% |
+| broad ambiguous safety | 20 | 20 | 0 | 0 | 100.0% |
+| purchase/explain | 20 | 20 | 0 | 0 | 100.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 3
-- expected_status: ok -> ambiguous: 2
-- expected_status: ambiguous -> ok: 1
-- must_contain_missing: 2TB: 1
-- must_contain_missing: 9800X3D: 1
+- 특이 실패 패턴이 없습니다.
 
 ## 다음 개선 우선순위
 
-- 검색 의도 대비 노이즈 제거 규칙을 더 촘촘하게 다듬기
-- ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기
-- 정확 모델 추출과 exact compare 성공 범위를 확대하기
+- 카테고리별 broad 검색 필터를 다시 점검하기
+- exact-ish 검색에서 모델 코드 인식률을 높이기
+- 설명형 응답 요약과 추천 문구를 더 자연스럽게 다듬기
 
 ## 문장별 결과
 
@@ -222,11 +218,11 @@
 - observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478540원, 최고가 1936120원, 판매처 20곳입니다.
 - notes: (none)
 
-### graphics-card-exact-compare-3 · soft_fail
+### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 이건 XT 말고 일반형끼리만 비교해줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다.
-- notes: must_not_contain: RX 9070 XT
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932160원, 최고가 1065430원, 판매처 4곳입니다.
+- notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT는 정확히 XT끼리만 가격 비교해줘
@@ -303,7 +299,7 @@
 ### keyboard-broad-search-4 · pass
 - prompt: 저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고 보여줘
 - expected_behavior: 사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.
-- observed_summary: 저소음 사무용 키보드 기준 2개 모델, 4개 판매처를 찾았습니다.
+- observed_summary: 저소음 사무용 키보드 기준 1개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-ish-search-1 · pass
@@ -351,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75는 정확히 같은 제품 기준으로 얼마 차이 나는지 보고 싶어
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -372,11 +368,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### keyboard-broad-ambiguous-safety-4 · soft_fail
+### keyboard-broad-ambiguous-safety-4 · pass
 - prompt: 저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘
 - expected_behavior: 브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### keyboard-purchase-explain-1 · pass
 - prompt: Keychron 키보드 중에 하나 사려는데 너무 막연하면 멈추고 다음 검색어를 줘
@@ -393,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: MX Mechanical Mini는 지금 들어가도 괜찮은 가격대인지 설명해줘
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass
@@ -498,11 +494,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### monitor-purchase-explain-1 · soft_fail
+### monitor-purchase-explain-1 · pass
 - prompt: 27인치 4K 모니터 지금 사도 될 가격인지 보고 싶은데, 애매하면 재질문도 같이 줘
 - expected_behavior: 27인치 4K monitor explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### monitor-purchase-explain-2 · pass
 - prompt: 32인치 QHD 모니터 쪽이 요즘 살 만한지 보려는데 너무 넓으면 멈춰줘
@@ -531,7 +527,7 @@
 ### pc-part-broad-search-2 · pass
 - prompt: 850W 파워 찾는 중이라 파워 본체 위주로만 정리해줘
 - expected_behavior: 850W 파워 broad search는 파워 본품 중심이어야 한다.
-- observed_summary: 850W 파워 파워 만 기준 7개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 850W 파워 파워 만 기준 5개 모델, 8개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-3 · pass
@@ -543,7 +539,7 @@
 ### pc-part-broad-search-4 · pass
 - prompt: 2TB NVMe SSD 쪽으로 보는 중인데 외장 케이스 같은 건 빼고 본체만 보여줘
 - expected_behavior: NVMe SSD broad search는 외장 저장장치나 완본체 노이즈를 줄여야 한다.
-- observed_summary: 2TB NVMe SSD 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 2TB NVMe SSD 기준 9개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-ish-search-1 · pass
@@ -570,16 +566,16 @@
 - observed_summary: SuperFlower SF-850F14XG 이 기준 1개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
-### pc-part-exact-compare-1 · fail
-- prompt: B650M-PLUS는 정확 모델 기준으로 가격 비교해줘
-- expected_behavior: 메인보드 exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: B650M-PLUS; must_contain_missing: ASUS
+### pc-part-exact-compare-1 · pass
+- prompt: ASUS TUF B650M-PLUS는 정확 모델 기준으로 가격 비교해줘
+- expected_behavior: ASUS TUF B650M-PLUS exact compare는 ok 상태를 목표로 한다.
+- observed_summary: ASUS TUF Gaming B650M-PLUS STCOM 기준 최저가 206930원, 최고가 295450원, 판매처 20곳입니다.
+- notes: (none)
 
 ### pc-part-exact-compare-2 · pass
 - prompt: 9800X3D 가격 차이만 정확히 비교해줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-3 · pass
@@ -600,11 +596,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### pc-part-broad-ambiguous-safety-2 · soft_fail
+### pc-part-broad-ambiguous-safety-2 · pass
 - prompt: 850W 파워를 한 번에 비교하면 모델이 많을 것 같은데 가능 여부부터 봐줘
 - expected_behavior: 파워 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: must_not_contain: 조립PC
+- notes: (none)
 
 ### pc-part-broad-ambiguous-safety-3 · pass
 - prompt: DDR5 32GB 메모리 통으로 가격 비교하려는데, 너무 넓으면 멈추고 다시 물을 걸 추천해줘
@@ -624,21 +620,21 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### pc-part-purchase-explain-2 · fail
+### pc-part-purchase-explain-2 · pass
 - prompt: 850W 파워 지금 들어가도 될 가격대인지 같이 봐줘, 애매하면 정확 모델도 알려줘
-- expected_behavior: CPU exact explain은 ok 상태를 목표로 한다.
+- expected_behavior: 850W 파워 broad explain은 ambiguous로 멈추고 정확 모델 추천을 주는 편이 좋다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: 9800X3D; must_contain_missing: Ryzen
+- notes: (none)
 
-### pc-part-purchase-explain-3 · fail
+### pc-part-purchase-explain-3 · pass
 - prompt: 9800X3D는 요즘 사도 괜찮은 가격인지 봐줘
-- expected_behavior: SSD exact explain은 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667080원이고 최고가와의 차이는 646030원입니다.
-- notes: must_contain_missing: SN850X; must_contain_missing: 2TB
+- expected_behavior: 9800X3D exact explain은 ok 상태를 목표로 한다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667070원이고 최고가와의 차이는 646040원입니다.
+- notes: (none)
 
-### pc-part-purchase-explain-4 · fail
+### pc-part-purchase-explain-4 · pass
 - prompt: SN850X 2TB 지금 사도 무난한 가격인지 설명해줘
-- expected_behavior: 파워 broad explain은 ambiguous로 멈추고 재질문을 유도해야 한다.
+- expected_behavior: SN850X 2TB exact explain은 ok 상태를 목표로 한다.
 - observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 1697500원, 판매처 17곳입니다. 현재 최저가는 313500원이고 최고가와의 차이는 1384000원입니다.
-- notes: expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries
+- notes: (none)
 
