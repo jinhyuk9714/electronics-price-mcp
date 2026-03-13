@@ -12,9 +12,19 @@ const BRAND_ALIASES: Record<string, string> = {
   "엠에스아이": "MSI",
   "hp": "HP",
   "dell": "Dell",
+  "amd": "AMD",
+  "wd": "WD",
+  "wd_black": "WD",
+  "wd black": "WD",
+  "keychron": "Keychron",
+  "앱코": "ABKO",
+  "abko": "ABKO",
+  "drunkdeer": "DrunkDeer",
+  "superflower": "SuperFlower",
   "lenovo": "Lenovo",
   "레노버": "Lenovo",
   "logitech": "Logitech",
+  "로지텍": "Logitech",
   "zotac": "ZOTAC"
 };
 
@@ -165,7 +175,7 @@ export function extractNormalizedModel(value: string): string | null {
     return notebookModelCode;
   }
 
-  return null;
+  return extractNonLaptopExactModel(value);
 }
 
 export function extractExactQueryModel(value: string): string | null {
@@ -303,9 +313,14 @@ export function resolvePrimaryModelForQuery(query: string, title: string): strin
   const broadQueryKind = detectBroadQueryKind(simplifiedQuery);
   const notebookModelCode = extractNotebookModelCode(title);
   const gpuModel = extractGpuModel(title);
+  const nonLaptopExactModel = extractNonLaptopExactModel(title);
 
   if (exactQueryModel) {
-    return isGpuModel(exactQueryModel) ? gpuModel : notebookModelCode;
+    if (isGpuModel(exactQueryModel)) {
+      return gpuModel;
+    }
+
+    return notebookModelCode ?? nonLaptopExactModel;
   }
 
   if (broadQueryKind === "laptop") {
@@ -316,7 +331,7 @@ export function resolvePrimaryModelForQuery(query: string, title: string): strin
     return gpuModel;
   }
 
-  return notebookModelCode ?? gpuModel;
+  return nonLaptopExactModel ?? notebookModelCode ?? gpuModel;
 }
 
 export function classifyOfferTitle(value: string): {
@@ -401,6 +416,68 @@ function isNotebookSizePrefix(value: string): boolean {
 
 function isGpuModel(value: string): boolean {
   return value.startsWith("RTX ") || value.startsWith("RX ");
+}
+
+function extractNonLaptopExactModel(value: string): string | null {
+  const normalized = normalizeQuery(value);
+
+  if (normalized.includes("KEYCHRON") && /\bK2\s+PRO\b/.test(normalized)) {
+    return "KEYCHRON K2 PRO";
+  }
+
+  if ((normalized.includes("LOGITECH") || normalized.includes("로지텍")) && /\bMX\s+MECHANICAL\s+MINI\b/.test(normalized)) {
+    return "LOGITECH MX MECHANICAL MINI";
+  }
+
+  if ((normalized.includes("LOGITECH") || normalized.includes("로지텍")) && /\bMX\s+MECHANICAL\b/.test(normalized)) {
+    return "LOGITECH MX MECHANICAL";
+  }
+
+  if ((normalized.includes("ABKO") || normalized.includes("앱코")) && /\bK660\b/.test(normalized)) {
+    return "ABKO K660";
+  }
+
+  if (normalized.includes("DRUNKDEER") && /\bA75\b/.test(normalized)) {
+    return "DRUNKDEER A75";
+  }
+
+  if (/\b27GR93U\b/.test(normalized)) {
+    return "LG 27GR93U";
+  }
+
+  if (/\bU2723QE\b/.test(normalized)) {
+    return "DELL U2723QE";
+  }
+
+  if (/\b321URX\b/.test(normalized)) {
+    return "MSI 321URX";
+  }
+
+  if (/\bS27DG500\b/.test(normalized)) {
+    return "SAMSUNG S27DG500";
+  }
+
+  if ((normalized.includes("ASUS") || normalized.includes("아수스") || normalized.includes("에이수스")) && /\bTUF\b/.test(normalized) && /\bB650M-PLUS\b/.test(normalized)) {
+    return "ASUS TUF B650M-PLUS";
+  }
+
+  if (/\bRYZEN\s*7\s*9800X3D\b/.test(normalized)) {
+    return "RYZEN 7 9800X3D";
+  }
+
+  const sn850xMatch = normalized.match(/\bSN850X\b.*\b(1TB|2TB|4TB)\b|\b(1TB|2TB|4TB)\b.*\bSN850X\b/);
+  if (sn850xMatch) {
+    const capacity = sn850xMatch[1] ?? sn850xMatch[2];
+    if (capacity) {
+      return `WD SN850X ${capacity}`;
+    }
+  }
+
+  if (/\bSF-850F14XG\b/.test(normalized)) {
+    return "SUPERFLOWER SF-850F14XG";
+  }
+
+  return null;
 }
 
 function extractNotebookFamilyLine(value: string, brand?: string | null): string | null {

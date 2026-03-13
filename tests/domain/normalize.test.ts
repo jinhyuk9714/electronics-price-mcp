@@ -115,9 +115,43 @@ describe("normalize helpers", () => {
     expect(extractNormalizedModel("삼성 갤럭시북4 프로 16")).toBeNull();
   });
 
+  test("extractNormalizedModel recognizes exact keyboard, monitor, and pc-part models", () => {
+    expect(extractNormalizedModel("Keychron K2 Pro 무선 기계식 키보드")).toBe("KEYCHRON K2 PRO");
+    expect(extractNormalizedModel("로지텍 MX Mechanical Mini 무선 키보드")).toBe(
+      "LOGITECH MX MECHANICAL MINI"
+    );
+    expect(extractNormalizedModel("앱코 K660 카일 광축 키보드")).toBe("ABKO K660");
+    expect(extractNormalizedModel("DrunkDeer A75 래피드트리거 키보드")).toBe("DRUNKDEER A75");
+
+    expect(extractNormalizedModel("LG 울트라기어 27GR93U 27인치 4K 모니터")).toBe("LG 27GR93U");
+    expect(extractNormalizedModel("Dell UltraSharp U2723QE 27형 4K 모니터")).toBe("DELL U2723QE");
+    expect(extractNormalizedModel("MSI MPG 321URX QD-OLED 게이밍 모니터")).toBe("MSI 321URX");
+    expect(extractNormalizedModel("삼성 오디세이 S27DG500 QHD 게이밍 모니터")).toBe("SAMSUNG S27DG500");
+
+    expect(extractNormalizedModel("ASUS TUF B650M-PLUS WIFI 메인보드")).toBe("ASUS TUF B650M-PLUS");
+    expect(extractNormalizedModel("AMD Ryzen 7 9800X3D 정품 멀티팩")).toBe("RYZEN 7 9800X3D");
+    expect(extractNormalizedModel("WD_BLACK SN850X 2TB NVMe SSD")).toBe("WD SN850X 2TB");
+    expect(extractNormalizedModel("SuperFlower SF-850F14XG LEADEX VII GOLD ATX3.1")).toBe(
+      "SUPERFLOWER SF-850F14XG"
+    );
+  });
+
+  test("extractNormalizedModel keeps storage capacity and keyboard variants distinct", () => {
+    expect(extractNormalizedModel("WD_BLACK SN850X 1TB NVMe SSD")).toBe("WD SN850X 1TB");
+    expect(extractNormalizedModel("WD_BLACK SN850X 2TB NVMe SSD")).toBe("WD SN850X 2TB");
+    expect(extractNormalizedModel("Logitech MX Mechanical 무선 키보드")).toBe("LOGITECH MX MECHANICAL");
+    expect(extractNormalizedModel("Logitech MX Mechanical Mini 무선 키보드")).toBe(
+      "LOGITECH MX MECHANICAL MINI"
+    );
+  });
+
   test("extractExactQueryModel only marks exact-model queries", () => {
     expect(extractExactQueryModel("RTX 5070")).toBe("RTX 5070");
     expect(extractExactQueryModel("16Z90T GA5CK 최저가 비교")).toBe("16Z90T-GA5CK");
+    expect(extractExactQueryModel("Keychron K2 Pro 가격 비교")).toBe("KEYCHRON K2 PRO");
+    expect(extractExactQueryModel("LG 27GR93U 가격 비교")).toBe("LG 27GR93U");
+    expect(extractExactQueryModel("Ryzen 7 9800X3D 가격 비교")).toBe("RYZEN 7 9800X3D");
+    expect(extractExactQueryModel("WD SN850X 2TB 가격 비교")).toBe("WD SN850X 2TB");
     expect(extractExactQueryModel("RTX 5070 시리즈 가격 비교")).toBeNull();
     expect(extractExactQueryModel("LG 그램 16")).toBeNull();
   });

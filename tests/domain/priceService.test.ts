@@ -1735,6 +1735,242 @@ describe("PriceService", () => {
     ]);
   });
 
+  test("compareProductPrices supports exact keyboard model queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "Keychron K2 Pro",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "Keychron K2 Pro 무선 기계식 키보드 갈축",
+            brand: "Keychron",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "KEYCHRON K2 PRO RGB 알루미늄 핫스왑",
+            brand: "Keychron",
+            mallName: "몰B",
+            price: 139000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "Keychron K2 Pro 전용 키캡",
+            brand: "Keychron",
+            mallName: "몰C",
+            price: 39000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({ query: "Keychron K2 Pro 가격 비교해 줘" });
+
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("KEYCHRON K2 PRO");
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.every((offer) => offer.normalizedModel === "KEYCHRON K2 PRO")).toBe(true);
+  });
+
+  test("compareProductPrices supports exact monitor model queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "LG 27GR93U",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG 울트라기어 27GR93U 27인치 4K 게이밍 모니터",
+            brand: "LG",
+            mallName: "몰A",
+            price: 689000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG 27GR93U IPS UHD HDMI 2.1 모니터",
+            brand: "LG",
+            mallName: "몰B",
+            price: 719000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({ query: "LG 27GR93U 가격 비교해 줘" });
+
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("LG 27GR93U");
+    expect(result.offers).toHaveLength(2);
+  });
+
+  test("compareProductPrices supports exact pc-part model queries and keeps capacity variants distinct", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "WD SN850X 2TB",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "WD_BLACK SN850X 2TB NVMe SSD",
+            brand: "WD",
+            mallName: "몰A",
+            price: 219000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "WD BLACK SN850X 2TB PCIe 4.0 SSD",
+            brand: "WD",
+            mallName: "몰B",
+            price: 229000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "WD_BLACK SN850X 1TB NVMe SSD",
+            brand: "WD",
+            mallName: "몰C",
+            price: 149000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({ query: "WD SN850X 2TB 가격 비교해 줘" });
+
+    expect(result.status).toBe("ok");
+    expect(result.comparison?.normalizedModel).toBe("WD SN850X 2TB");
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.some((offer) => offer.title.includes("1TB"))).toBe(false);
+  });
+
+  test("explainPurchaseOptions supports exact keyboard monitor and pc-part queries", async () => {
+    const keyboardService = new PriceService({
+      provider: createProvider({
+        query: "MX Mechanical Mini",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 MX Mechanical Mini 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰A",
+            price: 169000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LOGITECH MX Mechanical Mini Linear",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 179000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const monitorService = new PriceService({
+      provider: createProvider({
+        query: "Dell U2723QE",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "Dell UltraSharp U2723QE 27형 4K 모니터",
+            brand: "Dell",
+            mallName: "몰A",
+            price: 589000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "DELL U2723QE USB-C 허브 모니터",
+            brand: "Dell",
+            mallName: "몰B",
+            price: 619000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const partService = new PriceService({
+      provider: createProvider({
+        query: "Ryzen 7 9800X3D",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "300",
+            title: "AMD Ryzen 7 9800X3D 정품 멀티팩",
+            brand: "AMD",
+            mallName: "몰A",
+            price: 689000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "301",
+            title: "AMD 라이젠7 9800X3D 정품 박스",
+            brand: "AMD",
+            mallName: "몰B",
+            price: 705000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      })
+    });
+
+    const keyboard = await keyboardService.explainPurchaseOptions({
+      query: "로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?"
+    });
+    const monitor = await monitorService.explainPurchaseOptions({
+      query: "Dell U2723QE 지금 사도 돼?"
+    });
+    const part = await partService.explainPurchaseOptions({
+      query: "Ryzen 7 9800X3D 지금 사도 괜찮아?"
+    });
+
+    expect(keyboard.status).toBe("ok");
+    expect(keyboard.summary).toContain("최저가");
+    expect(keyboard.summary).toContain("MX Mechanical Mini");
+
+    expect(monitor.status).toBe("ok");
+    expect(monitor.summary).toContain("U2723QE");
+
+    expect(part.status).toBe("ok");
+    expect(part.summary).toContain("9800X3D");
+  });
+
   test("compareProductPrices trims comparison phrasing before calling the provider", async () => {
     let receivedQuery = "";
 
