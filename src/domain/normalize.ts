@@ -290,6 +290,16 @@ const NATURAL_LANGUAGE_TAIL_PATTERNS = [
   /\s*설명(?:해)?\s*줘?[^,]*$/iu
 ] as const;
 
+const NATURAL_LANGUAGE_BROAD_TRUNCATION_PATTERNS = [
+  /\s*이라고만\s*(?:보면|말하면|하면).*$/iu,
+  /\s*라고만\s*(?:보면|말하면|하면).*$/iu,
+  /\s*정도로만\s*말하면.*$/iu,
+  /\s*통으로.*$/iu,
+  /\s*전체(?:를)?\s.*$/iu,
+  /\s*전부(?:를)?\s.*$/iu,
+  /\s*쪽(?:으로|을)?(?:\s|$).*$/iu
+] as const;
+
 const NATURAL_LANGUAGE_ALIAS_REPLACEMENTS = [
   { pattern: /갤북(?=\d|\s|$)/giu, replacement: "갤럭시북", alias: "갤럭시북" }
 ] as const;
@@ -805,6 +815,7 @@ export function condenseNaturalLanguageQuery(value: string): NaturalLanguageQuer
   baseQuery = stripTrailingIntentPhrases(baseQuery);
   baseQuery = removeExcludedClauses(baseQuery, excludedTerms);
   baseQuery = normalizeNaturalLanguageShapes(baseQuery);
+  baseQuery = stripBroadNarrativeTail(baseQuery);
 
   for (const pattern of NATURAL_LANGUAGE_TAIL_PATTERNS) {
     baseQuery = baseQuery.replace(pattern, " ").trim();
@@ -816,6 +827,7 @@ export function condenseNaturalLanguageQuery(value: string): NaturalLanguageQuer
 
   baseQuery = stripTrailingIntentPhrases(baseQuery);
   baseQuery = normalizeNaturalLanguageShapes(baseQuery);
+  baseQuery = stripBroadNarrativeTail(baseQuery);
   baseQuery = cleanupNaturalLanguageArtifacts(baseQuery);
   let finalBaseQuery = baseQuery || stripTrailingIntentPhrases(aliasResult.text) || originalQuery;
   const preliminaryExactModel =
@@ -1364,6 +1376,16 @@ function normalizeNaturalLanguageShapes(value: string): string {
     .replace(/라인으로/giu, "라인")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function stripBroadNarrativeTail(value: string): string {
+  let cleaned = value.trim();
+
+  for (const pattern of NATURAL_LANGUAGE_BROAD_TRUNCATION_PATTERNS) {
+    cleaned = cleaned.replace(pattern, "").trim();
+  }
+
+  return cleaned;
 }
 
 function cleanupNaturalLanguageArtifacts(value: string): string {

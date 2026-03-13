@@ -2229,6 +2229,186 @@ describe("PriceService", () => {
     expect(result.suggestedQueries?.some((query) => query.includes("마우스"))).toBe(false);
   });
 
+  test("compareProductPrices suggests notebook model codes for broad Galaxy Book prompts written in natural language", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "갤럭시북4 프로 16",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB 512GB",
+            brand: "삼성전자",
+            mallName: "몰A",
+            price: 1899000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A71A 32GB 1TB",
+            brand: "삼성전자",
+            mallName: "몰B",
+            price: 2399000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "갤북4 프로 16이라고만 보면 여러 모델일 것 같은데 일단 가격 비교가 되는 수준인지 봐줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "NT960XGQ-A51A 가격 비교해 줘",
+      "NT960XGQ-A71A 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests notebook model codes for broad Gram prompts written in natural language", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "그램 16",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램16 16ZD90Q-GX36K RAM 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1399000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 그램16 16ZD90RU-GX54K RAM 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1499000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "그램 16 쪽을 보는 중인데, 모델이 여러 개면 멈춰도 되니까 지금 사도 되는 가격대인지 같이 봐줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "16ZD90Q-GX36K 지금 사도 괜찮은 가격대야?",
+      "16ZD90RU-GX54K 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("compareProductPrices suggests exact Logitech keyboard models for broad natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "로지텍 기계식 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 MX Mechanical Mini 무선 키보드",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 169000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "Logitech MX Mechanical tactile 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 179000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "로지텍 MX Master 3S 무선 마우스",
+            brand: "로지텍",
+            mallName: "몰C",
+            price: 129000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "로지텍 기계식 키보드 정도로만 말하면 여러 개일 텐데 그래도 비교 요청 넣어볼게"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH MX MECHANICAL MINI 가격 비교해 줘",
+      "LOGITECH MX MECHANICAL 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests office-oriented keyboard models for broad natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "저소음 사무용 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 MX Mechanical Mini 무선 키보드",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 169000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "Logitech MX Mechanical tactile 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 179000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "DrunkDeer A75 PRO 게이밍 키보드 래피드트리거",
+            brand: "DrunkDeer",
+            mallName: "몰C",
+            price: 129000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH MX MECHANICAL MINI 지금 사도 괜찮은 가격대야?",
+      "LOGITECH MX MECHANICAL 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
   test("compareProductPrices suggests exact monitor models for size and resolution broad queries", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -2278,6 +2458,96 @@ describe("PriceService", () => {
       "MSI MD271UL 가격 비교해 줘"
     ]);
     expect(result.suggestedQueries?.some((query) => query.includes("321URX"))).toBe(false);
+  });
+
+  test("explainPurchaseOptions suggests exact monitor models for broad gaming-monitor prompts written in natural language", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "게이밍 모니터",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "MSI MPG 321URX QD-OLED 32인치 게이밍 모니터",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 1499000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "삼성전자 오디세이 G5 S27DG500 27인치 게이밍 모니터",
+            brand: "삼성전자",
+            mallName: "몰B",
+            price: 339000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "게이밍 모니터라고만 하면 모델이 많으니 안 되면 멈추고 다시 물을 만한 걸 추천해줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "SAMSUNG S27DG500 지금 사도 괜찮은 가격대야?",
+      "MSI 321URX 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests exact monitor models for broad natural-language size and resolution prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27인치 4K 모니터",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "MSI MD271UL 68~69cm(27인치) 4K UHD 모니터",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 359000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 27US550 68~69cm(27인치) UHD 모니터",
+            brand: "LG",
+            mallName: "몰B",
+            price: 329000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "MSI MPG 321URX QD-OLED 32인치 게이밍 모니터",
+            brand: "MSI",
+            mallName: "몰C",
+            price: 1499000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "27인치 4K 모니터 지금 사도 될 가격인지 보고 싶은데, 애매하면 재질문도 같이 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LG 27US550 지금 사도 괜찮은 가격대야?",
+      "MSI MD271UL 지금 사도 괜찮은 가격대야?"
+    ]);
   });
 
   test("compareProductPrices suggests exact pc-part models for motherboard and memory spec queries", async () => {
@@ -2375,6 +2645,108 @@ describe("PriceService", () => {
     expect(memory.suggestedQueries).toEqual([
       "KLEVV DDR5 PC5-44800 32GB 가격 비교해 줘",
       "SAMSUNG DDR5 PC5-44800 32GB 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices suggests exact motherboard models for broad natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "B650 메인보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "바이오스타 B650 MT-E PRO 제이씨현",
+            brand: "바이오스타",
+            mallName: "몰A",
+            price: 139000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "ASRock B650 M PRO RS 대원씨티에스",
+            brand: "ASRock",
+            mallName: "몰B",
+            price: 189000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ASUS TUF B650M-PLUS WIFI 메인보드",
+            brand: "ASUS",
+            mallName: "몰C",
+            price: 219000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "B650 메인보드 전체 가격 비교는 너무 넓을 것 같은데 일단 가능 여부만 봐줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "BIOSTAR B650MT-E PRO 가격 비교해 줘",
+      "ASROCK B650M PRO RS 가격 비교해 줘",
+      "ASUS TUF B650M-PLUS 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests exact motherboard models for broad natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "B650 메인보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "바이오스타 B650 MT-E PRO 제이씨현",
+            brand: "바이오스타",
+            mallName: "몰A",
+            price: 139000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "ASRock B650 M PRO RS 대원씨티에스",
+            brand: "ASRock",
+            mallName: "몰B",
+            price: 189000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ASUS TUF B650M-PLUS WIFI 메인보드",
+            brand: "ASUS",
+            mallName: "몰C",
+            price: 219000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "B650 메인보드 지금 사도 될 가격인지 애매하면 다음 검색어도 같이 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "BIOSTAR B650MT-E PRO 지금 사도 괜찮은 가격대야?",
+      "ASROCK B650M PRO RS 지금 사도 괜찮은 가격대야?",
+      "ASUS TUF B650M-PLUS 지금 사도 괜찮은 가격대야?"
     ]);
   });
 
@@ -2845,6 +3217,349 @@ describe("PriceService", () => {
     expect(receivedQuery).toBe("갤럭시북4 프로 16");
   });
 
+  test("compareProductPrices condenses broad Galaxy Book prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "갤럭시북4 프로 16") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB 512GB",
+                brand: "삼성전자",
+                mallName: "몰A",
+                price: 1899000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "삼성전자 갤럭시북4 프로 NT960XGQ-A71A 32GB 1TB",
+                brand: "삼성전자",
+                mallName: "몰B",
+                price: 2399000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.compareProductPrices({
+      query: "갤북4 프로 16이라고만 보면 여러 모델일 것 같은데 일단 가격 비교가 되는 수준인지 봐줘"
+    });
+
+    expect(result.query).toBe("갤럭시북4 프로 16");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "NT960XGQ-A51A 가격 비교해 줘",
+      "NT960XGQ-A71A 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices condenses broad keyboard prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "로지텍 기계식 키보드") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "로지텍 MX Mechanical Mini 무선 키보드",
+                brand: "로지텍",
+                mallName: "몰A",
+                price: 169000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "Logitech MX Mechanical tactile 무선 키보드",
+                brand: "Logitech",
+                mallName: "몰B",
+                price: 179000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "102",
+                title: "로지텍 MX Master 3S 무선 마우스",
+                brand: "로지텍",
+                mallName: "몰C",
+                price: 129000,
+                link: "https://example.com/c",
+                image: "https://example.com/c.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.compareProductPrices({
+      query: "로지텍 기계식 키보드 정도로만 말하면 여러 개일 텐데 그래도 비교 요청 넣어볼게"
+    });
+
+    expect(result.query).toBe("로지텍 기계식 키보드");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH MX MECHANICAL MINI 가격 비교해 줘",
+      "LOGITECH MX MECHANICAL 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices condenses broad monitor prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "게이밍 모니터") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "MSI MPG 321URX QD-OLED 32인치 게이밍 모니터",
+                brand: "MSI",
+                mallName: "몰A",
+                price: 1499000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "삼성전자 오디세이 G5 S27DG500 27인치 게이밍 모니터",
+                brand: "삼성전자",
+                mallName: "몰B",
+                price: 339000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.compareProductPrices({
+      query: "게이밍 모니터라고만 하면 모델이 많으니 안 되면 멈추고 다시 물을 만한 걸 추천해줘"
+    });
+
+    expect(result.query).toBe("게이밍 모니터");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "SAMSUNG S27DG500 가격 비교해 줘",
+      "MSI 321URX 가격 비교해 줘"
+    ]);
+  });
+
+  test("compareProductPrices condenses broad pc-part prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "DDR5 32GB 메모리") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "200",
+                title: "삼성전자 삼성 DDR5 PC5-44800 32GB , 1개",
+                brand: "삼성전자",
+                mallName: "몰D",
+                price: 114000,
+                link: "https://example.com/d",
+                image: "https://example.com/d.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "201",
+                title: "에센코어 클레브 DDR5 PC5-44800 KLEVV CL46 32GB , 1개",
+                brand: "클레브",
+                mallName: "몰E",
+                price: 109000,
+                link: "https://example.com/e",
+                image: "https://example.com/e.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "202",
+                title: "삼성전자 삼성 DDR5 PC5-44800 16GB , 1개",
+                brand: "삼성전자",
+                mallName: "몰F",
+                price: 59000,
+                link: "https://example.com/f",
+                image: "https://example.com/f.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.compareProductPrices({
+      query: "DDR5 32GB 메모리 통으로 가격 비교하려는데, 너무 넓으면 멈추고 다시 물을 걸 추천해줘"
+    });
+
+    expect(result.query).toBe("DDR5 32GB 메모리");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "KLEVV DDR5 PC5-44800 32GB 가격 비교해 줘",
+      "SAMSUNG DDR5 PC5-44800 32GB 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions condenses broad Gram prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "그램 16") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "LG전자 그램16 16ZD90Q-GX36K RAM 16GB, 256GB",
+                brand: "LG",
+                mallName: "몰A",
+                price: 1399000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "LG전자 그램16 16ZD90RU-GX54K RAM 16GB, 256GB",
+                brand: "LG",
+                mallName: "몰B",
+                price: 1499000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "그램 16 쪽을 보는 중인데, 모델이 여러 개면 멈춰도 되니까 지금 사도 되는 가격대인지 같이 봐줘"
+    });
+
+    expect(result.query).toBe("그램 16");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "16ZD90Q-GX36K 지금 사도 괜찮은 가격대야?",
+      "16ZD90RU-GX54K 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("explainPurchaseOptions condenses broad motherboard prompts enough to recover follow-up suggestions", async () => {
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          if (input.query !== "B650 메인보드") {
+            return {
+              query: input.query,
+              offers: []
+            };
+          }
+
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "바이오스타 B650 MT-E PRO 제이씨현",
+                brand: "바이오스타",
+                mallName: "몰A",
+                price: 139000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "ASRock B650 M PRO RS 대원씨티에스",
+                brand: "ASRock",
+                mallName: "몰B",
+                price: 189000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "102",
+                title: "ASUS TUF B650M-PLUS WIFI 메인보드",
+                brand: "ASUS",
+                mallName: "몰C",
+                price: 219000,
+                link: "https://example.com/c",
+                image: "https://example.com/c.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "B650 메인보드 쪽을 지금 사도 되는 가격인지 보고 싶은데 막연하면 멈추고 재질문 추천해줘"
+    });
+
+    expect(result.query).toBe("B650 메인보드");
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "BIOSTAR B650MT-E PRO 지금 사도 괜찮은 가격대야?",
+      "ASROCK B650M PRO RS 지금 사도 괜찮은 가격대야?",
+      "ASUS TUF B650M-PLUS 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
   test("compareProductPrices keeps long broad notebook prompts ambiguous instead of collapsing to not_found", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -2878,7 +3593,7 @@ describe("PriceService", () => {
       query: "4060 들어간 노트북 전부를 한 번에 비교하는 건 무리일 것 같긴 한데, 그래도 어떻게 나오는지 봐줘"
     });
 
-    expect(result.query).toBe("4060 노트북 전부");
+    expect(result.query).toBe("4060 노트북");
     expect(result.status).toBe("ambiguous");
     expect(result.summary).toContain("정확");
     expect(result.suggestedQueries?.length).toBeGreaterThan(0);

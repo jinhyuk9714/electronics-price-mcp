@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T02:56:04.224Z
+- 생성 시각: 2026-03-13T03:08:21.060Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -47,7 +47,7 @@
 ### laptop-broad-search-2 · pass
 - prompt: 4060 노트북 찾아줘
 - expected_behavior: 4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.
-- observed_summary: 4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다.
+- observed_summary: 4060 노트북 기준 7개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### laptop-broad-search-3 · pass
@@ -221,7 +221,7 @@
 ### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 가격 비교해 줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932160원, 최고가 1069000원, 판매처 5곳입니다.
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932160원, 최고가 1065430원, 판매처 4곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
@@ -335,7 +335,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: 로지텍 MX Mechanical Mini 가격 비교해 줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -389,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass

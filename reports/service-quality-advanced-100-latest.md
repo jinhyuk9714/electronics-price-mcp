@@ -1,20 +1,20 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-13T02:56:38.594Z
+- 생성 시각: 2026-03-13T03:08:54.410Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 81 pass / 12 soft_fail / 7 fail
-- 통과율: 81.0%
+- 전체 결과: 87 pass / 6 soft_fail / 7 fail
+- 통과율: 87.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 노트북 | 20 | 17 | 3 | 0 | 85.0% |
+| 노트북 | 20 | 19 | 1 | 0 | 95.0% |
 | 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
-| 키보드 | 20 | 15 | 3 | 2 | 75.0% |
-| 모니터 | 20 | 17 | 2 | 1 | 85.0% |
-| PC 부품 | 20 | 13 | 3 | 4 | 65.0% |
+| 키보드 | 20 | 16 | 2 | 2 | 80.0% |
+| 모니터 | 20 | 18 | 1 | 1 | 90.0% |
+| PC 부품 | 20 | 15 | 1 | 4 | 75.0% |
 
 ## 의도별 통과율
 
@@ -23,12 +23,12 @@
 | broad search | 20 | 18 | 0 | 2 | 90.0% |
 | exact-ish search | 20 | 18 | 1 | 1 | 90.0% |
 | exact compare | 20 | 18 | 1 | 1 | 90.0% |
-| broad ambiguous safety | 20 | 14 | 6 | 0 | 70.0% |
-| purchase/explain | 20 | 13 | 4 | 3 | 65.0% |
+| broad ambiguous safety | 20 | 18 | 2 | 0 | 90.0% |
+| purchase/explain | 20 | 15 | 2 | 3 | 75.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 10
+- missing_suggested_queries: 4
 - expected_status: ok -> ambiguous: 2
 - expected_status: ambiguous -> ok: 1
 - must_contain_missing: 2TB: 1
@@ -45,13 +45,13 @@
 ### laptop-broad-search-1 · pass
 - prompt: 게임도 좀 할 거라 게이밍 노트북 쪽으로 보고 싶은데, 사무용 느낌 나는 건 빼고 요즘 뭐가 잡히는지 정리해줘
 - expected_behavior: 게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.
-- observed_summary: 게이밍 노트북 보고 싶은데 기준 7개 모델, 8개 판매처를 찾았습니다.
+- observed_summary: 게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### laptop-broad-search-2 · pass
 - prompt: 4060 들어간 노트북을 보는 중인데 렌탈이나 다른 급 그래픽 섞지 말고 대충 후보가 뭐가 있나 좀 볼래
 - expected_behavior: 4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.
-- observed_summary: 4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다.
+- observed_summary: 4060 노트북 기준 7개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### laptop-broad-search-3 · pass
@@ -120,11 +120,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### laptop-broad-ambiguous-safety-2 · soft_fail
+### laptop-broad-ambiguous-safety-2 · pass
 - prompt: 갤북4 프로 16이라고만 보면 여러 모델일 것 같은데 일단 가격 비교가 되는 수준인지 봐줘
 - expected_behavior: 갤럭시북 broad compare는 ambiguous로 멈추고 모델 코드 재질문을 유도해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### laptop-broad-ambiguous-safety-3 · pass
 - prompt: 4060 들어간 노트북 전부를 한 번에 비교하는 건 무리일 것 같긴 한데, 그래도 어떻게 나오는지 봐줘
@@ -138,11 +138,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### laptop-purchase-explain-1 · soft_fail
+### laptop-purchase-explain-1 · pass
 - prompt: 그램 16 쪽을 보는 중인데, 모델이 여러 개면 멈춰도 되니까 지금 사도 되는 가격대인지 같이 봐줘
 - expected_behavior: 그램 16 explain은 ambiguous로 멈추고 다음 질문을 제안해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### laptop-purchase-explain-2 · soft_fail
 - prompt: 4060 노트북 알아보는 중인데 너무 막연하면 멈추고, 다음에 뭘 물어보면 좋을지도 알려줘
@@ -177,7 +177,7 @@
 ### graphics-card-broad-search-3 · pass
 - prompt: 라데온 9070 쪽 보는 중이라 브라켓이나 완본체 섞지 말고 카드만 찾아줘
 - expected_behavior: 라데온 broad search는 부속품과 완본체를 줄여야 한다.
-- observed_summary: 라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 라데온 9070 기준 2개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-broad-search-4 · pass
@@ -195,7 +195,7 @@
 ### graphics-card-exact-ish-search-2 · pass
 - prompt: ASUS TUF 5070 Ti 쪽으로 보는데 그 모델명 기준으로 검색해줘
 - expected_behavior: 정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.
-- observed_summary: 검색 결과가 없습니다: ASUS TUF 5070 Ti 명 기준으로
+- observed_summary: ASUS TUF 5070 Ti 기준 1개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-exact-ish-search-3 · pass
@@ -297,7 +297,7 @@
 ### keyboard-broad-search-3 · pass
 - prompt: 텐키리스 게이밍 키보드 쪽으로 보고 싶어서 풀배열 오피스용 말고 맞는 것만 보여줘
 - expected_behavior: TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.
-- observed_summary: 텐키리스 게이밍 키보드 서 풀배열 맞는 것만 기준 2개 모델, 2개 판매처를 찾았습니다.
+- observed_summary: 텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-broad-search-4 · fail
@@ -339,7 +339,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -366,11 +366,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### keyboard-broad-ambiguous-safety-3 · soft_fail
+### keyboard-broad-ambiguous-safety-3 · pass
 - prompt: 로지텍 기계식 키보드 정도로만 말하면 여러 개일 텐데 그래도 비교 요청 넣어볼게
 - expected_behavior: 브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### keyboard-broad-ambiguous-safety-4 · soft_fail
 - prompt: 저소음 사무용 키보드도 모델이 많으니 정확히 못 고르면 멈추고 다음 질문을 추천해줘
@@ -393,7 +393,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: MX Mechanical Mini는 지금 들어가도 괜찮은 가격대인지 설명해줘
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass
@@ -417,7 +417,7 @@
 ### monitor-broad-search-3 · pass
 - prompt: 울트라와이드 모니터 쪽으로 보는데 본체 말고 암이나 케이블 같은 건 빼고 찾아줘
 - expected_behavior: 울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.
-- observed_summary: 울트라와이드 모니터 본체 말고 암이나 기준 8개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 울트라와이드 모니터 기준 9개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-broad-search-4 · fail
@@ -486,11 +486,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### monitor-broad-ambiguous-safety-3 · soft_fail
+### monitor-broad-ambiguous-safety-3 · pass
 - prompt: 게이밍 모니터라고만 하면 모델이 많으니 안 되면 멈추고 다시 물을 만한 걸 추천해줘
 - expected_behavior: 32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### monitor-broad-ambiguous-safety-4 · pass
 - prompt: 울트라와이드 모니터 가격 비교하고 싶은데 너무 넓으면 멈추고 정리해줘
@@ -606,11 +606,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: must_not_contain: 조립PC
 
-### pc-part-broad-ambiguous-safety-3 · soft_fail
+### pc-part-broad-ambiguous-safety-3 · pass
 - prompt: DDR5 32GB 메모리 통으로 가격 비교하려는데, 너무 넓으면 멈추고 다시 물을 걸 추천해줘
 - expected_behavior: 메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### pc-part-broad-ambiguous-safety-4 · pass
 - prompt: 2TB NVMe SSD 가격 비교하고 싶은데 모델이 많으면 안전하게 멈춰줘
@@ -618,11 +618,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### pc-part-purchase-explain-1 · soft_fail
+### pc-part-purchase-explain-1 · pass
 - prompt: B650 메인보드 쪽을 지금 사도 되는 가격인지 보고 싶은데 막연하면 멈추고 재질문 추천해줘
 - expected_behavior: B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### pc-part-purchase-explain-2 · fail
 - prompt: 850W 파워 지금 들어가도 될 가격대인지 같이 봐줘, 애매하면 정확 모델도 알려줘

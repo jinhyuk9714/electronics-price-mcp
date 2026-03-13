@@ -189,7 +189,7 @@ describe("normalize helpers", () => {
     expect(keyboard.intentHints.explain).toBe(true);
     expect(keyboard.categoryHints.keyboard).toBe(true);
 
-    expect(monitor.baseQuery).toBe("27인치 4K 모니터 전체");
+    expect(monitor.baseQuery).toBe("27인치 4K 모니터");
     expect(monitor.intentHints.compare).toBe(true);
     expect(monitor.intentHints.broad).toBe(true);
     expect(monitor.categoryHints.monitor).toBe(true);

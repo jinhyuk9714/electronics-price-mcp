@@ -1,22 +1,22 @@
 {
   "title": "Service Quality Advanced 100 Evaluation",
-  "generatedAt": "2026-03-13T02:56:38.594Z",
+  "generatedAt": "2026-03-13T03:08:54.410Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
     "total": 100,
-    "pass": 81,
-    "softFail": 12,
+    "pass": 87,
+    "softFail": 6,
     "fail": 7,
-    "passRate": 0.81,
+    "passRate": 0.87,
     "byCategory": [
       {
         "key": "노트북",
         "total": 20,
-        "pass": 17,
-        "softFail": 3,
+        "pass": 19,
+        "softFail": 1,
         "fail": 0,
-        "passRate": 0.85
+        "passRate": 0.95
       },
       {
         "key": "그래픽카드",
@@ -29,26 +29,26 @@
       {
         "key": "키보드",
         "total": 20,
-        "pass": 15,
-        "softFail": 3,
+        "pass": 16,
+        "softFail": 2,
         "fail": 2,
-        "passRate": 0.75
+        "passRate": 0.8
       },
       {
         "key": "모니터",
         "total": 20,
-        "pass": 17,
-        "softFail": 2,
+        "pass": 18,
+        "softFail": 1,
         "fail": 1,
-        "passRate": 0.85
+        "passRate": 0.9
       },
       {
         "key": "PC 부품",
         "total": 20,
-        "pass": 13,
-        "softFail": 3,
+        "pass": 15,
+        "softFail": 1,
         "fail": 4,
-        "passRate": 0.65
+        "passRate": 0.75
       }
     ],
     "byIntent": [
@@ -79,24 +79,24 @@
       {
         "key": "broad ambiguous safety",
         "total": 20,
-        "pass": 14,
-        "softFail": 6,
+        "pass": 18,
+        "softFail": 2,
         "fail": 0,
-        "passRate": 0.7
+        "passRate": 0.9
       },
       {
         "key": "purchase/explain",
         "total": 20,
-        "pass": 13,
-        "softFail": 4,
+        "pass": 15,
+        "softFail": 2,
         "fail": 3,
-        "passRate": 0.65
+        "passRate": 0.75
       }
     ],
     "failurePatterns": [
       {
         "pattern": "missing_suggested_queries",
-        "count": 10
+        "count": 4
       },
       {
         "pattern": "expected_status: ok -> ambiguous",
@@ -174,10 +174,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observedSummary": "게이밍 노트북 보고 싶은데 기준 7개 모델, 8개 판매처를 찾았습니다.",
+      "observedSummary": "게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observed_summary": "게이밍 노트북 보고 싶은데 기준 7개 모델, 8개 판매처를 찾았습니다."
+      "observed_summary": "게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-2",
@@ -187,10 +187,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.",
-      "observedSummary": "4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다.",
+      "observedSummary": "4060 노트북 기준 7개 모델, 9개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.",
-      "observed_summary": "4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다."
+      "observed_summary": "4060 노트북 기준 7개 모델, 9개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-3",
@@ -341,10 +341,10 @@
       "category": "laptop",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "갤럭시북 broad compare는 ambiguous로 멈추고 모델 코드 재질문을 유도해야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "갤럭시북 broad compare는 ambiguous로 멈추고 모델 코드 재질문을 유도해야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -380,10 +380,10 @@
       "category": "laptop",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "그램 16 explain은 ambiguous로 멈추고 다음 질문을 제안해야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "그램 16 explain은 ambiguous로 멈추고 다음 질문을 제안해야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -460,10 +460,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "라데온 broad search는 부속품과 완본체를 줄여야 한다.",
-      "observedSummary": "라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다.",
+      "observedSummary": "라데온 9070 기준 2개 모델, 10개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "라데온 broad search는 부속품과 완본체를 줄여야 한다.",
-      "observed_summary": "라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "라데온 9070 기준 2개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "graphics-card-broad-search-4",
@@ -499,10 +499,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 명 기준으로",
+      "observedSummary": "ASUS TUF 5070 Ti 기준 1개 모델, 10개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 명 기준으로"
+      "observed_summary": "ASUS TUF 5070 Ti 기준 1개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "graphics-card-exact-ish-search-3",
@@ -720,10 +720,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observedSummary": "텐키리스 게이밍 키보드 서 풀배열 맞는 것만 기준 2개 모델, 2개 판매처를 찾았습니다.",
+      "observedSummary": "텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observed_summary": "텐키리스 게이밍 키보드 서 풀배열 맞는 것만 기준 2개 모델, 2개 판매처를 찾았습니다."
+      "observed_summary": "텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-broad-search-4",
@@ -811,10 +811,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.",
+      "observedSummary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다.",
       "notes": "",
       "expected_behavior": "MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다."
+      "observed_summary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다."
     },
     {
       "id": "keyboard-exact-compare-3",
@@ -874,10 +874,10 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -928,10 +928,10 @@
       "executor": "explain-mcp",
       "status": "pass",
       "expectedBehavior": "정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observedSummary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.",
+      "observedSummary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.",
       "notes": "",
       "expected_behavior": "정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observed_summary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다."
+      "observed_summary": "로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다."
     },
     {
       "id": "keyboard-purchase-explain-4",
@@ -980,10 +980,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.",
-      "observedSummary": "울트라와이드 모니터 본체 말고 암이나 기준 8개 모델, 10개 판매처를 찾았습니다.",
+      "observedSummary": "울트라와이드 모니터 기준 9개 모델, 10개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.",
-      "observed_summary": "울트라와이드 모니터 본체 말고 암이나 기준 8개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "울트라와이드 모니터 기준 9개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "monitor-broad-search-4",
@@ -1134,10 +1134,10 @@
       "category": "monitor",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -1394,10 +1394,10 @@
       "category": "pc-part",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -1420,10 +1420,10 @@
       "category": "pc-part",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
