@@ -1,5 +1,6 @@
 import {
   classifyOfferTitle,
+  condenseNaturalLanguageQuery,
   detectBroadQueryKind,
   detectSupplementalQueryKind,
   extractExactQueryModel,
@@ -53,6 +54,10 @@ const SUGGESTION_QUERY_STOPWORDS = new Set([
   "SERIES",
   "계열",
   "라인업",
+  "라인",
+  "전체",
+  "전부",
+  "통으로",
   "가격",
   "비교",
   "설명",
@@ -100,15 +105,16 @@ export class PriceService {
   }
 
   async searchProducts(input: SearchProductsInput): Promise<SearchProductsResult> {
+    const condensedQuery = condenseNaturalLanguageQuery(input.query);
     const providerResult = await this.fetchNormalizedOffers({
-      query: input.query,
+      query: condensedQuery.baseQuery,
       category: input.category,
       sort: input.sort,
       excludeUsed: input.excludeUsed,
       limit: input.limit
     });
 
-    const searchSelection = selectSearchOffers(providerResult.query, providerResult.offers);
+    const searchSelection = selectSearchOffers(input.query, providerResult.offers);
     const offers = searchSelection.offers.filter((offer) =>
       typeof input.budgetMax === "number" ? offer.price <= input.budgetMax : true
     );
@@ -287,7 +293,8 @@ export class PriceService {
       return null;
     }
 
-    const providerQuery = simplifyIntentQuery(query);
+    const condensedQuery = condenseNaturalLanguageQuery(query);
+    const providerQuery = condensedQuery.baseQuery;
 
     const search = await this.fetchNormalizedOffers({
       query: providerQuery,
@@ -297,11 +304,30 @@ export class PriceService {
     });
 
     if (search.offers.length === 0) {
+      const broadQueryKind = detectBroadQueryKind(providerQuery);
+      const supplementalQueryKind = detectSupplementalQueryKind(providerQuery);
+
+      if (condensedQuery.intentHints.broad || broadQueryKind !== "other" || supplementalQueryKind !== "other") {
+        return {
+          status: "ambiguous",
+          query: providerQuery,
+          summary:
+            broadQueryKind === "graphics-card"
+              ? "정확히 같은 모델만 비교할 수 있습니다."
+              : "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+          warning:
+            broadQueryKind === "graphics-card"
+              ? createBroadGpuAmbiguousWarning()
+              : "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.",
+          offers: []
+        };
+      }
+
       return null;
     }
 
     return resolveComparisonTarget({
-      query: providerQuery,
+      query,
       offers: search.offers
     });
   }
@@ -317,15 +343,17 @@ function resolveComparisonTarget(options: {
     return null;
   }
 
-  const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
-  const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(options.query);
-  const supplementalQueryKind = exactQueryModel ? "other" : detectSupplementalQueryKind(options.query);
+  const condensedQuery = condenseNaturalLanguageQuery(options.query);
+  const baseQuery = options.forcedExactModel ? simplifyIntentQuery(options.query) : condensedQuery.baseQuery;
+  const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(baseQuery);
+  const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(baseQuery);
+  const supplementalQueryKind = exactQueryModel ? "other" : detectSupplementalQueryKind(baseQuery);
   const scopedOffers = exactQueryModel ? dedupedOffers : filterBroadSearchOffers(options.query, dedupedOffers);
 
   if (!exactQueryModel && scopedOffers.length === 0) {
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary:
         broadQueryKind === "graphics-card"
           ? "정확히 같은 모델만 비교할 수 있습니다."
@@ -349,7 +377,7 @@ function resolveComparisonTarget(options: {
 
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary:
         accessoryOnlyExactQuery && !broadGpuQuery
           ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다."
@@ -364,10 +392,10 @@ function resolveComparisonTarget(options: {
     };
   }
 
-  if (!exactQueryModel && detectBroadQueryKind(options.query) === "laptop") {
+  if (!exactQueryModel && broadQueryKind === "laptop") {
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -377,7 +405,7 @@ function resolveComparisonTarget(options: {
   if (!exactQueryModel && supplementalQueryKind === "keyboard") {
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -387,17 +415,17 @@ function resolveComparisonTarget(options: {
   if (!exactQueryModel && broadQueryKind === "graphics-card") {
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary: "정확히 같은 모델만 비교할 수 있습니다.",
       warning: createBroadGpuAmbiguousWarning(),
       offers: comparisonOffers
     };
   }
 
-  if ((!exactQueryModel && (isAmbiguousComparison(options.query, comparisonOffers) || groups.length !== 1)) || groups.length !== 1) {
+  if ((!exactQueryModel && (isAmbiguousComparison(baseQuery, comparisonOffers) || groups.length !== 1)) || groups.length !== 1) {
     return {
       status: "ambiguous",
-      query: options.query,
+      query: baseQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -408,7 +436,7 @@ function resolveComparisonTarget(options: {
 
   return {
     status: "ok",
-    query: options.query,
+    query: baseQuery,
     group,
     offers: comparisonOffers.filter((offer) => offer.productId === group.productId)
   };
@@ -1023,7 +1051,11 @@ function isAccessoryLikeOffer(query: string, offer: ProductOffer): boolean {
 }
 
 function isComparisonExcludedOffer(query: string, offer: ProductOffer): boolean {
-  return isAccessoryLikeOffer(query, offer) || isConfigVariantOffer(offer.title);
+  return (
+    isExcludedByPromptTerms(query, offer) ||
+    isAccessoryLikeOffer(query, offer) ||
+    isConfigVariantOffer(offer.title)
+  );
 }
 
 function isBroadSearchExcludedOffer(
@@ -1031,6 +1063,10 @@ function isBroadSearchExcludedOffer(
   offer: ProductOffer,
   broadQueryKind: "graphics-card" | "laptop" | "other"
 ): boolean {
+  if (isExcludedByPromptTerms(query, offer)) {
+    return true;
+  }
+
   if (isQueryIntentMismatch(query, offer.title)) {
     return true;
   }
@@ -1071,6 +1107,16 @@ function isConfigVariantOffer(title: string): boolean {
       normalizedTitle
     ) || CONFIG_VARIANT_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))
   );
+}
+
+function isExcludedByPromptTerms(query: string, offer: ProductOffer): boolean {
+  const excludedTerms = condenseNaturalLanguageQuery(query).excludedTerms;
+  if (excludedTerms.length === 0) {
+    return false;
+  }
+
+  const normalizedTitle = normalizeQuery(offer.title);
+  return excludedTerms.some((term) => normalizedTitle.includes(normalizeQuery(term)));
 }
 
 function isGpuLikeModel(value: string): boolean {

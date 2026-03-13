@@ -1,64 +1,64 @@
 {
   "title": "Service Quality Advanced 100 Evaluation",
-  "generatedAt": "2026-03-13T02:06:39.422Z",
+  "generatedAt": "2026-03-13T02:25:09.848Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
     "total": 100,
-    "pass": 30,
-    "softFail": 12,
-    "fail": 58,
-    "passRate": 0.3,
+    "pass": 67,
+    "softFail": 13,
+    "fail": 20,
+    "passRate": 0.67,
     "byCategory": [
       {
         "key": "노트북",
         "total": 20,
-        "pass": 4,
+        "pass": 16,
         "softFail": 3,
-        "fail": 13,
-        "passRate": 0.2
+        "fail": 1,
+        "passRate": 0.8
       },
       {
         "key": "그래픽카드",
         "total": 20,
-        "pass": 8,
-        "softFail": 2,
-        "fail": 10,
-        "passRate": 0.4
+        "pass": 16,
+        "softFail": 1,
+        "fail": 3,
+        "passRate": 0.8
       },
       {
         "key": "키보드",
         "total": 20,
-        "pass": 2,
-        "softFail": 5,
-        "fail": 13,
-        "passRate": 0.1
+        "pass": 11,
+        "softFail": 3,
+        "fail": 6,
+        "passRate": 0.55
       },
       {
         "key": "모니터",
         "total": 20,
-        "pass": 8,
-        "softFail": 0,
-        "fail": 12,
-        "passRate": 0.4
+        "pass": 12,
+        "softFail": 3,
+        "fail": 5,
+        "passRate": 0.6
       },
       {
         "key": "PC 부품",
         "total": 20,
-        "pass": 8,
-        "softFail": 2,
-        "fail": 10,
-        "passRate": 0.4
+        "pass": 12,
+        "softFail": 3,
+        "fail": 5,
+        "passRate": 0.6
       }
     ],
     "byIntent": [
       {
         "key": "broad search",
         "total": 20,
-        "pass": 5,
-        "softFail": 11,
-        "fail": 4,
-        "passRate": 0.25
+        "pass": 17,
+        "softFail": 0,
+        "fail": 3,
+        "passRate": 0.85
       },
       {
         "key": "exact-ish search",
@@ -71,103 +71,43 @@
       {
         "key": "exact compare",
         "total": 20,
-        "pass": 6,
-        "softFail": 0,
-        "fail": 14,
-        "passRate": 0.3
+        "pass": 9,
+        "softFail": 1,
+        "fail": 10,
+        "passRate": 0.45
       },
       {
         "key": "broad ambiguous safety",
         "total": 20,
-        "pass": 0,
-        "softFail": 0,
-        "fail": 20,
-        "passRate": 0
+        "pass": 14,
+        "softFail": 6,
+        "fail": 0,
+        "passRate": 0.7
       },
       {
         "key": "purchase/explain",
         "total": 20,
-        "pass": 1,
-        "softFail": 0,
-        "fail": 19,
-        "passRate": 0.05
+        "pass": 9,
+        "softFail": 5,
+        "fail": 6,
+        "passRate": 0.45
       }
     ],
     "failurePatterns": [
       {
-        "pattern": "must_contain_missing: 정확히 같은 모델",
-        "count": 30
-      },
-      {
-        "pattern": "expected_status: ambiguous -> not_found",
-        "count": 29
+        "pattern": "expected_status: ok -> ambiguous",
+        "count": 12
       },
       {
         "pattern": "missing_suggested_queries",
-        "count": 23
+        "count": 10
+      },
+      {
+        "pattern": "error: Unexpected token 'I', \"Internal S\"... is not valid JSON",
+        "count": 2
       },
       {
         "pattern": "expected_status: ok -> not_found",
-        "count": 20
-      },
-      {
-        "pattern": "must_not_contain: 완본체",
-        "count": 4
-      },
-      {
-        "pattern": "must_not_contain: 사무용",
-        "count": 3
-      },
-      {
-        "pattern": "expected_status: ok -> ambiguous",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: 15IRX9",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: 9800X3D",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: A51A",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: K660",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: Keychron",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: MX Mechanical",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: NT960XGQ",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: Ryzen",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: U2723QE",
-        "count": 2
-      },
-      {
-        "pattern": "must_contain_missing: 앱코",
-        "count": 2
-      },
-      {
-        "pattern": "must_not_contain: 브라켓",
-        "count": 2
-      },
-      {
-        "pattern": "must_not_contain: 오피스",
         "count": 2
       },
       {
@@ -175,7 +115,7 @@
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: 15-FB2061AX",
+        "pattern": "expected_status: ok -> undefined",
         "count": 1
       },
       {
@@ -199,6 +139,14 @@
         "count": 1
       },
       {
+        "pattern": "must_contain_missing: 5070",
+        "count": 1
+      },
+      {
+        "pattern": "must_contain_missing: 9800X3D",
+        "count": 1
+      },
+      {
         "pattern": "must_contain_missing: A75",
         "count": 1
       },
@@ -219,23 +167,19 @@
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: K2 Pro",
+        "pattern": "must_contain_missing: K660",
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: RTX",
+        "pattern": "must_contain_missing: Keychron",
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: RTX 5070",
+        "pattern": "must_contain_missing: MX Mechanical",
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: RX",
-        "count": 1
-      },
-      {
-        "pattern": "must_contain_missing: RX 9070",
+        "pattern": "must_contain_missing: Ryzen",
         "count": 1
       },
       {
@@ -247,11 +191,27 @@
         "count": 1
       },
       {
-        "pattern": "must_contain_missing: 갤럭시북",
+        "pattern": "must_contain_missing: TI",
         "count": 1
       },
       {
-        "pattern": "must_not_contain: 게이밍",
+        "pattern": "must_contain_missing: U2723QE",
+        "count": 1
+      },
+      {
+        "pattern": "must_contain_missing: 앱코",
+        "count": 1
+      },
+      {
+        "pattern": "must_contain_missing: 정확히 같은 모델",
+        "count": 1
+      },
+      {
+        "pattern": "must_contain_missing: 키보드",
+        "count": 1
+      },
+      {
+        "pattern": "must_not_contain: RX 9070 XT",
         "count": 1
       },
       {
@@ -259,27 +219,11 @@
         "count": 1
       },
       {
-        "pattern": "must_not_contain: 마우스",
-        "count": 1
-      },
-      {
-        "pattern": "must_not_contain: 외장",
-        "count": 1
-      },
-      {
         "pattern": "must_not_contain: 조립PC",
         "count": 1
       },
       {
-        "pattern": "must_not_contain: 키스킨",
-        "count": 1
-      },
-      {
         "pattern": "must_not_contain: 키캡",
-        "count": 1
-      },
-      {
-        "pattern": "must_not_contain: 파우치",
         "count": 1
       }
     ],
@@ -296,12 +240,12 @@
       "category": "laptop",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 게임도 좀 할 거라 게이밍 노트북 쪽으로 보고 싶은데, 사무용 느낌 나는 건 빼고 요즘 뭐가 잡히는지 정리해줘",
-      "notes": "must_not_contain: 사무용",
+      "observedSummary": "게이밍 노트북 보고 싶은데 기준 7개 모델, 8개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 게임도 좀 할 거라 게이밍 노트북 쪽으로 보고 싶은데, 사무용 느낌 나는 건 빼고 요즘 뭐가 잡히는지 정리해줘"
+      "observed_summary": "게이밍 노트북 보고 싶은데 기준 7개 모델, 8개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-2",
@@ -309,12 +253,12 @@
       "category": "laptop",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 4060 들어간 노트북을 보는 중인데 렌탈이나 다른 급 그래픽 섞지 말고 대충 후보가 뭐가 있나 좀 볼래",
-      "notes": "must_not_contain: 렌탈",
+      "observedSummary": "4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "4060 노트북 검색에서 다른 GPU 변형과 렌탈 결과가 줄어들어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 4060 들어간 노트북을 보는 중인데 렌탈이나 다른 급 그래픽 섞지 말고 대충 후보가 뭐가 있나 좀 볼래"
+      "observed_summary": "4060 노트북 기준 6개 모델, 8개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-3",
@@ -322,12 +266,12 @@
       "category": "laptop",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "그램 16 검색에서는 노트북 본체 위주 결과가 남아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 그램 16 생각 중인데 키스킨 같은 거 말고 본체 위주로만 뭐가 뜨는지",
-      "notes": "must_not_contain: 키스킨",
+      "observedSummary": "그램 16 만 뭐가 뜨는지 기준 3개 모델, 8개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "그램 16 검색에서는 노트북 본체 위주 결과가 남아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 그램 16 생각 중인데 키스킨 같은 거 말고 본체 위주로만 뭐가 뜨는지"
+      "observed_summary": "그램 16 만 뭐가 뜨는지 기준 3개 모델, 8개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-4",
@@ -335,12 +279,12 @@
       "category": "laptop",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "갤럭시북 broad search에서 액세서리 노이즈가 크게 줄어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 갤북4 프로 16 쪽으로 알아보는 중이라 파우치나 필름 같은 건 빼고 본체만",
-      "notes": "must_contain_missing: 갤럭시북; must_not_contain: 파우치",
+      "observedSummary": "갤럭시북4 프로 16 기준 9개 모델, 10개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "갤럭시북 broad search에서 액세서리 노이즈가 크게 줄어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 갤북4 프로 16 쪽으로 알아보는 중이라 파우치나 필름 같은 건 빼고 본체만"
+      "observed_summary": "갤럭시북4 프로 16 기준 9개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-exact-ish-search-1",
@@ -350,10 +294,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 그램 모델 검색은 모델 코드가 살아 있는 결과를 보여줘야 한다.",
-      "observedSummary": "검색 결과가 없습니다: LG 그램 쪽에서 16Z90T GA5CK로 보이는 본체들만 가능하면 깔끔하게 정리해줘",
+      "observedSummary": "검색 결과가 없습니다: LG 그램 쪽에서 16Z90T GA5CK로 보이는 본체들만 깔끔하게",
       "notes": "",
       "expected_behavior": "정확한 그램 모델 검색은 모델 코드가 살아 있는 결과를 보여줘야 한다.",
-      "observed_summary": "검색 결과가 없습니다: LG 그램 쪽에서 16Z90T GA5CK로 보이는 본체들만 가능하면 깔끔하게 정리해줘"
+      "observed_summary": "검색 결과가 없습니다: LG 그램 쪽에서 16Z90T GA5CK로 보이는 본체들만 깔끔하게"
     },
     {
       "id": "laptop-exact-ish-search-2",
@@ -363,10 +307,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 갤럭시북 모델 검색은 모델 코드와 본체 위주 결과를 유지해야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고 본체 위주로",
+      "observedSummary": "검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고",
       "notes": "",
       "expected_behavior": "정확한 갤럭시북 모델 검색은 모델 코드와 본체 위주 결과를 유지해야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고 본체 위주로"
+      "observed_summary": "검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고"
     },
     {
       "id": "laptop-exact-ish-search-3",
@@ -376,10 +320,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "Lenovo exact-ish search는 다른 GPU 변형이 크게 끼지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 레노버는 15IRX9로 보는 거라 다른 비슷한 급 말고 이 모델 검색 좀 해줘",
+      "observedSummary": "검색 결과가 없습니다: 레노버는 15IRX9로 보는 거라 다른 비슷한 급 말고",
       "notes": "",
       "expected_behavior": "Lenovo exact-ish search는 다른 GPU 변형이 크게 끼지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 레노버는 15IRX9로 보는 거라 다른 비슷한 급 말고 이 모델 검색 좀 해줘"
+      "observed_summary": "검색 결과가 없습니다: 레노버는 15IRX9로 보는 거라 다른 비슷한 급 말고"
     },
     {
       "id": "laptop-exact-ish-search-4",
@@ -389,10 +333,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "HP exact-ish search는 동일 모델 중심으로 정리되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 빅터스 쪽에서 15-FB2061AX 이걸 보는 거라 모델 맞는 것들만 한번 찾아봐줘",
+      "observedSummary": "빅터스 쪽에서 15-FB2061AX 이걸 보는 거라 모델 맞는 것들만 기준 1개 모델, 6개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "HP exact-ish search는 동일 모델 중심으로 정리되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 빅터스 쪽에서 15-FB2061AX 이걸 보는 거라 모델 맞는 것들만 한번 찾아봐줘"
+      "observed_summary": "빅터스 쪽에서 15-FB2061AX 이걸 보는 거라 모델 맞는 것들만 기준 1개 모델, 6개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-exact-compare-1",
@@ -402,10 +346,10 @@
       "executor": "compare-api",
       "status": "fail",
       "expectedBehavior": "정확한 그램 모델 비교는 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 16Z90T; must_contain_missing: GA5CK",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: 16Z90T; must_contain_missing: GA5CK",
       "expected_behavior": "정확한 그램 모델 비교는 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-exact-compare-2",
@@ -413,12 +357,12 @@
       "category": "laptop",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "정확한 갤럭시북 모델 비교는 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: NT960XGQ; must_contain_missing: A51A",
+      "observedSummary": "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 6곳입니다.",
+      "notes": "",
       "expected_behavior": "정확한 갤럭시북 모델 비교는 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 6곳입니다."
     },
     {
       "id": "laptop-exact-compare-3",
@@ -426,12 +370,12 @@
       "category": "laptop",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 15IRX9",
+      "observedSummary": "레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다.",
+      "notes": "",
       "expected_behavior": "Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다."
     },
     {
       "id": "laptop-exact-compare-4",
@@ -439,12 +383,12 @@
       "category": "laptop",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "HP exact compare는 모델 코드 기준으로 ok가 되어야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 15-FB2061AX",
+      "observedSummary": "HP VICTUS 15-fb2061AX 8GB, 512GB 기준 최저가 1349000원, 최고가 2849160원, 판매처 9곳입니다.",
+      "notes": "",
       "expected_behavior": "HP exact compare는 모델 코드 기준으로 ok가 되어야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "HP VICTUS 15-fb2061AX 8GB, 512GB 기준 최저가 1349000원, 최고가 2849160원, 판매처 9곳입니다."
     },
     {
       "id": "laptop-broad-ambiguous-safety-1",
@@ -452,12 +396,12 @@
       "category": "laptop",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "그램 16 broad compare는 안전하게 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "그램 16 broad compare는 안전하게 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-broad-ambiguous-safety-2",
@@ -465,12 +409,12 @@
       "category": "laptop",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "갤럭시북 broad compare는 ambiguous로 멈추고 모델 코드 재질문을 유도해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "갤럭시북 broad compare는 ambiguous로 멈추고 모델 코드 재질문을 유도해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-broad-ambiguous-safety-3",
@@ -478,12 +422,12 @@
       "category": "laptop",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "4060 노트북 broad compare는 ambiguous로 멈추고 GPU-only 추천 없이 모델 코드 중심 제안을 해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "4060 노트북 broad compare는 ambiguous로 멈추고 GPU-only 추천 없이 모델 코드 중심 제안을 해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-broad-ambiguous-safety-4",
@@ -491,12 +435,12 @@
       "category": "laptop",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 노트북 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "게이밍 노트북 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-purchase-explain-1",
@@ -504,12 +448,12 @@
       "category": "laptop",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "그램 16 explain은 ambiguous로 멈추고 다음 질문을 제안해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "그램 16 explain은 ambiguous로 멈추고 다음 질문을 제안해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-purchase-explain-2",
@@ -517,12 +461,12 @@
       "category": "laptop",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "4060 노트북 explain은 노트북 모델 코드 기준 추천을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "4060 노트북 explain은 노트북 모델 코드 기준 추천을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "laptop-purchase-explain-3",
@@ -530,12 +474,12 @@
       "category": "laptop",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "정확한 갤럭시북 explain은 ok 상태로 가격대 해석을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: NT960XGQ; must_contain_missing: A51A",
+      "observedSummary": "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 7곳입니다. 현재 최저가는 2498900원이고 최고가와의 차이는 2251200원입니다.",
+      "notes": "",
       "expected_behavior": "정확한 갤럭시북 explain은 ok 상태로 가격대 해석을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 7곳입니다. 현재 최저가는 2498900원이고 최고가와의 차이는 2251200원입니다."
     },
     {
       "id": "laptop-purchase-explain-4",
@@ -543,12 +487,12 @@
       "category": "laptop",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 15IRX9",
+      "observedSummary": "레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1649000원이고 최고가와의 차이는 1050000원입니다.",
+      "notes": "",
       "expected_behavior": "정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1649000원이고 최고가와의 차이는 1050000원입니다."
     },
     {
       "id": "graphics-card-broad-search-1",
@@ -556,12 +500,12 @@
       "category": "graphics-card",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "5070 broad search는 부속품과 완본체 노이즈를 크게 줄여야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 5070급 그래픽카드 보는 중인데 브라켓이나 완본체 같은 건 빼고 본품 위주로 뭐가 뜨는지",
-      "notes": "must_contain_missing: RTX; must_not_contain: 브라켓; must_not_contain: 완본체",
+      "observedSummary": "5070 그래픽카드 뭐가 뜨는지 기준 1개 모델, 1개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "5070 broad search는 부속품과 완본체 노이즈를 크게 줄여야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 5070급 그래픽카드 보는 중인데 브라켓이나 완본체 같은 건 빼고 본품 위주로 뭐가 뜨는지"
+      "observed_summary": "5070 그래픽카드 뭐가 뜨는지 기준 1개 모델, 1개 판매처를 찾았습니다."
     },
     {
       "id": "graphics-card-broad-search-2",
@@ -569,12 +513,12 @@
       "category": "graphics-card",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "5070 시리즈 broad search는 GPU 계열 중심으로 정리되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: RTX 5070 시리즈를 넓게 훑어보고 싶은데 조립PC 말고 카드 본체만 정리해줘",
-      "notes": "must_not_contain: 조립PC",
+      "observedSummary": "검색 결과가 없습니다: RTX 5070 시리즈 넓게 훑어보고 싶은데 카드",
+      "notes": "",
       "expected_behavior": "5070 시리즈 broad search는 GPU 계열 중심으로 정리되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: RTX 5070 시리즈를 넓게 훑어보고 싶은데 조립PC 말고 카드 본체만 정리해줘"
+      "observed_summary": "검색 결과가 없습니다: RTX 5070 시리즈 넓게 훑어보고 싶은데 카드"
     },
     {
       "id": "graphics-card-broad-search-3",
@@ -582,12 +526,12 @@
       "category": "graphics-card",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "라데온 broad search는 부속품과 완본체를 줄여야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 라데온 9070 쪽 보는 중이라 브라켓이나 완본체 섞지 말고 카드만",
-      "notes": "must_contain_missing: RX; must_not_contain: 브라켓; must_not_contain: 완본체",
+      "observedSummary": "라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "라데온 broad search는 부속품과 완본체를 줄여야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 라데온 9070 쪽 보는 중이라 브라켓이나 완본체 섞지 말고 카드만"
+      "observed_summary": "라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "graphics-card-broad-search-4",
@@ -595,12 +539,12 @@
       "category": "graphics-card",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "fail",
       "expectedBehavior": "5070 Ti broad search는 그래픽카드 본품 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 5070 Ti 라인 보는데 지지대나 완본체 말고 본품만 검색 좀 해줘",
-      "notes": "must_not_contain: 완본체",
+      "observedSummary": "Unexpected token 'I', \"Internal S\"... is not valid JSON",
+      "notes": "error: Unexpected token 'I', \"Internal S\"... is not valid JSON; must_contain_missing: 5070; must_contain_missing: TI",
       "expected_behavior": "5070 Ti broad search는 그래픽카드 본품 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 5070 Ti 라인 보는데 지지대나 완본체 말고 본품만 검색 좀 해줘"
+      "observed_summary": "Unexpected token 'I', \"Internal S\"... is not valid JSON"
     },
     {
       "id": "graphics-card-exact-ish-search-1",
@@ -610,10 +554,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 GPU 모델 검색은 부속품 없이 모델명이 살아 있어야 한다.",
-      "observedSummary": "조탁 5070 Twin Edge 쪽이 궁금해서 ZOTAC RTX 5070 Twin Edge로 보이는 것만 기준 1개 모델, 10개 판매처를 찾았습니다.",
+      "observedSummary": "검색 결과가 없습니다: 조탁 5070 Twin Edge 쪽이 ZOTAC RTX 5070 Twin Edge로 보이는 것만",
       "notes": "",
       "expected_behavior": "정확한 GPU 모델 검색은 부속품 없이 모델명이 살아 있어야 한다.",
-      "observed_summary": "조탁 5070 Twin Edge 쪽이 궁금해서 ZOTAC RTX 5070 Twin Edge로 보이는 것만 기준 1개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "검색 결과가 없습니다: 조탁 5070 Twin Edge 쪽이 ZOTAC RTX 5070 Twin Edge로 보이는 것만"
     },
     {
       "id": "graphics-card-exact-ish-search-2",
@@ -623,10 +567,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 쪽으로 보는데 그 모델명 기준으로",
+      "observedSummary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 그 모델명 기준으로",
       "notes": "",
       "expected_behavior": "정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 쪽으로 보는데 그 모델명 기준으로"
+      "observed_summary": "검색 결과가 없습니다: ASUS TUF 5070 Ti 그 모델명 기준으로"
     },
     {
       "id": "graphics-card-exact-ish-search-3",
@@ -649,10 +593,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 PowerColor 검색은 브랜드/모델명이 살아 있어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만 한번 정리해줘",
+      "observedSummary": "검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만",
       "notes": "",
       "expected_behavior": "정확한 PowerColor 검색은 브랜드/모델명이 살아 있어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만 한번 정리해줘"
+      "observed_summary": "검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만"
     },
     {
       "id": "graphics-card-exact-compare-1",
@@ -660,12 +604,12 @@
       "category": "graphics-card",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "pass",
+      "status": "fail",
       "expectedBehavior": "RTX 5070 exact compare는 ok 상태여야 한다.",
-      "observedSummary": "갤럭시 GALAZ 지포스 RTX 5070 EX GAMER BLACK OC D7 12GB 그래픽카드 단일 모델 기준 최저가 1228130원, 최고가 5106450원, 판매처 5곳입니다.",
-      "notes": "",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "expected_status: ok -> ambiguous",
       "expected_behavior": "RTX 5070 exact compare는 ok 상태여야 한다.",
-      "observed_summary": "갤럭시 GALAZ 지포스 RTX 5070 EX GAMER BLACK OC D7 12GB 그래픽카드 단일 모델 기준 최저가 1228130원, 최고가 5106450원, 판매처 5곳입니다."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-exact-compare-2",
@@ -675,10 +619,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "RTX 5070 Ti exact compare는 ok 상태여야 한다.",
-      "observedSummary": "기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 5183900원, 판매처 19곳입니다.",
+      "observedSummary": "기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 1936120원, 판매처 19곳입니다.",
       "notes": "",
       "expected_behavior": "RTX 5070 Ti exact compare는 ok 상태여야 한다.",
-      "observed_summary": "기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 5183900원, 판매처 19곳입니다."
+      "observed_summary": "기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 1936120원, 판매처 19곳입니다."
     },
     {
       "id": "graphics-card-exact-compare-3",
@@ -686,12 +630,12 @@
       "category": "graphics-card",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: RX 9070",
+      "observedSummary": "RGB 16GB GDDR6 HDMI 3xDP AMD RDNA 4 RX -97TRGBBA가 탑재된 XFX 머큐리 라데온 RX 9070XT OC 게이밍 에디션 XFX Swift AMD 기준 최저가 853200원, 최고가 853200원, 판매처 1곳입니다.",
+      "notes": "must_not_contain: RX 9070 XT",
       "expected_behavior": "RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "RGB 16GB GDDR6 HDMI 3xDP AMD RDNA 4 RX -97TRGBBA가 탑재된 XFX 머큐리 라데온 RX 9070XT OC 게이밍 에디션 XFX Swift AMD 기준 최저가 853200원, 최고가 853200원, 판매처 1곳입니다."
     },
     {
       "id": "graphics-card-exact-compare-4",
@@ -712,12 +656,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "5070 시리즈 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "5070 시리즈 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-2",
@@ -725,12 +669,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-3",
@@ -738,12 +682,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "브랜드+세대 broad compare는 동일상품 비교를 시도하지 않아야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "브랜드+세대 broad compare는 동일상품 비교를 시도하지 않아야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-4",
@@ -751,12 +695,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "라데온 계열 broad compare는 ambiguous로 멈추고 추천 질의를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "라데온 계열 broad compare는 ambiguous로 멈추고 추천 질의를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-purchase-explain-1",
@@ -766,10 +710,10 @@
       "executor": "explain-mcp",
       "status": "fail",
       "expectedBehavior": "RTX 5070 explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: RTX 5070",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "expected_status: ok -> ambiguous",
       "expected_behavior": "RTX 5070 explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-purchase-explain-2",
@@ -779,10 +723,10 @@
       "executor": "explain-mcp",
       "status": "pass",
       "expectedBehavior": "RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observedSummary": "파워컬러 헬하운드 스펙트럴 화이트 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 719060원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 719060원이고 최고가와의 차이는 713250원입니다.",
+      "observedSummary": "파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535010원입니다.",
       "notes": "",
       "expected_behavior": "RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observed_summary": "파워컬러 헬하운드 스펙트럴 화이트 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 719060원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 719060원이고 최고가와의 차이는 713250원입니다."
+      "observed_summary": "파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535010원입니다."
     },
     {
       "id": "graphics-card-purchase-explain-3",
@@ -790,12 +734,12 @@
       "category": "graphics-card",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "GPU 시리즈 explain은 ambiguous로 멈추고 재질문을 유도해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "GPU 시리즈 explain은 ambiguous로 멈추고 재질문을 유도해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-purchase-explain-4",
@@ -803,12 +747,12 @@
       "category": "graphics-card",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "라데온 계열 explain은 ambiguous로 멈추고 suggestedQueries를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "라데온 계열 explain은 ambiguous로 멈추고 suggestedQueries를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "keyboard-broad-search-1",
@@ -816,12 +760,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 게이밍 키보드 찾는 중인데 사무용 느낌 강한 거나 오피스용은 빼고 뭐가 뜨는지 볼래",
-      "notes": "must_not_contain: 사무용; must_not_contain: 오피스",
+      "observedSummary": "검색 결과가 없습니다: 게이밍 키보드 찾는 중인데 뭐가 뜨는지",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 게이밍 키보드 찾는 중인데 사무용 느낌 강한 거나 오피스용은 빼고 뭐가 뜨는지 볼래"
+      "observed_summary": "검색 결과가 없습니다: 게이밍 키보드 찾는 중인데 뭐가 뜨는지"
     },
     {
       "id": "keyboard-broad-search-2",
@@ -829,12 +773,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "무선 기계식 키보드 검색은 키보드 본체 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 무선 기계식 키보드 보고 있는데 마우스나 사무용 키보드 같은 건 빼고 정리해줘",
-      "notes": "must_not_contain: 마우스; must_not_contain: 사무용",
+      "observedSummary": "무선 기계식 키보드 보고 있는데 기준 2개 모델, 2개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "무선 기계식 키보드 검색은 키보드 본체 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 무선 기계식 키보드 보고 있는데 마우스나 사무용 키보드 같은 건 빼고 정리해줘"
+      "observed_summary": "무선 기계식 키보드 보고 있는데 기준 2개 모델, 2개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-broad-search-3",
@@ -842,12 +786,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 텐키리스 게이밍 키보드 쪽으로 보고 싶어서 풀배열 오피스용 말고 맞는 것만",
-      "notes": "must_not_contain: 오피스",
+      "observedSummary": "검색 결과가 없습니다: 텐키리스 게이밍 키보드 보고 싶어서 풀배열 맞는 것만",
+      "notes": "",
       "expected_behavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 텐키리스 게이밍 키보드 쪽으로 보고 싶어서 풀배열 오피스용 말고 맞는 것만"
+      "observed_summary": "검색 결과가 없습니다: 텐키리스 게이밍 키보드 보고 싶어서 풀배열 맞는 것만"
     },
     {
       "id": "keyboard-broad-search-4",
@@ -855,12 +799,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "fail",
       "expectedBehavior": "사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고",
-      "notes": "must_not_contain: 게이밍",
+      "observedSummary": "저소음 기준 8개 모델, 10개 판매처를 찾았습니다.",
+      "notes": "must_contain_missing: 키보드",
       "expected_behavior": "사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고"
+      "observed_summary": "저소음 기준 8개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-exact-ish-search-1",
@@ -870,10 +814,10 @@
       "executor": "search-api",
       "status": "fail",
       "expectedBehavior": "정확한 Keychron 검색은 모델명이 유지되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만",
+      "observedSummary": "검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 그 모델로 뜨는 것들만",
       "notes": "must_contain_missing: Keychron",
       "expected_behavior": "정확한 Keychron 검색은 모델명이 유지되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만"
+      "observed_summary": "검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 그 모델로 뜨는 것들만"
     },
     {
       "id": "keyboard-exact-ish-search-2",
@@ -883,10 +827,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "MX Mechanical Mini 검색은 키보드 본체 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 로지텍 mx mini라고들 하던데 정확히는 MX Mechanical Mini잖아, 그걸로",
+      "observedSummary": "로지텍 mx mini라고들 하던데 는 MX Mechanical Mini잖아 그걸로 기준 1개 모델, 7개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "MX Mechanical Mini 검색은 키보드 본체 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 로지텍 mx mini라고들 하던데 정확히는 MX Mechanical Mini잖아, 그걸로"
+      "observed_summary": "로지텍 mx mini라고들 하던데 는 MX Mechanical Mini잖아 그걸로 기준 1개 모델, 7개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-exact-ish-search-3",
@@ -896,10 +840,10 @@
       "executor": "search-api",
       "status": "soft_fail",
       "expectedBehavior": "앱코 K660 검색은 모델명을 유지해야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 앱코 K660 하나 보는데 키캡 같은 액세서리 말고 본체만",
+      "observedSummary": "검색 결과가 없습니다: 앱코 K660 하나 키캡 같은 액세서리 말고",
       "notes": "must_not_contain: 키캡",
       "expected_behavior": "앱코 K660 검색은 모델명을 유지해야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 앱코 K660 하나 보는데 키캡 같은 액세서리 말고 본체만"
+      "observed_summary": "검색 결과가 없습니다: 앱코 K660 하나 키캡 같은 액세서리 말고"
     },
     {
       "id": "keyboard-exact-ish-search-4",
@@ -909,10 +853,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: DrunkDeer A75 이 모델 궁금해서 정확히 맞는 것만 한번 찾아봐줘",
+      "observedSummary": "DrunkDeer A75 맞는 것만 기준 1개 모델, 3개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: DrunkDeer A75 이 모델 궁금해서 정확히 맞는 것만 한번 찾아봐줘"
+      "observed_summary": "DrunkDeer A75 맞는 것만 기준 1개 모델, 3개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-exact-compare-1",
@@ -920,12 +864,12 @@
       "category": "keyboard",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "Keychron K2 Pro exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: Keychron; must_contain_missing: K2 Pro",
+      "observedSummary": "Keychron K2 Pro 갈축 84키 무선 키보드 갈색 스위치 기준 최저가 115000원, 최고가 232100원, 판매처 6곳입니다.",
+      "notes": "",
       "expected_behavior": "Keychron K2 Pro exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "Keychron K2 Pro 갈축 84키 무선 키보드 갈색 스위치 기준 최저가 115000원, 최고가 232100원, 판매처 6곳입니다."
     },
     {
       "id": "keyboard-exact-compare-2",
@@ -935,10 +879,10 @@
       "executor": "compare-api",
       "status": "fail",
       "expectedBehavior": "MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: MX Mechanical",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous",
       "expected_behavior": "MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-exact-compare-3",
@@ -946,12 +890,12 @@
       "category": "keyboard",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "앱코 K660 exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 앱코; must_contain_missing: K660",
+      "observedSummary": "앱코 NCORE K660 ARC 오테뮤 기계식 키보드 블랙, 청축 기준 최저가 28900원, 최고가 93890원, 판매처 20곳입니다.",
+      "notes": "",
       "expected_behavior": "앱코 K660 exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "앱코 NCORE K660 ARC 오테뮤 기계식 키보드 블랙, 청축 기준 최저가 28900원, 최고가 93890원, 판매처 20곳입니다."
     },
     {
       "id": "keyboard-exact-compare-4",
@@ -961,10 +905,10 @@
       "executor": "compare-api",
       "status": "fail",
       "expectedBehavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: DrunkDeer; must_contain_missing: A75",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: DrunkDeer; must_contain_missing: A75",
       "expected_behavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-1",
@@ -972,12 +916,12 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-2",
@@ -985,12 +929,12 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "무선 키보드 broad compare는 ambiguous로 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "무선 키보드 broad compare는 ambiguous로 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-3",
@@ -998,12 +942,12 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-4",
@@ -1011,12 +955,12 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-purchase-explain-1",
@@ -1024,12 +968,12 @@
       "category": "keyboard",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 explain은 동일상품이 아니면 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 explain은 동일상품이 아니면 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-purchase-explain-2",
@@ -1037,12 +981,12 @@
       "category": "keyboard",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "Keychron 브랜드 explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "Keychron 브랜드 explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-purchase-explain-3",
@@ -1052,10 +996,10 @@
       "executor": "explain-mcp",
       "status": "fail",
       "expectedBehavior": "정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: MX Mechanical",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: MX Mechanical",
       "expected_behavior": "정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "keyboard-purchase-explain-4",
@@ -1065,10 +1009,10 @@
       "executor": "explain-mcp",
       "status": "fail",
       "expectedBehavior": "앱코 K660 explain은 ok 상태를 목표로 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 앱코; must_contain_missing: K660",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: 앱코; must_contain_missing: K660",
       "expected_behavior": "앱코 K660 explain은 ok 상태를 목표로 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-broad-search-1",
@@ -1078,10 +1022,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "27인치 4K 모니터 broad search는 모니터 본품 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고 본체 위주로 정리해줘",
+      "observedSummary": "검색 결과가 없습니다: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고",
       "notes": "",
       "expected_behavior": "27인치 4K 모니터 broad search는 모니터 본품 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고 본체 위주로 정리해줘"
+      "observed_summary": "검색 결과가 없습니다: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고"
     },
     {
       "id": "monitor-broad-search-2",
@@ -1091,10 +1035,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "게이밍 모니터 broad search는 렌탈 노이즈를 크게 줄여야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 32인치 QHD 모니터 보려는데 너무 엉뚱한 해상도는 빼고 대충 뭐가 있는지",
+      "observedSummary": "검색 결과가 없습니다: 32인치 QHD 모니터 보려는데 너무 엉뚱한 해상도는 빼고 뭐가 있는지",
       "notes": "",
       "expected_behavior": "게이밍 모니터 broad search는 렌탈 노이즈를 크게 줄여야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 32인치 QHD 모니터 보려는데 너무 엉뚱한 해상도는 빼고 대충 뭐가 있는지"
+      "observed_summary": "검색 결과가 없습니다: 32인치 QHD 모니터 보려는데 너무 엉뚱한 해상도는 빼고 뭐가 있는지"
     },
     {
       "id": "monitor-broad-search-3",
@@ -1104,10 +1048,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.",
-      "observedSummary": "울트라와이드 모니터 쪽으로 보는데 본체 말고 암이나 케이블 같은 건 빼고 기준 4개 모델, 4개 판매처를 찾았습니다.",
+      "observedSummary": "울트라와이드 모니터 본체 말고 암이나 기준 8개 모델, 10개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.",
-      "observed_summary": "울트라와이드 모니터 쪽으로 보는데 본체 말고 암이나 케이블 같은 건 빼고 기준 4개 모델, 4개 판매처를 찾았습니다."
+      "observed_summary": "울트라와이드 모니터 본체 말고 암이나 기준 8개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "monitor-broad-search-4",
@@ -1117,10 +1061,10 @@
       "executor": "search-api",
       "status": "fail",
       "expectedBehavior": "32인치 QHD 모니터 broad search는 과도하게 흩어지지 않아야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 고주사율 게이밍 모니터 보는 중인데 TV나 다른 기기 말고 모니터만",
+      "observedSummary": "검색 결과가 없습니다: 고주사율 게이밍 모니터 TV나 다른 기기 말고 모니터만",
       "notes": "must_contain_missing: 32",
       "expected_behavior": "32인치 QHD 모니터 broad search는 과도하게 흩어지지 않아야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 고주사율 게이밍 모니터 보는 중인데 TV나 다른 기기 말고 모니터만"
+      "observed_summary": "검색 결과가 없습니다: 고주사율 게이밍 모니터 TV나 다른 기기 말고 모니터만"
     },
     {
       "id": "monitor-exact-ish-search-1",
@@ -1130,10 +1074,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 LG 모니터 검색은 모델 코드가 유지되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: LG 27GR93U 이 모델로 검색 좀 해줘, 비슷한 다른 모델 말고",
+      "observedSummary": "검색 결과가 없습니다: LG 27GR93U 이 모델로 검색 해줘 비슷한 다른 모델 말고",
       "notes": "",
       "expected_behavior": "정확한 LG 모니터 검색은 모델 코드가 유지되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: LG 27GR93U 이 모델로 검색 좀 해줘, 비슷한 다른 모델 말고"
+      "observed_summary": "검색 결과가 없습니다: LG 27GR93U 이 모델로 검색 해줘 비슷한 다른 모델 말고"
     },
     {
       "id": "monitor-exact-ish-search-2",
@@ -1143,10 +1087,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "정확한 Dell 모니터 검색은 모델 코드가 유지되어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: DELL U2723QE 하나 보는 중인데 정확한 모델명으로 뜨는 것만",
+      "observedSummary": "검색 결과가 없습니다: DELL U2723QE 하나 정확한 모델명으로 뜨는 것만",
       "notes": "",
       "expected_behavior": "정확한 Dell 모니터 검색은 모델 코드가 유지되어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: DELL U2723QE 하나 보는 중인데 정확한 모델명으로 뜨는 것만"
+      "observed_summary": "검색 결과가 없습니다: DELL U2723QE 하나 정확한 모델명으로 뜨는 것만"
     },
     {
       "id": "monitor-exact-ish-search-3",
@@ -1180,12 +1124,12 @@
       "category": "monitor",
       "intent": "exact-compare",
       "executor": "compare-api",
-      "status": "pass",
+      "status": "fail",
       "expectedBehavior": "LG 27GR93U exact compare는 ok 상태를 목표로 한다.",
-      "observedSummary": "LG전자 27MQ400C 27GR93U 27인치 모니터암 울트라슬림 브라켓 클램프형 LDT-13 기준 최저가 27000원, 최고가 1635800원, 판매처 8곳입니다.",
-      "notes": "",
+      "observedSummary": "Unexpected token 'I', \"Internal S\"... is not valid JSON",
+      "notes": "error: Unexpected token 'I', \"Internal S\"... is not valid JSON; expected_status: ok -> undefined; must_contain_missing: 27GR93U",
       "expected_behavior": "LG 27GR93U exact compare는 ok 상태를 목표로 한다.",
-      "observed_summary": "LG전자 27MQ400C 27GR93U 27인치 모니터암 울트라슬림 브라켓 클램프형 LDT-13 기준 최저가 27000원, 최고가 1635800원, 판매처 8곳입니다."
+      "observed_summary": "Unexpected token 'I', \"Internal S\"... is not valid JSON"
     },
     {
       "id": "monitor-exact-compare-2",
@@ -1208,10 +1152,10 @@
       "executor": "compare-api",
       "status": "fail",
       "expectedBehavior": "MSI 321URX exact compare는 ok 상태를 목표로 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 321URX",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: 321URX",
       "expected_behavior": "MSI 321URX exact compare는 ok 상태를 목표로 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "monitor-exact-compare-4",
@@ -1232,12 +1176,12 @@
       "category": "monitor",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "27인치 4K 모니터 broad compare는 ambiguous로 멈추고 모델 추천을 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "27인치 4K 모니터 broad compare는 ambiguous로 멈추고 모델 추천을 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-broad-ambiguous-safety-2",
@@ -1245,12 +1189,12 @@
       "category": "monitor",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 모니터 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "게이밍 모니터 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-broad-ambiguous-safety-3",
@@ -1258,12 +1202,12 @@
       "category": "monitor",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-broad-ambiguous-safety-4",
@@ -1271,12 +1215,12 @@
       "category": "monitor",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "울트라와이드 broad compare는 ambiguous로 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "울트라와이드 broad compare는 ambiguous로 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-purchase-explain-1",
@@ -1284,12 +1228,12 @@
       "category": "monitor",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "27인치 4K monitor explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "27인치 4K monitor explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-purchase-explain-2",
@@ -1297,12 +1241,12 @@
       "category": "monitor",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 모니터 explain은 broad query이면 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "게이밍 모니터 explain은 broad query이면 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "monitor-purchase-explain-3",
@@ -1310,12 +1254,12 @@
       "category": "monitor",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "LG 27GR93U explain은 ok 상태를 목표로 한다.",
-      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
-      "notes": "expected_status: ok -> ambiguous; must_contain_missing: 27GR93U",
+      "observedSummary": "LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다. 현재 최저가는 61740원이고 최고가와의 차이는 1797260원입니다.",
+      "notes": "",
       "expected_behavior": "LG 27GR93U explain은 ok 상태를 목표로 한다.",
-      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
+      "observed_summary": "LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다. 현재 최저가는 61740원이고 최고가와의 차이는 1797260원입니다."
     },
     {
       "id": "monitor-purchase-explain-4",
@@ -1323,12 +1267,12 @@
       "category": "monitor",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "Dell U2723QE explain은 ok 상태를 목표로 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: U2723QE",
+      "observedSummary": "[대여] 델 4K 모니터 단기렌탈 U2723QE USB-C 2박3일 기준 최저가 26400원, 최고가 1425100원, 판매처 17곳입니다. 현재 최저가는 26400원이고 최고가와의 차이는 1398700원입니다.",
+      "notes": "must_not_contain: 렌탈",
       "expected_behavior": "Dell U2723QE explain은 ok 상태를 목표로 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "[대여] 델 4K 모니터 단기렌탈 U2723QE USB-C 2박3일 기준 최저가 26400원, 최고가 1425100원, 판매처 17곳입니다. 현재 최저가는 26400원이고 최고가와의 차이는 1398700원입니다."
     },
     {
       "id": "pc-part-broad-search-1",
@@ -1336,12 +1280,12 @@
       "category": "pc-part",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "B650 메인보드 broad search는 완본체와 렌탈 노이즈를 줄여야 한다.",
-      "observedSummary": "검색 결과가 없습니다: B650 메인보드 보는 중인데 메인보드 말고 다른 완본체나 엉뚱한 건 빼고",
-      "notes": "must_not_contain: 완본체",
+      "observedSummary": "검색 결과가 없습니다: B650 메인보드 메인보드 말고 다른",
+      "notes": "",
       "expected_behavior": "B650 메인보드 broad search는 완본체와 렌탈 노이즈를 줄여야 한다.",
-      "observed_summary": "검색 결과가 없습니다: B650 메인보드 보는 중인데 메인보드 말고 다른 완본체나 엉뚱한 건 빼고"
+      "observed_summary": "검색 결과가 없습니다: B650 메인보드 메인보드 말고 다른"
     },
     {
       "id": "pc-part-broad-search-2",
@@ -1351,10 +1295,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "850W 파워 broad search는 파워 본품 중심이어야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 850W 파워 찾는 중이라 파워 본체 위주로만 정리해줘",
+      "observedSummary": "검색 결과가 없습니다: 850W 파워 찾는 중이라 파워 만",
       "notes": "",
       "expected_behavior": "850W 파워 broad search는 파워 본품 중심이어야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 850W 파워 찾는 중이라 파워 본체 위주로만 정리해줘"
+      "observed_summary": "검색 결과가 없습니다: 850W 파워 찾는 중이라 파워 만"
     },
     {
       "id": "pc-part-broad-search-3",
@@ -1375,12 +1319,12 @@
       "category": "pc-part",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "NVMe SSD broad search는 외장 저장장치나 완본체 노이즈를 줄여야 한다.",
-      "observedSummary": "검색 결과가 없습니다: 2TB NVMe SSD 쪽으로 보는 중인데 외장 케이스 같은 건 빼고 본체만",
-      "notes": "must_not_contain: 외장",
+      "observedSummary": "2TB NVMe SSD 기준 10개 모델, 10개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "NVMe SSD broad search는 외장 저장장치나 완본체 노이즈를 줄여야 한다.",
-      "observed_summary": "검색 결과가 없습니다: 2TB NVMe SSD 쪽으로 보는 중인데 외장 케이스 같은 건 빼고 본체만"
+      "observed_summary": "2TB NVMe SSD 기준 10개 모델, 10개 판매처를 찾았습니다."
     },
     {
       "id": "pc-part-exact-ish-search-1",
@@ -1455,10 +1399,10 @@
       "executor": "compare-api",
       "status": "fail",
       "expectedBehavior": "CPU exact compare는 ok 상태를 목표로 한다.",
-      "observedSummary": "캡슐 프라레일 토마스와 나카마들 치열한 기관차 정확히 철도편 전 18종(대전차 대색 차이 Ver.들이) 1개 기준 최저가 172320원, 최고가 172320원, 판매처 1곳입니다.",
-      "notes": "must_contain_missing: 9800X3D; must_contain_missing: Ryzen",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous",
       "expected_behavior": "CPU exact compare는 ok 상태를 목표로 한다.",
-      "observed_summary": "캡슐 프라레일 토마스와 나카마들 치열한 기관차 정확히 철도편 전 18종(대전차 대색 차이 Ver.들이) 1개 기준 최저가 172320원, 최고가 172320원, 판매처 1곳입니다."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-exact-compare-3",
@@ -1492,12 +1436,12 @@
       "category": "pc-part",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "B650 broad compare는 ambiguous로 멈추고 모델 재질문을 유도해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "B650 broad compare는 ambiguous로 멈추고 모델 재질문을 유도해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-broad-ambiguous-safety-2",
@@ -1505,12 +1449,12 @@
       "category": "pc-part",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "파워 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "must_not_contain: 조립PC",
       "expected_behavior": "파워 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-broad-ambiguous-safety-3",
@@ -1518,12 +1462,12 @@
       "category": "pc-part",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-broad-ambiguous-safety-4",
@@ -1531,12 +1475,12 @@
       "category": "pc-part",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "SSD broad compare는 ambiguous로 멈추고 모델 재질문을 유도해야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
       "expected_behavior": "SSD broad compare는 ambiguous로 멈추고 모델 재질문을 유도해야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-purchase-explain-1",
@@ -1544,12 +1488,12 @@
       "category": "pc-part",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ambiguous -> not_found; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-purchase-explain-2",
@@ -1559,10 +1503,10 @@
       "executor": "explain-mcp",
       "status": "fail",
       "expectedBehavior": "CPU exact explain은 ok 상태를 목표로 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: 9800X3D; must_contain_missing: Ryzen",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: 9800X3D; must_contain_missing: Ryzen",
       "expected_behavior": "CPU exact explain은 ok 상태를 목표로 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-purchase-explain-3",
@@ -1572,10 +1516,10 @@
       "executor": "explain-mcp",
       "status": "fail",
       "expectedBehavior": "SSD exact explain은 ok 상태를 목표로 한다.",
-      "observedSummary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.",
-      "notes": "expected_status: ok -> not_found; must_contain_missing: SN850X; must_contain_missing: 2TB",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "expected_status: ok -> ambiguous; must_contain_missing: SN850X; must_contain_missing: 2TB",
       "expected_behavior": "SSD exact explain은 ok 상태를 목표로 한다.",
-      "observed_summary": "비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요."
+      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
     {
       "id": "pc-part-purchase-explain-4",

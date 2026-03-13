@@ -225,6 +225,110 @@ const TRAILING_INTENT_PATTERNS = [
   /\s*(?:지금\s*사도\s*괜찮은?\s*가격대야|지금\s*사도\s*괜찮아|지금\s*사도\s*돼)\s*$/i
 ] as const;
 
+const TRAILING_SEARCH_PATTERNS = [
+  /\s*(?:검색(?:해)?\s*줘|검색\s*좀\s*해\s*줘|찾아(?:\s*줘)?|보여(?:\s*줘)?|정리해줘|추천해줘|알려줘|봐줘|골라줘|볼래)\s*$/i
+] as const;
+
+const NATURAL_LANGUAGE_FILLER_PATTERNS = [
+  /알아보는\s*중인데/giu,
+  /알아보는\s*중이라/giu,
+  /게임도\s*좀\s*할\s*거라/giu,
+  /영상편집도\s*할\s*거라/giu,
+  /보는\s*중인데/giu,
+  /보는\s*중이라/giu,
+  /생각\s*중인데/giu,
+  /궁금해서/giu,
+  /보긴\s*하는데/giu,
+  /하고\s*싶은데/giu,
+  /하려는데/giu,
+  /바로/giu,
+  /쪽으로/giu,
+  /가능하면/giu,
+  /한번/giu,
+  /좀/giu,
+  /대충/giu,
+  /요즘\s*뭐가\s*잡히는지/giu,
+  /후보가\s*뭐가\s*있나/giu,
+  /본체\s*(?:위주로|위주|만)/giu,
+  /본품\s*(?:위주로|위주|만)/giu,
+  /가능\s*여부(?:부터|먼저)?/giu,
+  /정확히/giu,
+  /무리일\s*것\s*같긴\s*한데/giu,
+  /그래도\s*어떻게\s*나오는지/giu,
+  /애매하면/giu,
+  /안\s*되면/giu,
+  /너무\s*막연하면/giu,
+  /너무\s*길지\s*않게/giu,
+  /가격\s*차이만\s*깔끔하게/giu,
+  /가격\s*차이만/giu,
+  /판매처별로\s*얼마\s*차이\s*나는지/giu,
+  /정확히\s*같은\s*(?:모델|제품)(?:끼리|기준(?:으로)?)?(?:만)?/giu,
+  /같은\s*(?:모델|제품)(?:끼리|기준(?:으로)?)?(?:만)?/giu,
+  /\b이건\b/giu,
+  /\b이거는\b/giu,
+  /\b이거\b/giu,
+  /\b이\s*모델은\b/giu,
+  /\b이\s*모델\b/giu
+] as const;
+
+const NATURAL_LANGUAGE_TAIL_PATTERNS = [
+  /\s*(?:한\s*번에\s*)?비교하는\s*건.*$/iu,
+  /\s*(?:바로\s*)?비교하는\s*건[^,]*$/iu,
+  /\s*가격\s*비교(?:는|를)?[^,]*$/iu,
+  /\s*비교(?:를)?[^,]*$/iu,
+  /\s*지금\s*사도\s*(?:될|돼|괜찮(?:아|은?\s*가격대야?))[^,]*$/iu,
+  /\s*지금\s*들어가도\s*될\s*가격인지[^,]*$/iu,
+  /\s*가격대인지[^,]*$/iu,
+  /\s*설명(?:해)?\s*줘?[^,]*$/iu
+] as const;
+
+const NATURAL_LANGUAGE_ALIAS_REPLACEMENTS = [
+  { pattern: /갤북(?=\d|\s|$)/giu, replacement: "갤럭시북", alias: "갤럭시북" }
+] as const;
+
+const NATURAL_LANGUAGE_ALIAS_HINTS = [
+  { pattern: /빅터스/iu, alias: "VICTUS" },
+  { pattern: /라데온/iu, alias: "RX" },
+  { pattern: /엔비디아|지포스/iu, alias: "RTX" }
+] as const;
+
+const EXCLUSION_CUE_PATTERN = /(빼고|말고|제외(?:하고|해)?|섞지\s*말고)/iu;
+
+const EXCLUDED_TERM_DEFINITIONS = [
+  "사무용",
+  "오피스",
+  "인강용",
+  "학생용",
+  "업무용",
+  "인체공학",
+  "마우스",
+  "마우스패드",
+  "브라켓",
+  "완본체",
+  "조립PC",
+  "게이밍PC",
+  "컴퓨터 본체",
+  "데스크탑",
+  "데스크톱",
+  "렌탈",
+  "대여",
+  "임대",
+  "키스킨",
+  "키커버",
+  "케이스",
+  "보호필름",
+  "필름",
+  "어댑터",
+  "충전기",
+  "케이블",
+  "파우치",
+  "가방",
+  "커버",
+  "거치대",
+  "스탠드",
+  "외장"
+] as const;
+
 type NotebookFamilyLinePattern = {
   line: string;
   patterns: readonly RegExp[];
@@ -247,6 +351,26 @@ export type BroadQueryIntentProfile =
   | {
       category: "other";
     };
+
+export interface NaturalLanguageQueryCondensation {
+  originalQuery: string;
+  baseQuery: string;
+  excludedTerms: string[];
+  intentHints: {
+    compare: boolean;
+    explain: boolean;
+    broad: boolean;
+    exactIsh: boolean;
+  };
+  categoryHints: {
+    laptop: boolean;
+    graphicsCard: boolean;
+    keyboard: boolean;
+    monitor: boolean;
+    pcPart: boolean;
+  };
+  normalizedAliases: string[];
+}
 
 const NOTEBOOK_FAMILY_LINE_PATTERNS: readonly NotebookFamilyLinePattern[] = [
   {
@@ -664,24 +788,70 @@ export function isGraphicsDeviceLikeTitle(value: string): boolean {
   return GRAPHICS_DEVICE_CUES.some((cue) => normalizedTitle.includes(cue));
 }
 
-export function simplifyIntentQuery(value: string): string {
-  const original = stripHtml(value).replace(DASH_CHARACTERS, "-").trim();
-  let simplified = original.replace(/[?？!]+$/g, "").trim();
+export function condenseNaturalLanguageQuery(value: string): NaturalLanguageQueryCondensation {
+  const originalQuery = stripHtml(value).replace(DASH_CHARACTERS, "-").trim();
+  const aliasResult = applyNaturalLanguageAliases(originalQuery);
+  const excludedTerms = extractExcludedTerms(aliasResult.text);
+  let baseQuery = aliasResult.text;
 
-  while (true) {
-    const next = TRAILING_INTENT_PATTERNS.reduce(
-      (current, pattern) => current.replace(pattern, "").trim(),
-      simplified
-    ).replace(/[?？!]+$/g, "").trim();
+  baseQuery = stripTrailingIntentPhrases(baseQuery);
+  baseQuery = removeExcludedClauses(baseQuery, excludedTerms);
+  baseQuery = normalizeNaturalLanguageShapes(baseQuery);
 
-    if (next === simplified) {
-      break;
-    }
-
-    simplified = next;
+  for (const pattern of NATURAL_LANGUAGE_TAIL_PATTERNS) {
+    baseQuery = baseQuery.replace(pattern, " ").trim();
   }
 
-  return simplified || original;
+  for (const pattern of NATURAL_LANGUAGE_FILLER_PATTERNS) {
+    baseQuery = baseQuery.replace(pattern, " ").trim();
+  }
+
+  baseQuery = stripTrailingIntentPhrases(baseQuery);
+  baseQuery = normalizeNaturalLanguageShapes(baseQuery);
+  baseQuery = cleanupNaturalLanguageArtifacts(baseQuery);
+
+  const finalBaseQuery = baseQuery || stripTrailingIntentPhrases(aliasResult.text) || originalQuery;
+  const categoryHints = {
+    laptop: hasAnyCue(finalBaseQuery, NOTEBOOK_QUERY_CUES),
+    graphicsCard: hasAnyCue(finalBaseQuery, GRAPHICS_QUERY_CUES),
+    keyboard: hasAnyCue(finalBaseQuery, KEYBOARD_QUERY_CUES),
+    monitor:
+      hasAnyCue(finalBaseQuery, MONITOR_QUERY_CUES) ||
+      /\b(24|27|29|32|34|38|40|43)\s*(인치|형)\b/i.test(finalBaseQuery),
+    pcPart:
+      hasAnyCue(finalBaseQuery, PC_PART_QUERY_CUES) ||
+      /\b\d{3,4}W\b/i.test(finalBaseQuery) ||
+      /\b(16GB|32GB|64GB|1TB|2TB|4TB)\b/i.test(finalBaseQuery)
+  };
+  const exactModel =
+    extractNotebookModelCode(finalBaseQuery) ||
+    extractGpuQueryModel(finalBaseQuery)?.model ||
+    extractNonLaptopExactModel(finalBaseQuery);
+  const normalizedFinalQuery = normalizeQuery(finalBaseQuery);
+  const broadNotebookGpuQuery =
+    categoryHints.laptop && finalBaseQuery.includes("노트북") && !extractNotebookModelCode(finalBaseQuery);
+
+  return {
+    originalQuery,
+    baseQuery: finalBaseQuery,
+    excludedTerms,
+    intentHints: {
+      compare: /비교/u.test(originalQuery),
+      explain: /설명|지금\s*사도|가격대|들어가도/u.test(originalQuery),
+      broad:
+        BROAD_QUERY_CUES.some((cue) => normalizedFinalQuery.includes(cue)) ||
+        broadNotebookGpuQuery ||
+        /모델이\s*여러\s*개|통으로|전체/u.test(originalQuery) ||
+        !exactModel,
+      exactIsh: Boolean(exactModel)
+    },
+    categoryHints,
+    normalizedAliases: aliasResult.normalizedAliases
+  };
+}
+
+export function simplifyIntentQuery(value: string): string {
+  return condenseNaturalLanguageQuery(value).baseQuery;
 }
 
 export function isAmbiguousComparison(
@@ -1102,4 +1272,105 @@ function normalizeModelText(value: string): string {
     .replace(DASH_CHARACTERS, "-")
     .replace(/\s*-\s*/g, "-")
     .toUpperCase();
+}
+
+function applyNaturalLanguageAliases(value: string): { text: string; normalizedAliases: string[] } {
+  let text = value;
+  const normalizedAliases = new Set<string>();
+
+  for (const entry of NATURAL_LANGUAGE_ALIAS_REPLACEMENTS) {
+    if (entry.pattern.test(text)) {
+      text = text.replace(entry.pattern, entry.replacement);
+      normalizedAliases.add(entry.alias);
+    }
+  }
+
+  for (const entry of NATURAL_LANGUAGE_ALIAS_HINTS) {
+    if (entry.pattern.test(text)) {
+      normalizedAliases.add(entry.alias);
+    }
+  }
+
+  return {
+    text,
+    normalizedAliases: Array.from(normalizedAliases)
+  };
+}
+
+function stripTrailingIntentPhrases(value: string): string {
+  let simplified = value.replace(/[?？!]+$/g, "").trim();
+
+  while (true) {
+    const next = [...TRAILING_INTENT_PATTERNS, ...TRAILING_SEARCH_PATTERNS]
+      .reduce((current, pattern) => current.replace(pattern, "").trim(), simplified)
+      .replace(/[?？!]+$/g, "")
+      .trim();
+
+    if (next === simplified) {
+      break;
+    }
+
+    simplified = next;
+  }
+
+  return simplified;
+}
+
+function extractExcludedTerms(value: string): string[] {
+  if (!EXCLUSION_CUE_PATTERN.test(value)) {
+    return [];
+  }
+
+  const normalized = normalizeQuery(value);
+  return EXCLUDED_TERM_DEFINITIONS
+    .filter((term) => normalized.includes(normalizeQuery(term)))
+    .sort((left, right) => value.indexOf(left) - value.indexOf(right));
+}
+
+function removeExcludedClauses(value: string, excludedTerms: string[]): string {
+  let cleaned = value;
+
+  for (const term of excludedTerms) {
+    const escaped = escapeRegExp(term);
+    cleaned = cleaned
+      .replace(new RegExp(`${escaped}[^,.!?]{0,40}?(?:빼고|말고|제외(?:하고|해)?|섞지\\s*말고)`, "giu"), " ")
+      .replace(new RegExp(`${escaped}(?:나|이나)?`, "giu"), " ");
+  }
+
+  return cleaned;
+}
+
+function normalizeNaturalLanguageShapes(value: string): string {
+  return value
+    .replace(/갤럭시북\s*4/giu, "갤럭시북4")
+    .replace(/\b(RTX\s*\d{4}(?:\s*(?:TI|SUPER))?|RX\s*\d{4}(?:\s*(?:XT|GRE))?|\d{4})\s*들어간\s*노트북/giu, "$1 노트북")
+    .replace(/\b(\d{4})\s*급\s*그래픽카드/giu, "$1 그래픽카드")
+    .replace(/전체를/giu, "전체")
+    .replace(/라인으로/giu, "라인")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function cleanupNaturalLanguageArtifacts(value: string): string {
+  return value
+    .replace(/\b(나|이나|같은\s*건|같은건|느낌\s*나는\s*건|느낌나는건)\b/giu, " ")
+    .replace(/\b(보고\s*싶은데|가능\s*여부|가능\s*여부부터|가능\s*여부먼저)\b/giu, " ")
+    .replace(/보는데/giu, " ")
+    .replace(/(?:^|\s)(이건|이거는|이거|이\s*모델은|이\s*모델)(?=\s|$)/gu, " ")
+    .replace(/(전부|전체|라인)(를|은|는|이|가)/gu, "$1")
+    .replace(/([A-Za-z0-9-]+)(은|는|이|가)\b/gu, "$1")
+    .replace(/([가-힣A-Za-z0-9-]+)(을|를)/gu, "$1")
+    .replace(/(?:^|\s)(알아|봐)(?=\s|$)/gu, " ")
+    .replace(/\s*,\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function hasAnyCue(value: string, cues: readonly string[]): boolean {
+  const normalized = normalizeQuery(value);
+  return cues.some((cue) => normalized.includes(cue));
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

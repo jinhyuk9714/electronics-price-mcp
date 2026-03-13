@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import {
+  condenseNaturalLanguageQuery,
   extractGpuModel,
   extractExactQueryModel,
   extractNotebookFamilyKey,
@@ -159,6 +160,55 @@ describe("normalize helpers", () => {
     expect(extractExactQueryModel("엔비디아 5070 그래픽카드 비교")).toBeNull();
     expect(extractExactQueryModel("RTX 5070 그래픽카드 비교")).toBe("RTX 5070");
     expect(extractExactQueryModel("LG 그램 16")).toBeNull();
+  });
+
+  test("condenseNaturalLanguageQuery extracts baseQuery, exclusions, hints, and aliases from long prompts", () => {
+    const galaxybook = condenseNaturalLanguageQuery(
+      "갤북4 프로 16 쪽으로 알아보는 중이라 파우치나 필름 같은 건 빼고 본체만 찾아줘"
+    );
+    const notebook = condenseNaturalLanguageQuery(
+      "4060 들어간 노트북을 보는 중인데 렌탈이나 다른 급 그래픽 섞지 말고 대충 후보가 뭐가 있나 좀 볼래"
+    );
+    const keyboard = condenseNaturalLanguageQuery(
+      "로지텍 기계식 키보드 지금 사도 될 가격인지 보고 싶은데 애매하면 재질문도 같이 줘"
+    );
+    const monitor = condenseNaturalLanguageQuery(
+      "27인치 4K 모니터 전체를 바로 비교하는 건 넓을 수 있으니까 가능 여부 먼저 봐줘"
+    );
+
+    expect(galaxybook.baseQuery).toBe("갤럭시북4 프로 16");
+    expect(galaxybook.excludedTerms).toEqual(["파우치", "필름"]);
+    expect(galaxybook.normalizedAliases).toContain("갤럭시북");
+    expect(galaxybook.categoryHints.laptop).toBe(true);
+
+    expect(notebook.baseQuery).toBe("4060 노트북");
+    expect(notebook.intentHints.broad).toBe(true);
+    expect(notebook.categoryHints.laptop).toBe(true);
+
+    expect(keyboard.baseQuery).toBe("로지텍 기계식 키보드");
+    expect(keyboard.intentHints.explain).toBe(true);
+    expect(keyboard.categoryHints.keyboard).toBe(true);
+
+    expect(monitor.baseQuery).toBe("27인치 4K 모니터 전체");
+    expect(monitor.intentHints.compare).toBe(true);
+    expect(monitor.intentHints.broad).toBe(true);
+    expect(monitor.categoryHints.monitor).toBe(true);
+  });
+
+  test("condenseNaturalLanguageQuery preserves exact models inside long natural-language prompts", () => {
+    expect(
+      condenseNaturalLanguageQuery("NT960XGQ-A51A 이건 지금 사도 괜찮은 가격대인지 한번 설명해줘").baseQuery
+    ).toBe("NT960XGQ-A51A");
+    expect(condenseNaturalLanguageQuery("15IRX9 보는데 지금 들어가도 될 가격인지 너무 길지 않게 봐줘").baseQuery).toBe(
+      "15IRX9"
+    );
+    expect(condenseNaturalLanguageQuery("Keychron K2 Pro 이건 정확히 같은 모델끼리 가격 비교해줘").baseQuery).toBe(
+      "Keychron K2 Pro"
+    );
+    expect(condenseNaturalLanguageQuery("U2723QE 이 모델은 지금 들어가도 될 가격인지 좀 봐줘").baseQuery).toBe(
+      "U2723QE"
+    );
+    expect(condenseNaturalLanguageQuery("9800X3D 가격 차이만 정확히 비교해줘").baseQuery).toBe("9800X3D");
   });
 
   test("isGraphicsDeviceLikeTitle excludes non-device graphics false positives", () => {

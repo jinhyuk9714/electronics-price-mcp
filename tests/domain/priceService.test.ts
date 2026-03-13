@@ -2819,4 +2819,144 @@ describe("PriceService", () => {
 
     expect(receivedQuery).toBe("그램 16");
   });
+
+  test("searchProducts condenses long natural-language broad queries before calling the provider", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: []
+          };
+        }
+      }
+    });
+
+    await service.searchProducts({
+      query: "갤북4 프로 16 쪽으로 알아보는 중이라 파우치나 필름 같은 건 빼고 본체만 찾아줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(receivedQuery).toBe("갤럭시북4 프로 16");
+  });
+
+  test("compareProductPrices keeps long broad notebook prompts ambiguous instead of collapsing to not_found", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "4060 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 15-fb2061AX 윈도우11 16GB 지포스 RTX 4060 게이밍 노트북",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1480000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB",
+            brand: "Lenovo",
+            mallName: "몰B",
+            price: 1644000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "4060 들어간 노트북 전부를 한 번에 비교하는 건 무리일 것 같긴 한데, 그래도 어떻게 나오는지 봐줘"
+    });
+
+    expect(result.query).toBe("4060 노트북 전부");
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확");
+    expect(result.suggestedQueries?.length).toBeGreaterThan(0);
+  });
+
+  test("compareProductPrices supports exact keyboard models embedded in long natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "Keychron K2 Pro",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "Keychron K2 Pro 무선 기계식 키보드",
+            brand: "Keychron",
+            mallName: "몰A",
+            price: 149000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "Keychron K2 Pro RGB 기계식 키보드",
+            brand: "Keychron",
+            mallName: "몰B",
+            price: 159000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "Keychron K2 Pro 이건 정확히 같은 모델끼리 가격 비교해줘"
+    });
+
+    expect(result.query).toBe("Keychron K2 Pro");
+    expect(result.status).toBe("ok");
+    expect(result.summary).toContain("Keychron K2 Pro");
+  });
+
+  test("explainPurchaseOptions supports exact notebook models embedded in long natural-language prompts", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "NT960XGQ-A51A",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰A",
+            price: 2498900,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB",
+            brand: "Samsung",
+            mallName: "몰B",
+            price: 2510000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "NT960XGQ-A51A 이건 지금 사도 괜찮은 가격대인지 한번 설명해줘"
+    });
+
+    expect(result.query).toBe("NT960XGQ-A51A");
+    expect(result.status).toBe("ok");
+    expect(result.summary).toContain("NT960XGQ");
+  });
 });
