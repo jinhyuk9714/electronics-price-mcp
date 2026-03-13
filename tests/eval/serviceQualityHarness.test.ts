@@ -132,6 +132,7 @@ describe("service quality harness", () => {
     ]);
 
     const markdown = renderServiceQualityMarkdownReport({
+      title: "Service Quality Advanced 100 Evaluation",
       generatedAt: "2026-03-13T00:00:00.000Z",
       baseUrl: "https://example.com",
       mcpUrl: "https://example.com/mcp",
@@ -151,7 +152,7 @@ describe("service quality harness", () => {
       ]
     });
 
-    expect(markdown).toContain("# Service Quality 100 Evaluation");
+    expect(markdown).toContain("# Service Quality Advanced 100 Evaluation");
     expect(markdown).toContain("카테고리별 통과율");
     expect(markdown).toContain("의도별 통과율");
     expect(markdown).toContain("다음 개선 우선순위");

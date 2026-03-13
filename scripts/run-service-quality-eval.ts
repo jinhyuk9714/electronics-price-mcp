@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
-import { SERVICE_QUALITY_100_CASES } from "../eval-cases/service-quality-100.ts";
 import {
   evaluateServiceQualityCase,
   parseApiEnvelope,
@@ -17,12 +16,14 @@ import {
   type ServiceQualityObservation,
   type ServiceQualityReport
 } from "../src/eval/serviceQualityHarness.ts";
+import {
+  getServiceQualitySuiteConfig,
+  resolveServiceQualitySuiteName
+} from "../src/eval/serviceQualitySuites.ts";
 
 const DEFAULT_BASE_URL = "https://electronics-price-mcp.jinhyuk9714.workers.dev";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPORTS_DIR = resolve(SCRIPT_DIR, "../reports");
-const JSON_REPORT_PATH = resolve(REPORTS_DIR, "service-quality-100-latest.json");
-const MARKDOWN_REPORT_PATH = resolve(REPORTS_DIR, "service-quality-100-latest.md");
 
 type ExplainClientState = {
   client: Client;
@@ -30,14 +31,16 @@ type ExplainClientState = {
 };
 
 async function main() {
-  validateServiceQualityCaseSet(SERVICE_QUALITY_100_CASES);
+  const suiteName = resolveServiceQualitySuiteName();
+  const suite = getServiceQualitySuiteConfig(suiteName);
+  validateServiceQualityCaseSet(suite.cases);
 
   const baseUrl = process.env.SERVICE_QUALITY_BASE_URL?.trim() || DEFAULT_BASE_URL;
   const mcpUrl = process.env.SERVICE_QUALITY_MCP_URL?.trim() || `${baseUrl}/mcp`;
   const explainState = createExplainClientFactory(mcpUrl);
   const results = [];
 
-  for (const item of SERVICE_QUALITY_100_CASES) {
+  for (const item of suite.cases) {
     const observation = await executeCase(item, baseUrl, explainState);
     results.push(evaluateServiceQualityCase(item, observation));
   }
@@ -45,6 +48,7 @@ async function main() {
   await explainState.close();
 
   const report: ServiceQualityReport = {
+    title: suite.title,
     generatedAt: new Date().toISOString(),
     baseUrl,
     mcpUrl,
@@ -61,12 +65,15 @@ async function main() {
     }))
   };
 
-  await mkdir(REPORTS_DIR, { recursive: true });
-  await writeFile(JSON_REPORT_PATH, `${JSON.stringify(serializedReport, null, 2)}\n`, "utf8");
-  await writeFile(MARKDOWN_REPORT_PATH, `${renderServiceQualityMarkdownReport(report)}\n`, "utf8");
+  const jsonReportPath = resolve(REPORTS_DIR, suite.jsonReportFile);
+  const markdownReportPath = resolve(REPORTS_DIR, suite.markdownReportFile);
 
-  console.log(`Saved JSON report to ${JSON_REPORT_PATH}`);
-  console.log(`Saved Markdown report to ${MARKDOWN_REPORT_PATH}`);
+  await mkdir(REPORTS_DIR, { recursive: true });
+  await writeFile(jsonReportPath, `${JSON.stringify(serializedReport, null, 2)}\n`, "utf8");
+  await writeFile(markdownReportPath, `${renderServiceQualityMarkdownReport(report)}\n`, "utf8");
+
+  console.log(`Saved JSON report to ${jsonReportPath}`);
+  console.log(`Saved Markdown report to ${markdownReportPath}`);
   console.log(
     `Summary: ${report.totals.pass} pass / ${report.totals.softFail} soft_fail / ${report.totals.fail} fail`
   );

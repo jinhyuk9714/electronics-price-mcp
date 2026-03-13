@@ -77,6 +77,7 @@ export interface ServiceQualityTotals {
 }
 
 export interface ServiceQualityReport {
+  title?: string;
   generatedAt: string;
   baseUrl: string;
   mcpUrl: string;
@@ -305,7 +306,7 @@ export function summarizeServiceQualityResults(
 export function renderServiceQualityMarkdownReport(report: ServiceQualityReport): string {
   const lines: string[] = [];
 
-  lines.push("# Service Quality 100 Evaluation");
+  lines.push(`# ${report.title ?? "Service Quality 100 Evaluation"}`);
   lines.push("");
   lines.push(`- 생성 시각: ${report.generatedAt}`);
   lines.push(`- base URL: ${report.baseUrl}`);

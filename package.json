@@ -10,7 +10,8 @@
     "build": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "eval:service-quality": "node --experimental-strip-types scripts/run-service-quality-eval.ts"
+    "eval:service-quality": "node --experimental-strip-types scripts/run-service-quality-eval.ts",
+    "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100"
   },
   "engines": {
     "node": ">=22"
