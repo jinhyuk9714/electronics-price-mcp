@@ -1452,6 +1452,34 @@ describe("PriceService", () => {
     expect(result.offers.some((offer) => offer.title.includes("프로그래밍"))).toBe(false);
   });
 
+  test("compareProductPrices falls back to GPU family suggestions when broad RX series results clean down to empty", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RX 9070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환",
+            brand: null,
+            mallName: "몰A",
+            price: 50660,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "RX 9070 시리즈 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.offers).toHaveLength(0);
+    expect(result.suggestedQueries).toEqual(["RX 9070 가격 비교해 줘", "RX 9070 XT 가격 비교해 줘"]);
+  });
+
   test("compareProductPrices keeps bare vendor GPU queries ambiguous instead of promoting rental matches", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -2439,6 +2467,34 @@ describe("PriceService", () => {
     expect(result.status).toBe("ambiguous");
     expect(result.summary).toContain("정확히 같은 모델");
     expect(result.warning).toContain("시리즈/계열");
+    expect(result.suggestedQueries).toEqual(["RX 9070 지금 사도 괜찮은 가격대야?", "RX 9070 XT 지금 사도 괜찮은 가격대야?"]);
+  });
+
+  test("explainPurchaseOptions falls back to GPU family suggestions when broad RX series results clean down to empty", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RX 9070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환",
+            brand: null,
+            mallName: "몰A",
+            price: 50660,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "RX 9070 계열 지금 사도 괜찮아?"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.offers).toHaveLength(0);
     expect(result.suggestedQueries).toEqual(["RX 9070 지금 사도 괜찮은 가격대야?", "RX 9070 XT 지금 사도 괜찮은 가격대야?"]);
   });
 

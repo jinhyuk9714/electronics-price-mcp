@@ -1,17 +1,17 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T00:44:23.495Z
+- 생성 시각: 2026-03-13T00:49:25.469Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 99 pass / 1 soft_fail / 0 fail
-- 통과율: 99.0%
+- 전체 결과: 100 pass / 0 soft_fail / 0 fail
+- 통과율: 100.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 노트북 | 20 | 20 | 0 | 0 | 100.0% |
-| 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
+| 그래픽카드 | 20 | 20 | 0 | 0 | 100.0% |
 | 키보드 | 20 | 20 | 0 | 0 | 100.0% |
 | 모니터 | 20 | 20 | 0 | 0 | 100.0% |
 | PC 부품 | 20 | 20 | 0 | 0 | 100.0% |
@@ -23,18 +23,18 @@
 | broad search | 20 | 20 | 0 | 0 | 100.0% |
 | exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
 | exact compare | 20 | 20 | 0 | 0 | 100.0% |
-| broad ambiguous safety | 20 | 19 | 1 | 0 | 95.0% |
+| broad ambiguous safety | 20 | 20 | 0 | 0 | 100.0% |
 | purchase/explain | 20 | 20 | 0 | 0 | 100.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 1
+- 특이 실패 패턴이 없습니다.
 
 ## 다음 개선 우선순위
 
-- ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기
 - 카테고리별 broad 검색 필터를 다시 점검하기
 - exact-ish 검색에서 모델 코드 인식률을 높이기
+- 설명형 응답 요약과 추천 문구를 더 자연스럽게 다듬기
 
 ## 문장별 결과
 
@@ -236,11 +236,11 @@
 - observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
-### graphics-card-broad-ambiguous-safety-2 · soft_fail
+### graphics-card-broad-ambiguous-safety-2 · pass
 - prompt: RX 9070 시리즈 가격 비교해 줘
 - expected_behavior: 9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.
 - observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-3 · pass
 - prompt: 엔비디아 5070 그래픽카드 비교해 줘
@@ -347,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass

@@ -3,6 +3,7 @@ import {
   detectBroadQueryKind,
   detectSupplementalQueryKind,
   extractExactQueryModel,
+  extractBroadGpuSuggestionModels,
   extractGpuModel,
   extractNotebookFamilyKey,
   extractRequestedNotebookGpuModel,
@@ -546,14 +547,58 @@ function createSuggestedQueries(
       return left.minPrice - right.minPrice;
     });
 
+  const suggestionModels = candidates.map((group) => group.normalizedModel);
+  const graphicsFallbackModels =
+    suggestionCategory === "graphics-card"
+      ? getSuggestedGraphicsFallbackModels(simplifiedQuery, exactGroups)
+      : [];
+
+  return formatSuggestedQueries(mode, suggestionModels.length > 0 ? suggestionModels : graphicsFallbackModels);
+}
+
+function getSuggestedGraphicsFallbackModels(
+  query: string,
+  exactGroups: Array<ProductGroup & { normalizedModel: string }>
+): string[] {
+  const queryFallbackModels = extractBroadGpuSuggestionModels(query);
+  if (queryFallbackModels.length === 0) {
+    return [];
+  }
+
+  const familyStem = getGpuFamilyStem(queryFallbackModels[0]!);
+  if (!familyStem) {
+    return queryFallbackModels;
+  }
+
+  const exactFamilyModels = exactGroups
+    .map((group) => group.normalizedModel)
+    .filter((model) => getGpuFamilyStem(model) === familyStem);
+
+  if (exactFamilyModels.length > 0) {
+    const ordered = queryFallbackModels.filter((model) => exactFamilyModels.includes(model));
+    const extra = exactFamilyModels.filter((model) => !ordered.includes(model));
+    return Array.from(new Set([...ordered, ...extra])).slice(0, 3);
+  }
+
+  return queryFallbackModels;
+}
+
+function getGpuFamilyStem(model: string): string | null {
+  const match = model.match(/^(RTX|RX)\s+(\d{4})/);
+  if (!match?.[1] || !match[2]) {
+    return null;
+  }
+
+  return `${match[1]} ${match[2]}`;
+}
+
+function formatSuggestedQueries(mode: "compare" | "explain", models: string[]): string[] | undefined {
   const suggestions: string[] = [];
   const seen = new Set<string>();
 
-  for (const group of candidates) {
+  for (const model of models) {
     const suggestion =
-      mode === "compare"
-        ? `${group.normalizedModel} 가격 비교해 줘`
-        : `${group.normalizedModel} 지금 사도 괜찮은 가격대야?`;
+      mode === "compare" ? `${model} 가격 비교해 줘` : `${model} 지금 사도 괜찮은 가격대야?`;
 
     if (seen.has(suggestion)) {
       continue;

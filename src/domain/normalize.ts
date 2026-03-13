@@ -442,6 +442,43 @@ export function extractRequestedNotebookGpuModel(value: string): string | null {
   return extractGpuModel(simplifiedQuery);
 }
 
+export function extractBroadGpuSuggestionModels(value: string): string[] {
+  const simplifiedQuery = simplifyIntentQuery(value);
+
+  if (extractExactQueryModel(simplifiedQuery) || detectBroadQueryKind(simplifiedQuery) !== "graphics-card") {
+    return [];
+  }
+
+  const queryModel = extractGpuQueryModel(simplifiedQuery);
+  if (!queryModel) {
+    return [];
+  }
+
+  const normalizedQuery = normalizeQuery(simplifiedQuery);
+  const suggestions = [queryModel.model];
+  const hasSeriesCue = BROAD_QUERY_CUES.some((cue) => normalizedQuery.includes(cue));
+
+  if (hasSeriesCue) {
+    if (
+      queryModel.model.startsWith("RTX ") &&
+      !queryModel.model.includes(" TI") &&
+      !queryModel.model.includes(" SUPER")
+    ) {
+      suggestions.push(`${queryModel.model} TI`);
+    }
+
+    if (
+      queryModel.model.startsWith("RX ") &&
+      !queryModel.model.includes(" XT") &&
+      !queryModel.model.includes(" GRE")
+    ) {
+      suggestions.push(`${queryModel.model} XT`);
+    }
+  }
+
+  return Array.from(new Set(suggestions));
+}
+
 export function extractNotebookFamilyKey(query: string, title: string, brand?: string | null): string | null {
   const simplifiedQuery = simplifyIntentQuery(query);
 

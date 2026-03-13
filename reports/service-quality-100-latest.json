@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-03-13T00:44:23.495Z",
+  "generatedAt": "2026-03-13T00:49:25.469Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
     "total": 100,
-    "pass": 99,
-    "softFail": 1,
+    "pass": 100,
+    "softFail": 0,
     "fail": 0,
-    "passRate": 0.99,
+    "passRate": 1,
     "byCategory": [
       {
         "key": "노트북",
@@ -20,10 +20,10 @@
       {
         "key": "그래픽카드",
         "total": 20,
-        "pass": 19,
-        "softFail": 1,
+        "pass": 20,
+        "softFail": 0,
         "fail": 0,
-        "passRate": 0.95
+        "passRate": 1
       },
       {
         "key": "키보드",
@@ -78,10 +78,10 @@
       {
         "key": "broad ambiguous safety",
         "total": 20,
-        "pass": 19,
-        "softFail": 1,
+        "pass": 20,
+        "softFail": 0,
         "fail": 0,
-        "passRate": 0.95
+        "passRate": 1
       },
       {
         "key": "purchase/explain",
@@ -92,16 +92,11 @@
         "passRate": 1
       }
     ],
-    "failurePatterns": [
-      {
-        "pattern": "missing_suggested_queries",
-        "count": 1
-      }
-    ],
+    "failurePatterns": [],
     "nextImprovementPriorities": [
-      "ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기",
       "카테고리별 broad 검색 필터를 다시 점검하기",
-      "exact-ish 검색에서 모델 코드 인식률을 높이기"
+      "exact-ish 검색에서 모델 코드 인식률을 높이기",
+      "설명형 응답 요약과 추천 문구를 더 자연스럽게 다듬기"
     ]
   },
   "results": [
@@ -540,10 +535,10 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
       "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
-      "notes": "missing_suggested_queries",
+      "notes": "",
       "expected_behavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
       "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
@@ -776,10 +771,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.",
+      "observedSummary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.",
       "notes": "",
       "expected_behavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다."
+      "observed_summary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-1",
