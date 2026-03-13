@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T04:13:34.660Z
+- 생성 시각: 2026-03-13T05:45:34.373Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -215,19 +215,19 @@
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti 가격 비교해 줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478540원, 최고가 1936120원, 판매처 20곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478430원, 최고가 1936120원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 가격 비교해 줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932160원, 최고가 1065430원, 판매처 4곳입니다.
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932110원, 최고가 1065430원, 판매처 4곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT 가격 비교해 줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432190원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -263,7 +263,7 @@
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT 지금 사도 괜찮은 가격대야?
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534940원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432190원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534890원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -305,7 +305,7 @@
 ### keyboard-exact-ish-search-1 · pass
 - prompt: Keychron K2 Pro 검색해 줘
 - expected_behavior: 정확한 Keychron 검색은 모델명이 유지되어야 한다.
-- observed_summary: Keychron K2 Pro 기준 1개 모델, 4개 판매처를 찾았습니다.
+- observed_summary: Keychron K2 Pro 기준 1개 모델, 6개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-ish-search-2 · pass
@@ -323,13 +323,13 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 6개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass
 - prompt: Keychron K2 Pro 가격 비교해 줘
 - expected_behavior: Keychron K2 Pro exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: Keychron K2 Pro 갈축 84키 무선 키보드 갈색 스위치 기준 최저가 115000원, 최고가 232100원, 판매처 6곳입니다.
+- observed_summary: Keychron K2 Pro 갈축 84키 무선 키보드 갈색 스위치 기준 최저가 115000원, 최고가 232100원, 판매처 9곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-2 · pass
@@ -347,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 유선 기계식 키보드 마크네틱 스위치 82키 기준 최저가 163710원, 최고가 332900원, 판매처 7곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -431,7 +431,7 @@
 ### monitor-exact-ish-search-2 · pass
 - prompt: Dell U2723QE 찾아줘
 - expected_behavior: 정확한 Dell 모니터 검색은 모델 코드가 유지되어야 한다.
-- observed_summary: Dell U2723QE 기준 1개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: Dell U2723QE 기준 1개 모델, 7개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-exact-ish-search-3 · pass
@@ -449,19 +449,19 @@
 ### monitor-exact-compare-1 · pass
 - prompt: LG 27GR93U 가격 비교해 줘
 - expected_behavior: LG 27GR93U exact compare는 ok 상태를 목표로 한다.
-- observed_summary: LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다.
+- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 13곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-2 · pass
 - prompt: Dell U2723QE 가격 비교해 줘
 - expected_behavior: Dell U2723QE exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 17곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-3 · pass
 - prompt: MSI MPG 321URX 가격 비교해 줘
 - expected_behavior: MSI 321URX exact compare는 ok 상태를 목표로 한다.
-- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371420원, 최고가 2263850원, 판매처 19곳입니다.
+- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371310원, 최고가 2263850원, 판매처 19곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-4 · pass
@@ -509,19 +509,19 @@
 ### monitor-purchase-explain-3 · pass
 - prompt: LG 27GR93U 지금 사도 괜찮은 가격대야?
 - expected_behavior: LG 27GR93U explain은 ok 상태를 목표로 한다.
-- observed_summary: LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다. 현재 최저가는 61740원이고 최고가와의 차이는 1797260원입니다.
+- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 13곳입니다. 현재 최저가는 634990원이고 최고가와의 차이는 1224010원입니다.
 - notes: (none)
 
 ### monitor-purchase-explain-4 · pass
 - prompt: Dell U2723QE 지금 사도 돼?
 - expected_behavior: Dell U2723QE explain은 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 872960원이고 최고가와의 차이는 539570원입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 17곳입니다. 현재 최저가는 872960원이고 최고가와의 차이는 539570원입니다.
 - notes: (none)
 
 ### pc-part-broad-search-1 · pass
 - prompt: B650 메인보드 검색해 줘
 - expected_behavior: B650 메인보드 broad search는 완본체와 렌탈 노이즈를 줄여야 한다.
-- observed_summary: B650 메인보드 기준 8개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: B650 메인보드 기준 7개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-2 · pass
@@ -533,13 +533,13 @@
 ### pc-part-broad-search-3 · pass
 - prompt: DDR5 32GB 메모리 검색해 줘
 - expected_behavior: DDR5 32GB 메모리 broad search는 메모리 본품 중심이어야 한다.
-- observed_summary: DDR5 32GB 메모리 기준 6개 모델, 7개 판매처를 찾았습니다.
+- observed_summary: DDR5 32GB 메모리 기준 5개 모델, 7개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-4 · pass
 - prompt: NVMe SSD 2TB 찾아줘
 - expected_behavior: NVMe SSD broad search는 외장 저장장치나 완본체 노이즈를 줄여야 한다.
-- observed_summary: NVMe SSD 2TB 기준 9개 모델, 9개 판매처를 찾았습니다.
+- observed_summary: NVMe SSD 2TB 기준 7개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-ish-search-1 · pass
@@ -575,7 +575,7 @@
 ### pc-part-exact-compare-2 · pass
 - prompt: Ryzen 7 9800X3D 가격 비교해 줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 666960원, 최고가 1313110원, 판매처 20곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-3 · pass
@@ -623,7 +623,7 @@
 ### pc-part-purchase-explain-2 · pass
 - prompt: Ryzen 7 9800X3D 지금 사도 괜찮아?
 - expected_behavior: CPU exact explain은 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667070원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667070원이고 최고가와의 차이는 646040원입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 666960원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 666960원이고 최고가와의 차이는 646150원입니다.
 - notes: (none)
 
 ### pc-part-purchase-explain-3 · pass

@@ -3182,6 +3182,592 @@ describe("PriceService", () => {
     expect(result.offers.some((offer) => offer.title.includes("1TB"))).toBe(false);
   });
 
+  test("compareProductPrices handles live-like exact monitor and motherboard results", async () => {
+    const monitorService = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터",
+            brand: null,
+            mallName: "노트킹",
+            price: 61740,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 울트라기어 27GR93U",
+            brand: "울트라기어",
+            mallName: "브랜드총판매점",
+            price: 634990,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const boardService = new PriceService({
+      provider: createProvider({
+        query: "ASUS TUF B650M-PLUS",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "ASUS TUF Gaming B650M-PLUS STCOM",
+            brand: "ASUS",
+            mallName: "네이버",
+            price: 206930,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "ASUS TUF Gaming B650M-PLUS STCOM AMD 소켓 메인보드",
+            brand: "ASUS",
+            mallName: "LKZONE",
+            price: 219000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const monitorResult = await monitorService.compareProductPrices({
+      query: "27GR93U는 정확히 같은 모델끼리 가격 비교해줘"
+    });
+    const boardResult = await boardService.compareProductPrices({
+      query: "ASUS TUF B650M-PLUS 가격 비교해 줘"
+    });
+
+    expect(monitorResult.query).toBe("LG 27GR93U");
+    expect(monitorResult.status).toBe("ok");
+    expect(monitorResult.offers).toHaveLength(1);
+    expect(monitorResult.offers[0]?.title).not.toContain("프라이버시 필터");
+
+    expect(boardResult.query).toBe("ASUS TUF B650M-PLUS");
+    expect(boardResult.status).toBe("ok");
+    expect(boardResult.offers.every((offer) => offer.normalizedModel === "ASUS TUF B650M-PLUS")).toBe(true);
+  });
+
+  test("searchProducts keeps expanded exact-ish model families grouped by exact normalized models", async () => {
+    const cases = [
+      {
+        query: "Keychron Q1 Max 검색해 줘",
+        providerQuery: "Keychron Q1 Max",
+        expectedModel: "KEYCHRON Q1 MAX",
+        expectedGroupCount: 1,
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "Keychron Q1 Max 무선 커스텀 키보드 노브",
+            brand: "Keychron",
+            mallName: "몰A",
+            price: 239000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "KEYCHRON Q1 MAX 알루미늄 무선 기계식 키보드",
+            brand: "Keychron",
+            mallName: "몰B",
+            price: 249000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      },
+      {
+        query: "LG 32GS95UE 검색해 줘",
+        providerQuery: "LG 32GS95UE",
+        expectedModel: "LG 32GS95UE",
+        expectedGroupCount: 1,
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "LG 울트라기어 32GS95UE OLED 게이밍 모니터",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1899000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "LG 32GS95UE 32형 OLED UHD 모니터",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1949000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      },
+      {
+        query: "Samsung 990 PRO 2TB 검색해 줘",
+        providerQuery: "Samsung 990 PRO 2TB",
+        expectedModel: "SAMSUNG 990 PRO 2TB",
+        expectedGroupCount: 1,
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "300",
+            title: "삼성전자 990 PRO 2TB NVMe SSD",
+            brand: "삼성전자",
+            mallName: "몰A",
+            price: 269000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "301",
+            title: "Samsung 990 PRO Heatsink 2TB SSD",
+            brand: "Samsung",
+            mallName: "몰B",
+            price: 289000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      },
+      {
+        query: "GIGABYTE UD850GM PG5 검색해 줘",
+        providerQuery: "GIGABYTE UD850GM PG5",
+        expectedModel: "GIGABYTE UD850GM PG5",
+        expectedGroupCount: 1,
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "400",
+            title: "기가바이트 UD850GM PG5 80PLUS GOLD 파워",
+            brand: "기가바이트",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/g",
+            image: "https://example.com/g.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "401",
+            title: "GIGABYTE UD850GM PG5 ATX 3.0 풀모듈러",
+            brand: "GIGABYTE",
+            mallName: "몰B",
+            price: 139000,
+            link: "https://example.com/h",
+            image: "https://example.com/h.jpg"
+          }
+        ]
+      }
+    ] as const;
+
+    for (const testCase of cases) {
+      const service = new PriceService({
+        provider: createProvider({
+          query: testCase.providerQuery,
+          offers: [...testCase.offers]
+        })
+      });
+
+      const result = await service.searchProducts({
+        query: testCase.query,
+        sort: "relevance",
+        excludeUsed: true,
+        limit: 10
+      });
+
+      expect(result.query).toBe(testCase.providerQuery);
+      expect(result.groups).toHaveLength(testCase.expectedGroupCount);
+      expect(result.groups[0]?.normalizedModel).toBe(testCase.expectedModel);
+      expect(result.offers.every((offer) => offer.normalizedModel === testCase.expectedModel)).toBe(true);
+    }
+  });
+
+  test("compareProductPrices supports expanded exact model families across keyboards monitors and pc-parts", async () => {
+    const cases = [
+      {
+        query: "Keychron Q1 Max 가격 비교해 줘",
+        providerQuery: "Keychron Q1 Max",
+        expectedModel: "KEYCHRON Q1 MAX",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "Keychron Q1 Max 무선 커스텀 키보드 노브",
+            brand: "Keychron",
+            mallName: "몰A",
+            price: 239000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "KEYCHRON Q1 MAX 알루미늄 무선 기계식 키보드",
+            brand: "Keychron",
+            mallName: "몰B",
+            price: 249000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      },
+      {
+        query: "Logitech G Pro X TKL 가격 비교해 줘",
+        providerQuery: "Logitech G Pro X TKL",
+        expectedModel: "LOGITECH G PRO X TKL",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "로지텍 G Pro X TKL Lightspeed 무선 게이밍 키보드",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 229000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "LOGITECH G PRO X TKL LIGHTSPEED 화이트",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 239000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      },
+      {
+        query: "LG 32GS95UE 가격 비교해 줘",
+        providerQuery: "LG 32GS95UE",
+        expectedModel: "LG 32GS95UE",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "300",
+            title: "LG 울트라기어 32GS95UE OLED 게이밍 모니터",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1899000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "301",
+            title: "LG 32GS95UE 32형 OLED UHD 모니터",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1949000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      },
+      {
+        query: "Dell AW2725DF 가격 비교해 줘",
+        providerQuery: "Dell AW2725DF",
+        expectedModel: "DELL AW2725DF",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "400",
+            title: "Dell Alienware AW2725DF QD-OLED 게이밍 모니터",
+            brand: "Dell",
+            mallName: "몰A",
+            price: 999000,
+            link: "https://example.com/g",
+            image: "https://example.com/g.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "401",
+            title: "DELL ALIENWARE AW2725DF 360Hz QD-OLED",
+            brand: "Dell",
+            mallName: "몰B",
+            price: 1049000,
+            link: "https://example.com/h",
+            image: "https://example.com/h.jpg"
+          }
+        ]
+      },
+      {
+        query: "ASUS TUF B850M-PLUS 가격 비교해 줘",
+        providerQuery: "ASUS TUF B850M-PLUS",
+        expectedModel: "ASUS TUF B850M-PLUS",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "500",
+            title: "ASUS TUF B850M-PLUS WIFI 메인보드",
+            brand: "ASUS",
+            mallName: "몰A",
+            price: 269000,
+            link: "https://example.com/i",
+            image: "https://example.com/i.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "501",
+            title: "아수스 TUF B850M-PLUS 보드",
+            brand: "아수스",
+            mallName: "몰B",
+            price: 279000,
+            link: "https://example.com/j",
+            image: "https://example.com/j.jpg"
+          }
+        ]
+      },
+      {
+        query: "Ryzen 9 9950X 가격 비교해 줘",
+        providerQuery: "Ryzen 9 9950X",
+        expectedModel: "RYZEN 9 9950X",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "600",
+            title: "AMD Ryzen 9 9950X 정품 멀티팩",
+            brand: "AMD",
+            mallName: "몰A",
+            price: 849000,
+            link: "https://example.com/k",
+            image: "https://example.com/k.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "601",
+            title: "AMD 라이젠9 9950X 정품 박스",
+            brand: "AMD",
+            mallName: "몰B",
+            price: 859000,
+            link: "https://example.com/l",
+            image: "https://example.com/l.jpg"
+          }
+        ]
+      },
+      {
+        query: "Samsung 990 PRO 2TB 가격 비교해 줘",
+        providerQuery: "Samsung 990 PRO 2TB",
+        expectedModel: "SAMSUNG 990 PRO 2TB",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "700",
+            title: "삼성전자 990 PRO 2TB NVMe SSD",
+            brand: "삼성전자",
+            mallName: "몰A",
+            price: 269000,
+            link: "https://example.com/m",
+            image: "https://example.com/m.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "701",
+            title: "Samsung 990 PRO Heatsink 2TB SSD",
+            brand: "Samsung",
+            mallName: "몰B",
+            price: 289000,
+            link: "https://example.com/n",
+            image: "https://example.com/n.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "702",
+            title: "Samsung 990 PRO 1TB SSD",
+            brand: "Samsung",
+            mallName: "몰C",
+            price: 179000,
+            link: "https://example.com/o",
+            image: "https://example.com/o.jpg"
+          }
+        ]
+      },
+      {
+        query: "GIGABYTE UD850GM PG5 가격 비교해 줘",
+        providerQuery: "GIGABYTE UD850GM PG5",
+        expectedModel: "GIGABYTE UD850GM PG5",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "800",
+            title: "기가바이트 UD850GM PG5 80PLUS GOLD 파워",
+            brand: "기가바이트",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/p",
+            image: "https://example.com/p.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "801",
+            title: "GIGABYTE UD850GM PG5 ATX 3.0 풀모듈러",
+            brand: "GIGABYTE",
+            mallName: "몰B",
+            price: 139000,
+            link: "https://example.com/q",
+            image: "https://example.com/q.jpg"
+          }
+        ]
+      }
+    ] as const;
+
+    for (const testCase of cases) {
+      const service = new PriceService({
+        provider: createProvider({
+          query: testCase.providerQuery,
+          offers: [...testCase.offers]
+        })
+      });
+
+      const result = await service.compareProductPrices({ query: testCase.query });
+
+      expect(result.status).toBe("ok");
+      expect(result.comparison?.normalizedModel).toBe(testCase.expectedModel);
+      expect(result.offers.every((offer) => offer.normalizedModel === testCase.expectedModel)).toBe(true);
+    }
+  });
+
+  test("explainPurchaseOptions supports expanded exact model prompts across new families", async () => {
+    const cases = [
+      {
+        query: "Keychron V1 Max 지금 사도 괜찮은 가격대야?",
+        providerQuery: "Keychron V1 Max",
+        expectedModel: "KEYCHRON V1 MAX",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "Keychron V1 Max 무선 커스텀 키보드",
+            brand: "Keychron",
+            mallName: "몰A",
+            price: 159000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "KEYCHRON V1 MAX 핫스왑 기계식 키보드",
+            brand: "Keychron",
+            mallName: "몰B",
+            price: 169000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      },
+      {
+        query: "MSI 274URFW 지금 사도 괜찮은 가격대야?",
+        providerQuery: "MSI 274URFW",
+        expectedModel: "MSI 274URFW",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "MSI MAG 274URFW 27인치 4K 화이트 게이밍 모니터",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 479000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "MSI 274URFW Rapid IPS UHD 모니터",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 489000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      },
+      {
+        query: "Core Ultra 7 265K 지금 사도 괜찮은 가격대야?",
+        providerQuery: "Core Ultra 7 265K",
+        expectedModel: "INTEL CORE ULTRA 7 265K",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "300",
+            title: "인텔 코어 Ultra 7 265K 정품 박스",
+            brand: "Intel",
+            mallName: "몰A",
+            price: 579000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "301",
+            title: "Intel Core Ultra 7 265K 벌크",
+            brand: "Intel",
+            mallName: "몰B",
+            price: 569000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      },
+      {
+        query: "Crucial T500 1TB 지금 사도 괜찮은 가격대야?",
+        providerQuery: "Crucial T500 1TB",
+        expectedModel: "CRUCIAL T500 1TB",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "400",
+            title: "Crucial T500 1TB PCIe Gen4 NVMe SSD",
+            brand: "Crucial",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/g",
+            image: "https://example.com/g.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "401",
+            title: "마이크론 Crucial T500 1TB NVMe SSD",
+            brand: "Crucial",
+            mallName: "몰B",
+            price: 135000,
+            link: "https://example.com/h",
+            image: "https://example.com/h.jpg"
+          }
+        ]
+      }
+    ] as const;
+
+    for (const testCase of cases) {
+      const service = new PriceService({
+        provider: createProvider({
+          query: testCase.providerQuery,
+          offers: [...testCase.offers]
+        })
+      });
+
+      const result = await service.explainPurchaseOptions({ query: testCase.query });
+
+      expect(result.status).toBe("ok");
+      expect(result.summary.toUpperCase()).toContain(testCase.expectedModel.split(" ").slice(-1)[0]!.toUpperCase());
+      expect(result.offers.every((offer) => offer.normalizedModel === testCase.expectedModel)).toBe(true);
+    }
+  });
+
   test("explainPurchaseOptions supports exact keyboard monitor and pc-part queries", async () => {
     const keyboardService = new PriceService({
       provider: createProvider({

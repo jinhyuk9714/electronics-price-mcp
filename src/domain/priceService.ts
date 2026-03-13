@@ -970,6 +970,8 @@ function createInsight(focus: ExplainFocus, minPrice: number, maxPrice: number, 
 const ACCESSORY_KEYWORDS = [
   "케이스",
   "보호필름",
+  "프라이버시 필터",
+  "PRIVACY FILTER",
   "필름",
   "어댑터",
   "충전기",
@@ -983,6 +985,7 @@ const ACCESSORY_KEYWORDS = [
   "키스킨",
   "키캡",
   "덮개",
+  "보안기",
   "번들",
   "패키지",
   "BUNDLE"

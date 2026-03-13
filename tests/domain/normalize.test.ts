@@ -138,13 +138,52 @@ describe("normalize helpers", () => {
     );
   });
 
+  test("extractNormalizedModel recognizes expanded pattern-based exact models across supported families", () => {
+    expect(extractNormalizedModel("Keychron Q1 Max 무선 커스텀 키보드")).toBe("KEYCHRON Q1 MAX");
+    expect(extractNormalizedModel("Keychron V1 Max 기계식 키보드")).toBe("KEYCHRON V1 MAX");
+    expect(extractNormalizedModel("Logitech G Pro X TKL Lightspeed 무선 게이밍 키보드")).toBe(
+      "LOGITECH G PRO X TKL"
+    );
+    expect(extractNormalizedModel("로지텍 MX Keys S 무선 키보드")).toBe("LOGITECH MX KEYS S");
+
+    expect(extractNormalizedModel("LG 울트라기어 32GS95UE OLED 게이밍 모니터")).toBe("LG 32GS95UE");
+    expect(extractNormalizedModel("Dell Alienware AW2725DF QD-OLED 모니터")).toBe("DELL AW2725DF");
+    expect(extractNormalizedModel("삼성 오디세이 OLED G8 S32DG80 32인치 모니터")).toBe(
+      "SAMSUNG S32DG80"
+    );
+    expect(extractNormalizedModel("MSI MAG 274URFW 27인치 4K 화이트 모니터")).toBe("MSI 274URFW");
+
+    expect(extractNormalizedModel("ASUS TUF B850M-PLUS WIFI 메인보드")).toBe("ASUS TUF B850M-PLUS");
+    expect(extractNormalizedModel("MSI PRO B650M-A WIFI 메인보드")).toBe("MSI PRO B650M-A");
+    expect(extractNormalizedModel("GIGABYTE X870 EAGLE WIFI7 메인보드")).toBe("GIGABYTE X870 EAGLE");
+
+    expect(extractNormalizedModel("AMD Ryzen 9 9950X 정품 멀티팩")).toBe("RYZEN 9 9950X");
+    expect(extractNormalizedModel("인텔 코어 Ultra 7 265K 정품 박스")).toBe("INTEL CORE ULTRA 7 265K");
+    expect(extractNormalizedModel("인텔 코어 i7-14700K 정품")).toBe("INTEL I7-14700K");
+
+    expect(extractNormalizedModel("Samsung 990 PRO 2TB NVMe SSD")).toBe("SAMSUNG 990 PRO 2TB");
+    expect(extractNormalizedModel("SK hynix Platinum P41 2TB NVMe SSD")).toBe("SK HYNIX P41 2TB");
+    expect(extractNormalizedModel("Crucial T500 1TB PCIe Gen4 NVMe SSD")).toBe("CRUCIAL T500 1TB");
+
+    expect(extractNormalizedModel("GIGABYTE UD850GM PG5 80PLUS GOLD 풀모듈러 파워")).toBe(
+      "GIGABYTE UD850GM PG5"
+    );
+    expect(extractNormalizedModel("쿨러마스터 MWE GOLD 850 V3 ATX3.1 파워서플라이")).toBe(
+      "COOLERMASTER MWE GOLD 850 V3"
+    );
+  });
+
   test("extractNormalizedModel keeps storage capacity and keyboard variants distinct", () => {
     expect(extractNormalizedModel("WD_BLACK SN850X 1TB NVMe SSD")).toBe("WD SN850X 1TB");
     expect(extractNormalizedModel("WD_BLACK SN850X 2TB NVMe SSD")).toBe("WD SN850X 2TB");
+    expect(extractNormalizedModel("Samsung 990 PRO 1TB NVMe SSD")).toBe("SAMSUNG 990 PRO 1TB");
+    expect(extractNormalizedModel("Samsung 990 PRO 2TB NVMe SSD")).toBe("SAMSUNG 990 PRO 2TB");
     expect(extractNormalizedModel("Logitech MX Mechanical 무선 키보드")).toBe("LOGITECH MX MECHANICAL");
     expect(extractNormalizedModel("Logitech MX Mechanical Mini 무선 키보드")).toBe(
       "LOGITECH MX MECHANICAL MINI"
     );
+    expect(extractNormalizedModel("Keychron Q1 기계식 키보드")).toBe("KEYCHRON Q1");
+    expect(extractNormalizedModel("Keychron Q1 Max 기계식 키보드")).toBe("KEYCHRON Q1 MAX");
   });
 
   test("extractExactQueryModel only marks exact-model queries", () => {
@@ -287,6 +326,15 @@ describe("normalize helpers", () => {
     expect(extractExactQueryModel("9800X3D 가격 차이만 정확히 보고 싶어")).toBe("RYZEN 7 9800X3D");
     expect(extractExactQueryModel("그램 16 라인으로 보긴 하는데 모델이 많을 것 같아서, 바로 비교 말고 가능 여부부터 봐줘")).toBeNull();
     expect(extractExactQueryModel("B650 메인보드 전체 가격 비교는 너무 넓을 것 같은데 일단 가능 여부만 봐줘")).toBeNull();
+  });
+
+  test("extractExactQueryModel infers canonical bare monitor and storage models from natural prompts", () => {
+    expect(extractExactQueryModel("27GR93U는 정확히 같은 모델끼리 가격 비교해줘")).toBe("LG 27GR93U");
+    expect(extractExactQueryModel("321URX 이건 정확 모델 기준으로 최저가 비교해줘")).toBe("MSI 321URX");
+    expect(extractExactQueryModel("S27DG500 가격 비교 좀 해줘, 다른 비슷한 모델 섞지 말고")).toBe(
+      "SAMSUNG S27DG500"
+    );
+    expect(extractExactQueryModel("SN850X 2TB는 용량까지 맞는 것끼리만 비교해줘")).toBe("WD SN850X 2TB");
   });
 
   test("isGraphicsDeviceLikeTitle excludes non-device graphics false positives", () => {

@@ -15,15 +15,24 @@ const BRAND_ALIASES: Record<string, string> = {
   "gigabyte": "GIGABYTE",
   "기가바이트": "GIGABYTE",
   "coolermaster": "CoolerMaster",
+  "cooler master": "CoolerMaster",
   "쿨러마스터": "CoolerMaster",
   "msi": "MSI",
   "엠에스아이": "MSI",
   "hp": "HP",
   "dell": "Dell",
   "amd": "AMD",
+  "intel": "Intel",
+  "인텔": "Intel",
   "wd": "WD",
   "wd_black": "WD",
   "wd black": "WD",
+  "crucial": "Crucial",
+  "마이크론": "Crucial",
+  "micron": "Crucial",
+  "sk hynix": "SK HYNIX",
+  "sk하이닉스": "SK HYNIX",
+  "하이닉스": "SK HYNIX",
   "키크론": "Keychron",
   "keychron": "Keychron",
   "앱코": "ABKO",
@@ -151,7 +160,10 @@ const CANONICAL_BRAND_CUES = [
   { canonical: "COOLERMASTER", cues: ["COOLERMASTER", "쿨러마스터"] },
   { canonical: "SUPERFLOWER", cues: ["SUPERFLOWER"] },
   { canonical: "WD", cues: ["WD", "WD BLACK", "WD_BLACK"] },
-  { canonical: "KLEVV", cues: ["KLEVV", "클레브", "에센코어"] }
+  { canonical: "KLEVV", cues: ["KLEVV", "클레브", "에센코어"] },
+  { canonical: "INTEL", cues: ["INTEL", "인텔"] },
+  { canonical: "CRUCIAL", cues: ["CRUCIAL", "MICRON", "마이크론"] },
+  { canonical: "SK HYNIX", cues: ["SK HYNIX", "SK하이닉스", "하이닉스"] }
 ] as const;
 
 const GPU_VENDOR_OR_FAMILY_CUES = ["NVIDIA", "엔비디아", "GEFORCE", "지포스", "RADEON", "라데온"] as const;
@@ -276,6 +288,11 @@ const NATURAL_LANGUAGE_FILLER_PATTERNS = [
   /키보드\s*본체끼리(?:만)?/giu,
   /본체만/giu,
   /중에서도/giu,
+  /정확\s*모델\s*기준(?:으로)?/giu,
+  /최저가(?:만)?/giu,
+  /용량까지\s*맞는\s*것(?:들)?끼리(?:만)?/giu,
+  /다른\s*비슷한\s*모델\s*섞지\s*말고/giu,
+  /비슷한\s*모델\s*섞지\s*말고/giu,
   /로\s*뜨는\s*것들만/giu,
   /다음에\s*뭘\s*물어보면\s*좋을지(?:도)?/giu,
   /보고\s*싶어/giu,
@@ -569,6 +586,13 @@ export function extractGpuModel(value: string): string | null {
 
 export function extractNotebookModelCode(value: string): string | null {
   const normalized = normalizeModelText(value);
+  const looksLikeMonitorContext = MONITOR_DEVICE_CUES.some((cue) => normalized.includes(cue));
+  const hasMonitorBrandContext =
+    normalized.includes("DELL") ||
+    normalized.includes("ALIENWARE") ||
+    normalized.includes("LG") ||
+    normalized.includes("SAMSUNG") ||
+    normalized.includes("MSI");
 
   for (const pattern of NOTEBOOK_MODEL_PATTERNS) {
     for (const match of normalized.matchAll(pattern)) {
@@ -584,6 +608,10 @@ export function extractNotebookModelCode(value: string): string | null {
   for (const pattern of NOTEBOOK_STANDALONE_MODEL_PATTERNS) {
     for (const match of normalized.matchAll(pattern)) {
       const standaloneModel = normalizeModelPart(match[1]);
+
+      if ((looksLikeMonitorContext || hasMonitorBrandContext) && isLikelyMonitorModelCode(standaloneModel)) {
+        continue;
+      }
 
       if (isNotebookModelPart(standaloneModel)) {
         return standaloneModel;
@@ -1163,63 +1191,256 @@ function isLikelyMonitorModelCode(candidate: string): boolean {
   return !["HDR", "HDMI", "OLED", "IPS", "UHD", "QHD", "FHD", "USB", "TYPE"].includes(candidate);
 }
 
+type ExactModelMatcher = {
+  brandCues?: readonly string[];
+  allowBrandless?: boolean;
+  pattern: RegExp;
+  build: (match: RegExpMatchArray, normalized: string) => string | null;
+};
+
+const KEYBOARD_EXACT_MODEL_MATCHERS: readonly ExactModelMatcher[] = [
+  {
+    brandCues: ["KEYCHRON", "키크론"],
+    pattern: /\b([KQVCMA]\d{1,2})(?:\s+(AIR|PRO|MAX|HE|SE2?|PLUS))?\b/,
+    build: (match) => `KEYCHRON ${match[1]}${match[2] ? ` ${normalizeMatcherToken(match[2])}` : ""}`
+  },
+  {
+    brandCues: ["LOGITECH", "로지텍"],
+    allowBrandless: true,
+    pattern: /\bMX\s+MECHANICAL\s+MINI\b/,
+    build: () => "LOGITECH MX MECHANICAL MINI"
+  },
+  {
+    brandCues: ["LOGITECH", "로지텍"],
+    allowBrandless: true,
+    pattern: /\bMX\s+MECHANICAL\b/,
+    build: () => "LOGITECH MX MECHANICAL"
+  },
+  {
+    brandCues: ["LOGITECH", "로지텍"],
+    allowBrandless: true,
+    pattern: /\bMX\s+KEYS\s+S\b/,
+    build: () => "LOGITECH MX KEYS S"
+  },
+  {
+    brandCues: ["LOGITECH", "로지텍"],
+    pattern: /\bG\s+PRO\s+X\s+TKL\b/,
+    build: () => "LOGITECH G PRO X TKL"
+  },
+  {
+    brandCues: ["LOGITECH", "로지텍"],
+    pattern: /\b(G913|G715|G515)\b/,
+    build: (match) => `LOGITECH ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["ABKO", "앱코"],
+    pattern: /\b(K\d{3}|MK\d{3})\b/,
+    build: (match) => `ABKO ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["DRUNKDEER"],
+    pattern: /\b([A-Z]\d{2,3})(?:\s+(PRO|MAX))?\b/,
+    build: (match) => `DRUNKDEER ${match[1]}${match[2] ? ` ${normalizeMatcherToken(match[2])}` : ""}`
+  }
+] as const;
+
+const MONITOR_EXACT_MODEL_MATCHERS: readonly ExactModelMatcher[] = [
+  {
+    brandCues: ["LG", "엘지"],
+    allowBrandless: true,
+    pattern: /\b(\d{2}[A-Z]{2}\d{2}[A-Z]{1,3})\b/,
+    build: (match) => `LG ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["DELL", "ALIENWARE"],
+    allowBrandless: true,
+    pattern: /\b((?:U|AW)\d{4,5}[A-Z]{1,3})\b/,
+    build: (match) => `DELL ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["MSI", "엠에스아이"],
+    allowBrandless: true,
+    pattern: /\b(\d{3}[A-Z]{3,5})\b/,
+    build: (match) => `MSI ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["SAMSUNG", "삼성"],
+    allowBrandless: true,
+    pattern: /\b(S\d{2}[A-Z]{2}\d{2,3}[A-Z]?)\b/,
+    build: (match) => `SAMSUNG ${normalizeMatcherToken(match[1])}`
+  }
+] as const;
+
+const PC_PART_EXACT_MODEL_MATCHERS: readonly ExactModelMatcher[] = [
+  {
+    brandCues: ["ASUS", "아수스", "에이수스"],
+    pattern: /\b(TUF(?:\s+GAMING)?|PRIME|ROG\s+STRIX)\s+((?:B|X|Z)\d{3,4}[A-Z]?(?:-[A-Z0-9]+)*)\b/,
+    build: (match) =>
+      `ASUS ${normalizeMatcherToken(match[1]).replace("TUF GAMING", "TUF")} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["MSI", "엠에스아이"],
+    pattern: /\b(PRO|MAG|MPG)\s+((?:B|X|Z)\d{3,4}[A-Z]?(?:-[A-Z0-9]+)*)\b/,
+    build: (match) => `MSI ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["GIGABYTE", "기가바이트"],
+    pattern: /\b((?:B|X|Z)\d{3,4}[A-Z]?)\s+(EAGLE|AORUS|GAMING|ELITE)\b/,
+    build: (match) => `GIGABYTE ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["ASROCK", "애즈락"],
+    pattern: /\b((?:B|X|Z)\d{3,4}[A-Z]?(?:-[A-Z0-9]+)?)\s+(PRO\s+RS|STEEL\s+LEGEND|RIPTIDE|LIVEMIXER)\b/,
+    build: (match) => `ASROCK ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["BIOSTAR", "바이오스타"],
+    pattern: /\b((?:B|X|Z)\d{3,4}[A-Z]{0,2}(?:-[A-Z0-9]+)?)\s+(PRO|VALKYRIE|RACING)\b/,
+    build: (match) => `BIOSTAR ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    pattern: /\bRYZEN\s+([3579])\s+(\d{4,5}(?:X3D|X|G|F)?)\b/,
+    build: (match) => `RYZEN ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["AMD", "RYZEN"],
+    allowBrandless: true,
+    pattern: /\b(\d{4,5}(?:X3D|X|G|F))\b/,
+    build: (match) => {
+      const tier = inferRyzenTier(match[1]);
+      return tier ? `RYZEN ${tier} ${normalizeMatcherToken(match[1])}` : null;
+    }
+  },
+  {
+    brandCues: ["INTEL", "인텔"],
+    pattern: /(?:\bCORE\b|코어)\s+ULTRA\s+([3579])\s+(\d{3}[A-Z]?)/,
+    build: (match) => `INTEL CORE ULTRA ${normalizeMatcherToken(match[1])} ${normalizeMatcherToken(match[2])}`
+  },
+  {
+    brandCues: ["INTEL", "인텔"],
+    pattern: /\b(I[3579]-\d{5}[A-Z]?)\b/,
+    build: (match) => `INTEL ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["WD", "WD BLACK", "WD_BLACK"],
+    allowBrandless: true,
+    pattern: /\bSN850X\b.*\b(1TB|2TB|4TB)\b|\b(1TB|2TB|4TB)\b.*\bSN850X\b/,
+    build: (match) => {
+      const capacity = match[1] ?? match[2];
+      return capacity ? `WD SN850X ${normalizeMatcherToken(capacity)}` : null;
+    }
+  },
+  {
+    brandCues: ["SAMSUNG", "삼성"],
+    allowBrandless: true,
+    pattern: /\b990\s+PRO\b.*\b(1TB|2TB|4TB)\b|\b(1TB|2TB|4TB)\b.*\b990\s+PRO\b/,
+    build: (match) => {
+      const capacity = match[1] ?? match[2];
+      return capacity ? `SAMSUNG 990 PRO ${normalizeMatcherToken(capacity)}` : null;
+    }
+  },
+  {
+    brandCues: ["SK HYNIX", "SK하이닉스", "하이닉스"],
+    allowBrandless: true,
+    pattern: /\bP41\b.*\b(1TB|2TB)\b|\b(1TB|2TB)\b.*\bP41\b/,
+    build: (match) => {
+      const capacity = match[1] ?? match[2];
+      return capacity ? `SK HYNIX P41 ${normalizeMatcherToken(capacity)}` : null;
+    }
+  },
+  {
+    brandCues: ["CRUCIAL", "MICRON", "마이크론"],
+    allowBrandless: true,
+    pattern: /\bT500\b.*\b(1TB|2TB|4TB)\b|\b(1TB|2TB|4TB)\b.*\bT500\b/,
+    build: (match) => {
+      const capacity = match[1] ?? match[2];
+      return capacity ? `CRUCIAL T500 ${normalizeMatcherToken(capacity)}` : null;
+    }
+  },
+  {
+    brandCues: ["GIGABYTE", "기가바이트"],
+    pattern: /\b(UD850GM(?:\s+PG5)?)\b/,
+    build: (match) => `GIGABYTE ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    brandCues: ["COOLERMASTER", "COOLER MASTER", "쿨러마스터"],
+    pattern: /\b(MWE\s+GOLD\s+850(?:\s+V\d+)?)\b/,
+    build: (match) => `COOLERMASTER ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    pattern: /\b(SF-850F14XG)\b/,
+    build: (match) => `SUPERFLOWER ${normalizeMatcherToken(match[1])}`
+  },
+  {
+    pattern: /\b(DDR4|DDR5)\b.*\b(PC[45]-\d{4,5})\b.*\b(16GB|32GB|64GB)\b|\b(16GB|32GB|64GB)\b.*\b(DDR4|DDR5)\b.*\b(PC[45]-\d{4,5})\b/,
+    build: (match, normalized) => {
+      const brand = extractCanonicalBrandFromText(normalized);
+      const ddr = match[1] ?? match[5];
+      const speed = match[2] ?? match[6];
+      const capacity = match[3] ?? match[4];
+
+      if (!brand || !ddr || !speed || !capacity) {
+        return null;
+      }
+
+      return `${brand} ${normalizeMatcherToken(ddr)} ${normalizeMatcherToken(speed)} ${normalizeMatcherToken(capacity)}`;
+    }
+  }
+] as const;
+
 function extractNonLaptopExactModel(value: string): string | null {
   const normalized = normalizeQuery(value);
+  return (
+    matchExactModelRegistry(normalized, KEYBOARD_EXACT_MODEL_MATCHERS) ??
+    matchExactModelRegistry(normalized, MONITOR_EXACT_MODEL_MATCHERS) ??
+    matchExactModelRegistry(normalized, PC_PART_EXACT_MODEL_MATCHERS)
+  );
+}
 
-  if (normalized.includes("KEYCHRON") && /\bK2\s+PRO\b/.test(normalized)) {
-    return "KEYCHRON K2 PRO";
-  }
+function matchExactModelRegistry(normalized: string, matchers: readonly ExactModelMatcher[]): string | null {
+  for (const matcher of matchers) {
+    if (
+      matcher.brandCues &&
+      !matcher.brandCues.some((cue) => normalized.includes(cue)) &&
+      !matcher.allowBrandless
+    ) {
+      continue;
+    }
 
-  if (/\bMX\s+MECHANICAL\s+MINI\b/.test(normalized)) {
-    return "LOGITECH MX MECHANICAL MINI";
-  }
+    const match = normalized.match(matcher.pattern);
+    if (!match) {
+      continue;
+    }
 
-  if (/\bMX\s+MECHANICAL\b/.test(normalized)) {
-    return "LOGITECH MX MECHANICAL";
-  }
-
-  if ((normalized.includes("ABKO") || normalized.includes("앱코")) && /\bK660\b/.test(normalized)) {
-    return "ABKO K660";
-  }
-
-  if (normalized.includes("DRUNKDEER") && /\bA75\b/.test(normalized)) {
-    return "DRUNKDEER A75";
-  }
-
-  if (/\b27GR93U\b/.test(normalized)) {
-    return "LG 27GR93U";
-  }
-
-  if (/\bU2723QE\b/.test(normalized)) {
-    return "DELL U2723QE";
-  }
-
-  if (/\b321URX\b/.test(normalized)) {
-    return "MSI 321URX";
-  }
-
-  if (/\bS27DG500\b/.test(normalized)) {
-    return "SAMSUNG S27DG500";
-  }
-
-  if ((normalized.includes("ASUS") || normalized.includes("아수스") || normalized.includes("에이수스")) && /\bTUF\b/.test(normalized) && /\bB650M-PLUS\b/.test(normalized)) {
-    return "ASUS TUF B650M-PLUS";
-  }
-
-  if (/\b(?:RYZEN\s*7\s*)?9800X3D\b/.test(normalized)) {
-    return "RYZEN 7 9800X3D";
-  }
-
-  const sn850xMatch = normalized.match(/\bSN850X\b.*\b(1TB|2TB|4TB)\b|\b(1TB|2TB|4TB)\b.*\bSN850X\b/);
-  if (sn850xMatch) {
-    const capacity = sn850xMatch[1] ?? sn850xMatch[2];
-    if (capacity) {
-      return `WD SN850X ${capacity}`;
+    const model = matcher.build(match, normalized);
+    if (model) {
+      return model;
     }
   }
 
-  if (/\bSF-850F14XG\b/.test(normalized)) {
-    return "SUPERFLOWER SF-850F14XG";
+  return null;
+}
+
+function normalizeMatcherToken(value: string | undefined): string {
+  return (value ?? "").replace(/\s+/g, " ").trim().toUpperCase();
+}
+
+function inferRyzenTier(code: string | undefined): string | null {
+  if (!code) {
+    return null;
+  }
+
+  const normalizedCode = normalizeMatcherToken(code);
+  if (normalizedCode.startsWith("99")) {
+    return "9";
+  }
+
+  if (normalizedCode.startsWith("98") || normalizedCode.startsWith("97")) {
+    return "7";
+  }
+
+  if (normalizedCode.startsWith("96") || normalizedCode.startsWith("95")) {
+    return "5";
   }
 
   return null;
