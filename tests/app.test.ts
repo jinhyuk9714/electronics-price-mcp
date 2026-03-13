@@ -8,6 +8,7 @@ import type {
   ExplainPurchaseOptionsResult,
   SearchProductsResult
 } from "../src/domain/types.js";
+import { InMemoryRateLimiter } from "../src/runtime/rateLimit.js";
 
 type ToolCallResult = {
   content: Array<{ type: string; text: string }>;
@@ -78,7 +79,8 @@ function createService() {
 describe("createApp", () => {
   test("serves expanded root metadata and health endpoints", async () => {
     const app = createApp({
-      service: createService()
+      service: createService(),
+      requestIdFactory: () => "req-root"
     });
 
     const rootResponse = await app.request("https://example.com/");
@@ -101,10 +103,12 @@ describe("createApp", () => {
         prompt: "https://electronics-price-mcp.jinhyuk9714.workers.dev/prompt"
       }
     });
+    expect(rootResponse.headers.get("x-request-id")).toBe("req-root");
     expect(healthResponse.status).toBe(200);
     expect(await healthResponse.json()).toEqual({
       status: "ok"
     });
+    expect(healthResponse.headers.get("x-request-id")).toBe("req-root");
   });
 
   test("serves a prompt page with base-url-specific HTTP instructions", async () => {
@@ -308,5 +312,176 @@ describe("createApp", () => {
         message: expect.stringContaining("NAVER_CLIENT_ID")
       }
     });
+  });
+
+  test("includes request ids in bad-request error envelopes", async () => {
+    const app = createApp({
+      service: createService(),
+      requestIdFactory: () => "req-bad-request"
+    });
+
+    const response = await app.request("https://example.com/api/search");
+    const body = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(response.headers.get("x-request-id")).toBe("req-bad-request");
+    expect(body).toEqual({
+      success: false,
+      error: {
+        message: "query 파라미터를 입력해 주세요.",
+        requestId: "req-bad-request"
+      }
+    });
+  });
+
+  test("rate limits api search independently from api compare", async () => {
+    const now = 1_763_000_000_000;
+    const app = createApp({
+      service: createService(),
+      requestIdFactory: () => "req-search-limit",
+      rateLimiter: new InMemoryRateLimiter(() => now)
+    });
+
+    for (let index = 0; index < 60; index += 1) {
+      const response = await app.request("https://example.com/api/search?query=%EA%B7%B8%EB%9E%A816", {
+        headers: {
+          "cf-connecting-ip": "203.0.113.10"
+        }
+      });
+
+      expect(response.status).toBe(200);
+    }
+
+    const limitedSearch = await app.request("https://example.com/api/search?query=%EA%B7%B8%EB%9E%A816", {
+      headers: {
+        "cf-connecting-ip": "203.0.113.10"
+      }
+    });
+    const limitedSearchBody = await limitedSearch.json();
+
+    expect(limitedSearch.status).toBe(429);
+    expect(limitedSearch.headers.get("retry-after")).toBe("60");
+    expect(limitedSearch.headers.get("x-request-id")).toBe("req-search-limit");
+    expect(limitedSearchBody).toEqual({
+      success: false,
+      error: {
+        code: "RATE_LIMITED",
+        message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+        requestId: "req-search-limit"
+      }
+    });
+
+    const compareResponse = await app.request("https://example.com/api/compare?query=rtx%205070", {
+      headers: {
+        "cf-connecting-ip": "203.0.113.10"
+      }
+    });
+
+    expect(compareResponse.status).toBe(200);
+  });
+
+  test("rate limits api compare requests using x-forwarded-for fallback", async () => {
+    const now = 1_763_000_000_000;
+    const app = createApp({
+      service: createService(),
+      requestIdFactory: () => "req-compare-limit",
+      rateLimiter: new InMemoryRateLimiter(() => now)
+    });
+
+    for (let index = 0; index < 60; index += 1) {
+      const response = await app.request("https://example.com/api/compare?query=rtx%205070", {
+        headers: {
+          "x-forwarded-for": "198.51.100.8, 198.51.100.1"
+        }
+      });
+
+      expect(response.status).toBe(200);
+    }
+
+    const limitedResponse = await app.request("https://example.com/api/compare?query=rtx%205070", {
+      headers: {
+        "x-forwarded-for": "198.51.100.8, 198.51.100.1"
+      }
+    });
+    const limitedBody = await limitedResponse.json();
+
+    expect(limitedResponse.status).toBe(429);
+    expect(limitedResponse.headers.get("retry-after")).toBe("60");
+    expect(limitedBody).toEqual({
+      success: false,
+      error: {
+        code: "RATE_LIMITED",
+        message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+        requestId: "req-compare-limit"
+      }
+    });
+  });
+
+  test("rate limits mcp requests before transport setup", async () => {
+    const now = 1_763_000_000_000;
+    const app = createApp({
+      service: createService(),
+      requestIdFactory: () => "req-mcp-limit",
+      rateLimiter: new InMemoryRateLimiter(() => now)
+    });
+
+    for (let index = 0; index < 120; index += 1) {
+      const response = await app.request("https://example.com/mcp", {
+        method: "POST",
+        headers: {
+          "cf-connecting-ip": "203.0.113.55",
+          "content-type": "application/json"
+        },
+        body: "{}"
+      });
+
+      expect(response.status).not.toBe(429);
+    }
+
+    const limitedResponse = await app.request("https://example.com/mcp", {
+      method: "POST",
+      headers: {
+        "cf-connecting-ip": "203.0.113.55",
+        "content-type": "application/json"
+      },
+      body: "{}"
+    });
+    const limitedBody = await limitedResponse.json();
+
+    expect(limitedResponse.status).toBe(429);
+    expect(limitedResponse.headers.get("retry-after")).toBe("60");
+    expect(limitedBody).toEqual({
+      success: false,
+      error: {
+        code: "RATE_LIMITED",
+        message: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.",
+        requestId: "req-mcp-limit"
+      }
+    });
+  });
+
+  test("skips rate limiting for public docs and health routes", async () => {
+    let limiterCalls = 0;
+    const app = createApp({
+      service: createService(),
+      rateLimiter: {
+        async check() {
+          limiterCalls += 1;
+          return {
+            allowed: true,
+            retryAfterSeconds: 60
+          };
+        }
+      }
+    });
+
+    const healthResponse = await app.request("https://example.com/health");
+    const promptResponse = await app.request("https://example.com/prompt");
+    const openApiResponse = await app.request("https://example.com/openapi.json");
+
+    expect(healthResponse.status).toBe(200);
+    expect(promptResponse.status).toBe(200);
+    expect(openApiResponse.status).toBe(200);
+    expect(limiterCalls).toBe(0);
   });
 });

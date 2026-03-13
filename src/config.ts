@@ -7,7 +7,16 @@ export interface RuntimeConfig {
   chatgptAppUrl?: string;
 }
 
-export type RuntimeEnv = Record<string, string | undefined>;
+export interface RuntimeEnv {
+  NAVER_CLIENT_ID?: string;
+  NAVER_CLIENT_SECRET?: string;
+  REQUEST_TIMEOUT_MS?: string;
+  CACHE_TTL_MS?: string;
+  PUBLIC_BASE_URL?: string;
+  CHATGPT_APP_URL?: string;
+  ELECTRONICS_RATE_LIMITER?: DurableObjectNamespace;
+  [key: string]: string | DurableObjectNamespace | undefined;
+}
 
 export const DEFAULT_PUBLIC_BASE_URL = "https://electronics-price-mcp.jinhyuk9714.workers.dev";
 

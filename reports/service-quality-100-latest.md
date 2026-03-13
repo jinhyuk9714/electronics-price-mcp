@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T05:45:34.373Z
+- 생성 시각: 2026-03-13T06:03:45.011Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -101,7 +101,7 @@
 ### laptop-exact-compare-3 · pass
 - prompt: 15IRX9 가격 비교해 줘
 - expected_behavior: Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.
-- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다.
+- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-4 · pass
@@ -155,7 +155,7 @@
 ### laptop-purchase-explain-4 · pass
 - prompt: 15IRX9 지금 사도 괜찮아?
 - expected_behavior: 정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
+- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
 - notes: (none)
 
 ### graphics-card-broad-search-1 · pass
@@ -209,7 +209,7 @@
 ### graphics-card-exact-compare-1 · pass
 - prompt: RTX 5070 가격 비교해 줘
 - expected_behavior: RTX 5070 exact compare는 ok 상태여야 한다.
-- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다.
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 10곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-2 · pass
@@ -257,7 +257,7 @@
 ### graphics-card-purchase-explain-1 · pass
 - prompt: RTX 5070 지금 사도 돼?
 - expected_behavior: RTX 5070 explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다. 현재 최저가는 931000원이고 최고가와의 차이는 339000원입니다.
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 10곳입니다. 현재 최저가는 931000원이고 최고가와의 차이는 339000원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-2 · pass
@@ -323,7 +323,7 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass

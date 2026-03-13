@@ -4,3 +4,11 @@ compatibility_date = "2026-03-12"
 
 [observability]
 enabled = true
+
+[[durable_objects.bindings]]
+name = "ELECTRONICS_RATE_LIMITER"
+class_name = "RateLimiterDurableObject"
+
+[[migrations]]
+tag = "v1-rate-limiter"
+new_sqlite_classes = ["RateLimiterDurableObject"]
