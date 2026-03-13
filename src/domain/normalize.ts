@@ -45,7 +45,7 @@ const NOTEBOOK_MODEL_PATTERNS = [
 
 const NOTEBOOK_STANDALONE_MODEL_PATTERNS = [/\b([A-Z]{2}\d{4}[A-Z]{2})\b/g, /\b(\d{2}[A-Z]{3}\d{1,2})\b/g] as const;
 
-const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업"] as const;
+const BROAD_QUERY_CUES = ["시리즈", "SERIES", "전부", "전체", "모델들", "라인업", "계열"] as const;
 
 const NOTEBOOK_QUERY_CUES = [
   "노트북",
@@ -67,9 +67,31 @@ const GRAPHICS_QUERY_CUES = [
   "RX",
   "GEFORCE",
   "RADEON",
+  "NVIDIA",
+  "엔비디아",
+  "지포스",
+  "라데온",
   "그래픽카드",
   "그래픽 카드",
   "GPU"
+] as const;
+
+const GPU_VENDOR_OR_FAMILY_CUES = ["NVIDIA", "엔비디아", "GEFORCE", "지포스", "RADEON", "라데온"] as const;
+
+const GRAPHICS_DEVICE_CUES = ["그래픽카드", "그래픽 카드", "VGA", "지포스", "GEFORCE", "라데온", "RADEON"] as const;
+
+const NON_GRAPHICS_DEVICE_KEYWORDS = [
+  "호환",
+  "PROGRAMMING",
+  "프로그래밍",
+  "DOWNLOAD",
+  "다운로드",
+  "MODULE",
+  "모듈",
+  "PLC",
+  "CONTROL",
+  "컨트롤",
+  "산업"
 ] as const;
 
 const NOTEBOOK_ACCESSORY_KEYWORDS = [
@@ -189,7 +211,21 @@ export function extractExactQueryModel(value: string): string | null {
     return extractNotebookModelCode(simplifiedQuery);
   }
 
-  return extractNormalizedModel(simplifiedQuery);
+  const notebookModelCode = extractNotebookModelCode(simplifiedQuery);
+  if (notebookModelCode) {
+    return notebookModelCode;
+  }
+
+  const gpuQueryModel = extractGpuQueryModel(simplifiedQuery);
+  if (gpuQueryModel) {
+    if (gpuQueryModel.specificity === "bare" && hasBroadGpuFamilyCue(simplifiedQuery)) {
+      return null;
+    }
+
+    return gpuQueryModel.model;
+  }
+
+  return extractNonLaptopExactModel(simplifiedQuery);
 }
 
 export function isBroadExploratoryQuery(value: string): boolean {
@@ -353,6 +389,20 @@ export function classifyOfferTitle(value: string): {
   };
 }
 
+export function isGraphicsDeviceLikeTitle(value: string): boolean {
+  const normalizedTitle = normalizeQuery(value);
+
+  if (NON_GRAPHICS_DEVICE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+    return false;
+  }
+
+  if (extractGpuModel(value)) {
+    return true;
+  }
+
+  return GRAPHICS_DEVICE_CUES.some((cue) => normalizedTitle.includes(cue));
+}
+
 export function simplifyIntentQuery(value: string): string {
   const original = stripHtml(value).replace(DASH_CHARACTERS, "-").trim();
   let simplified = original.replace(/[?？!]+$/g, "").trim();
@@ -416,6 +466,54 @@ function isNotebookSizePrefix(value: string): boolean {
 
 function isGpuModel(value: string): boolean {
   return value.startsWith("RTX ") || value.startsWith("RX ");
+}
+
+function extractGpuQueryModel(value: string): { model: string; specificity: "explicit" | "bare" } | null {
+  const normalized = normalizeModelText(value);
+
+  const explicitRtxMatch = normalized.match(/\bRTX\s*(\d{4})(?:\s*(TI|SUPER))?\b/);
+  if (explicitRtxMatch) {
+    const variant = explicitRtxMatch[2] ? ` ${explicitRtxMatch[2]}` : "";
+    return {
+      model: `RTX ${explicitRtxMatch[1]}${variant}`,
+      specificity: "explicit"
+    };
+  }
+
+  const bareRtxMatch = normalized.match(/\b([4-5]0[5-9]0)(?:\s*(TI|SUPER))?\b/);
+  if (bareRtxMatch) {
+    const variant = bareRtxMatch[2] ? ` ${bareRtxMatch[2]}` : "";
+    return {
+      model: `RTX ${bareRtxMatch[1]}${variant}`,
+      specificity: "bare"
+    };
+  }
+
+  const explicitRxMatch = normalized.match(/\bRX\s*(\d{4})(?:\s*(XT|GRE))?\b/);
+  if (explicitRxMatch) {
+    const variant = explicitRxMatch[2] ? ` ${explicitRxMatch[2]}` : "";
+    return {
+      model: `RX ${explicitRxMatch[1]}${variant}`,
+      specificity: "explicit"
+    };
+  }
+
+  const bareRxMatch = normalized.match(/\b(9\d{3})(?:\s*(XT|GRE))?\b/);
+  if (bareRxMatch) {
+    const variant = bareRxMatch[2] ? ` ${bareRxMatch[2]}` : "";
+    return {
+      model: `RX ${bareRxMatch[1]}${variant}`,
+      specificity: "bare"
+    };
+  }
+
+  return null;
+}
+
+function hasBroadGpuFamilyCue(value: string): boolean {
+  const normalized = normalizeQuery(value);
+
+  return GPU_VENDOR_OR_FAMILY_CUES.some((cue) => normalized.includes(cue));
 }
 
 function extractNonLaptopExactModel(value: string): string | null {

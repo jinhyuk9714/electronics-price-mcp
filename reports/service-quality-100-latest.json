@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-03-13T00:13:55.825Z",
+  "generatedAt": "2026-03-13T00:22:38.106Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
     "total": 100,
-    "pass": 80,
-    "softFail": 17,
-    "fail": 3,
-    "passRate": 0.8,
+    "pass": 82,
+    "softFail": 18,
+    "fail": 0,
+    "passRate": 0.82,
     "byCategory": [
       {
         "key": "노트북",
@@ -20,10 +20,10 @@
       {
         "key": "그래픽카드",
         "total": 20,
-        "pass": 17,
-        "softFail": 0,
-        "fail": 3,
-        "passRate": 0.85
+        "pass": 19,
+        "softFail": 1,
+        "fail": 0,
+        "passRate": 0.95
       },
       {
         "key": "키보드",
@@ -78,36 +78,28 @@
       {
         "key": "broad ambiguous safety",
         "total": 20,
-        "pass": 10,
-        "softFail": 8,
-        "fail": 2,
-        "passRate": 0.5
+        "pass": 11,
+        "softFail": 9,
+        "fail": 0,
+        "passRate": 0.55
       },
       {
         "key": "purchase/explain",
         "total": 20,
-        "pass": 14,
+        "pass": 15,
         "softFail": 5,
-        "fail": 1,
-        "passRate": 0.7
+        "fail": 0,
+        "passRate": 0.75
       }
     ],
     "failurePatterns": [
       {
         "pattern": "missing_suggested_queries",
-        "count": 14
+        "count": 12
       },
       {
         "pattern": "must_not_contain: 사무용",
         "count": 5
-      },
-      {
-        "pattern": "expected_status: ambiguous -> ok",
-        "count": 3
-      },
-      {
-        "pattern": "must_contain_missing: 정확히 같은 모델",
-        "count": 3
       },
       {
         "pattern": "must_not_contain: 오피스",
@@ -129,7 +121,7 @@
     "nextImprovementPriorities": [
       "검색 의도 대비 노이즈 제거 규칙을 더 촘촘하게 다듬기",
       "ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기",
-      "정확 모델 추출과 exact compare 성공 범위를 확대하기"
+      "카테고리별 broad 검색 필터를 다시 점검하기"
     ]
   },
   "results": [
@@ -557,10 +549,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "5070 시리즈 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
       "notes": "",
       "expected_behavior": "5070 시리즈 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.",
-      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-2",
@@ -568,12 +560,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "soft_fail",
       "expectedBehavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
-      "observedSummary": "1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환 기준 최저가 50660원, 최고가 50660원, 판매처 1곳입니다.",
-      "notes": "expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "missing_suggested_queries",
       "expected_behavior": "9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.",
-      "observed_summary": "1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환 기준 최저가 50660원, 최고가 50660원, 판매처 1곳입니다."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-3",
@@ -581,12 +573,12 @@
       "category": "graphics-card",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "브랜드+세대 broad compare는 동일상품 비교를 시도하지 않아야 한다.",
-      "observedSummary": "[렌탈] RTX 5070 그래픽카드 렌탈 대여 30일 기준 최저가 88000원, 최고가 1362860원, 판매처 10곳입니다.",
-      "notes": "expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "브랜드+세대 broad compare는 동일상품 비교를 시도하지 않아야 한다.",
-      "observed_summary": "[렌탈] RTX 5070 그래픽카드 렌탈 대여 30일 기준 최저가 88000원, 최고가 1362860원, 판매처 10곳입니다."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-broad-ambiguous-safety-4",
@@ -596,10 +588,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "라데온 계열 broad compare는 ambiguous로 멈추고 추천 질의를 줘야 한다.",
-      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
       "notes": "",
       "expected_behavior": "라데온 계열 broad compare는 ambiguous로 멈추고 추천 질의를 줘야 한다.",
-      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-purchase-explain-1",
@@ -635,10 +627,10 @@
       "executor": "explain-mcp",
       "status": "pass",
       "expectedBehavior": "GPU 시리즈 explain은 ambiguous로 멈추고 재질문을 유도해야 한다.",
-      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
       "notes": "",
       "expected_behavior": "GPU 시리즈 explain은 ambiguous로 멈추고 재질문을 유도해야 한다.",
-      "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "graphics-card-purchase-explain-4",
@@ -646,12 +638,12 @@
       "category": "graphics-card",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "fail",
+      "status": "pass",
       "expectedBehavior": "라데온 계열 explain은 ambiguous로 멈추고 suggestedQueries를 줘야 한다.",
-      "observedSummary": "기가바이트 라데온 RX 9070 GAMING OC D6 16GB 피씨디렉트 기준 최저가 908670원, 최고가 1065430원, 판매처 4곳입니다. 현재 최저가는 908670원이고 최고가와의 차이는 156760원입니다.",
-      "notes": "expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries",
+      "observedSummary": "정확히 같은 모델만 비교할 수 있습니다.",
+      "notes": "",
       "expected_behavior": "라데온 계열 explain은 ambiguous로 멈추고 suggestedQueries를 줘야 한다.",
-      "observed_summary": "기가바이트 라데온 RX 9070 GAMING OC D6 16GB 피씨디렉트 기준 최저가 908670원, 최고가 1065430원, 판매처 4곳입니다. 현재 최저가는 908670원이고 최고가와의 차이는 156760원입니다."
+      "observed_summary": "정확히 같은 모델만 비교할 수 있습니다."
     },
     {
       "id": "keyboard-broad-search-1",

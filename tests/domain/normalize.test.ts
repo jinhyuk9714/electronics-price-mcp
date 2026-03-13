@@ -7,6 +7,7 @@ import {
   extractNormalizedModel,
   extractNotebookModelCode,
   extractRequestedNotebookGpuModel,
+  isGraphicsDeviceLikeTitle,
   resolvePrimaryModelForQuery,
   isAmbiguousComparison,
   normalizeBrand,
@@ -153,7 +154,16 @@ describe("normalize helpers", () => {
     expect(extractExactQueryModel("Ryzen 7 9800X3D 가격 비교")).toBe("RYZEN 7 9800X3D");
     expect(extractExactQueryModel("WD SN850X 2TB 가격 비교")).toBe("WD SN850X 2TB");
     expect(extractExactQueryModel("RTX 5070 시리즈 가격 비교")).toBeNull();
+    expect(extractExactQueryModel("RX 9070 시리즈 가격 비교")).toBeNull();
+    expect(extractExactQueryModel("RX 9070 계열 지금 사도 괜찮아?")).toBeNull();
+    expect(extractExactQueryModel("엔비디아 5070 그래픽카드 비교")).toBeNull();
+    expect(extractExactQueryModel("RTX 5070 그래픽카드 비교")).toBe("RTX 5070");
     expect(extractExactQueryModel("LG 그램 16")).toBeNull();
+  });
+
+  test("isGraphicsDeviceLikeTitle excludes non-device graphics false positives", () => {
+    expect(isGraphicsDeviceLikeTitle("RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환")).toBe(false);
+    expect(isGraphicsDeviceLikeTitle("ZOTAC GAMING GeForce RTX 5070 Twin Edge OC 12GB")).toBe(true);
   });
 
   test("isAmbiguousComparison flags mixed model families", () => {

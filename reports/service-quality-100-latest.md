@@ -1,17 +1,17 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T00:13:55.825Z
+- 생성 시각: 2026-03-13T00:22:38.106Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 80 pass / 17 soft_fail / 3 fail
-- 통과율: 80.0%
+- 전체 결과: 82 pass / 18 soft_fail / 0 fail
+- 통과율: 82.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 노트북 | 20 | 19 | 1 | 0 | 95.0% |
-| 그래픽카드 | 20 | 17 | 0 | 3 | 85.0% |
+| 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
 | 키보드 | 20 | 12 | 8 | 0 | 60.0% |
 | 모니터 | 20 | 17 | 3 | 0 | 85.0% |
 | PC 부품 | 20 | 15 | 5 | 0 | 75.0% |
@@ -23,22 +23,22 @@
 | broad search | 20 | 16 | 4 | 0 | 80.0% |
 | exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
 | exact compare | 20 | 20 | 0 | 0 | 100.0% |
-| broad ambiguous safety | 20 | 10 | 8 | 2 | 50.0% |
-| purchase/explain | 20 | 14 | 5 | 1 | 70.0% |
+| broad ambiguous safety | 20 | 11 | 9 | 0 | 55.0% |
+| purchase/explain | 20 | 15 | 5 | 0 | 75.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 14
+- missing_suggested_queries: 12
 - must_not_contain: 사무용: 5
-- expected_status: ambiguous -> ok: 3
-- must_contain_missing: 정확히 같은 모델: 3
 - must_not_contain: 오피스: 3
+- must_not_contain: 게이밍: 1
+- must_not_contain: 마우스: 1
 
 ## 다음 개선 우선순위
 
 - 검색 의도 대비 노이즈 제거 규칙을 더 촘촘하게 다듬기
 - ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기
-- 정확 모델 추출과 exact compare 성공 범위를 확대하기
+- 카테고리별 broad 검색 필터를 다시 점검하기
 
 ## 문장별 결과
 
@@ -237,25 +237,25 @@
 ### graphics-card-broad-ambiguous-safety-1 · pass
 - prompt: RTX 5070 시리즈 가격 비교해 줘
 - expected_behavior: 5070 시리즈 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
-### graphics-card-broad-ambiguous-safety-2 · fail
+### graphics-card-broad-ambiguous-safety-2 · soft_fail
 - prompt: RX 9070 시리즈 가격 비교해 줘
 - expected_behavior: 9070 시리즈 broad compare는 ambiguous로 멈춰야 한다.
-- observed_summary: 1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환 기준 최저가 50660원, 최고가 50660원, 판매처 1곳입니다.
-- notes: expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
+- notes: missing_suggested_queries
 
-### graphics-card-broad-ambiguous-safety-3 · fail
+### graphics-card-broad-ambiguous-safety-3 · pass
 - prompt: 엔비디아 5070 그래픽카드 비교해 줘
 - expected_behavior: 브랜드+세대 broad compare는 동일상품 비교를 시도하지 않아야 한다.
-- observed_summary: [렌탈] RTX 5070 그래픽카드 렌탈 대여 30일 기준 최저가 88000원, 최고가 1362860원, 판매처 10곳입니다.
-- notes: expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
+- notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-4 · pass
 - prompt: 라데온 9070 계열 비교해 줘
 - expected_behavior: 라데온 계열 broad compare는 ambiguous로 멈추고 추천 질의를 줘야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-1 · pass
@@ -273,14 +273,14 @@
 ### graphics-card-purchase-explain-3 · pass
 - prompt: RTX 5070 시리즈 지금 사도 돼?
 - expected_behavior: GPU 시리즈 explain은 ambiguous로 멈추고 재질문을 유도해야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
-### graphics-card-purchase-explain-4 · fail
+### graphics-card-purchase-explain-4 · pass
 - prompt: RX 9070 계열 지금 사도 괜찮아?
 - expected_behavior: 라데온 계열 explain은 ambiguous로 멈추고 suggestedQueries를 줘야 한다.
-- observed_summary: 기가바이트 라데온 RX 9070 GAMING OC D6 16GB 피씨디렉트 기준 최저가 908670원, 최고가 1065430원, 판매처 4곳입니다. 현재 최저가는 908670원이고 최고가와의 차이는 156760원입니다.
-- notes: expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries
+- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
+- notes: (none)
 
 ### keyboard-broad-search-1 · soft_fail
 - prompt: 게이밍 키보드 찾아줘

@@ -1189,7 +1189,8 @@ describe("PriceService", () => {
     });
 
     expect(result.status).toBe("ambiguous");
-    expect(result.warning).toContain("모델 코드");
+    expect(result.summary).toContain("정확히 같은 모델");
+    expect(result.warning).toContain("시리즈/계열");
     expect(result.suggestedQueries).toEqual(["RX 9070 가격 비교해 줘", "RX 9070 XT 가격 비교해 줘"]);
   });
 
@@ -1250,6 +1251,96 @@ describe("PriceService", () => {
     expect(result.suggestedQueries).toEqual(["RTX 5070 가격 비교해 줘", "RTX 5070 TI 가격 비교해 줘"]);
     expect(result.offers.some((offer) => offer.title.includes("브라켓"))).toBe(false);
     expect(result.offers.some((offer) => offer.title.includes("조립PC"))).toBe(false);
+  });
+
+  test("compareProductPrices keeps broad RX series queries ambiguous and filters non-device titles", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RX 9070 시리즈",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "1 GE 90-70/90-30/ RX 3i 시리즈 프로그래밍 다운로드 라 IC690USB901과 호환",
+            brand: null,
+            mallName: "몰A",
+            price: 50660,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "SAPPHIRE PULSE Radeon RX 9070 D6 16GB",
+            brand: "SAPPHIRE",
+            mallName: "몰B",
+            price: 899000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "SAPPHIRE PULSE Radeon RX 9070 XT D6 16GB",
+            brand: "SAPPHIRE",
+            mallName: "몰C",
+            price: 999000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "RX 9070 시리즈 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확히 같은 모델");
+    expect(result.warning).toContain("시리즈/계열");
+    expect(result.suggestedQueries).toEqual(["RX 9070 가격 비교해 줘", "RX 9070 XT 가격 비교해 줘"]);
+    expect(result.offers.some((offer) => offer.title.includes("프로그래밍"))).toBe(false);
+  });
+
+  test("compareProductPrices keeps bare vendor GPU queries ambiguous instead of promoting rental matches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "엔비디아 5070 그래픽카드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "[렌탈] RTX 5070 그래픽카드 렌탈 대여 30일",
+            brand: null,
+            mallName: "몰A",
+            price: 88000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge OC 12GB",
+            brand: "ZOTAC",
+            mallName: "몰B",
+            price: 919000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "엔비디아 5070 그래픽카드 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확히 같은 모델");
+    expect(result.warning).toContain("정확한 모델");
+    expect(result.suggestedQueries).toEqual(["RTX 5070 가격 비교해 줘"]);
+    expect(result.offers.some((offer) => offer.title.includes("렌탈"))).toBe(false);
   });
 
   test("compareProductPrices keeps notebook line-name searches ambiguous when exact models are mixed", async () => {
@@ -1727,12 +1818,51 @@ describe("PriceService", () => {
     });
 
     expect(result.status).toBe("ambiguous");
-    expect(result.summary).toContain("바로 판단할 수 없습니다");
+    expect(result.summary).toContain("정확히 같은 모델");
     expect(result.warning).toContain("추천 검색어");
     expect(result.suggestedQueries).toEqual([
       "RTX 5070 가격 비교해 줘",
       "RTX 5070 TI 가격 비교해 줘"
     ]);
+  });
+
+  test("explainPurchaseOptions keeps broad GPU family queries ambiguous and suggests exact models", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "RX 9070 계열",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "기가바이트 라데온 RX 9070 GAMING OC D6 16GB 피씨디렉트",
+            brand: "GIGABYTE",
+            mallName: "몰A",
+            price: 908670,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6",
+            brand: "PowerColor",
+            mallName: "몰B",
+            price: 997000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "RX 9070 계열 지금 사도 괜찮아?"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확히 같은 모델");
+    expect(result.warning).toContain("시리즈/계열");
+    expect(result.suggestedQueries).toEqual(["RX 9070 지금 사도 괜찮은 가격대야?", "RX 9070 XT 지금 사도 괜찮은 가격대야?"]);
   });
 
   test("compareProductPrices supports exact keyboard model queries", async () => {

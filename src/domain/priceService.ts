@@ -5,6 +5,7 @@ import {
   extractGpuModel,
   extractNotebookFamilyKey,
   extractRequestedNotebookGpuModel,
+  isGraphicsDeviceLikeTitle,
   isAmbiguousComparison,
   isBroadExploratoryQuery,
   normalizeBrand,
@@ -44,7 +45,26 @@ interface SearchSelection {
   warning?: string;
 }
 
-const SUGGESTION_QUERY_STOPWORDS = new Set(["시리즈", "SERIES", "가격", "비교", "설명", "노트북", "LAPTOP"]);
+const SUGGESTION_QUERY_STOPWORDS = new Set([
+  "시리즈",
+  "SERIES",
+  "계열",
+  "라인업",
+  "가격",
+  "비교",
+  "설명",
+  "노트북",
+  "LAPTOP",
+  "그래픽카드",
+  "그래픽",
+  "카드",
+  "NVIDIA",
+  "엔비디아",
+  "GEFORCE",
+  "지포스",
+  "RADEON",
+  "라데온"
+]);
 
 type ComparisonTarget =
   | {
@@ -169,13 +189,16 @@ export class PriceService {
         comparison.status === "ambiguous"
           ? createSuggestedQueries(comparison.query, comparison.offers, "explain")
           : undefined;
+      const broadQueryKind = comparison.status === "ambiguous" ? detectBroadQueryKind(comparison.query) : "other";
 
       return {
         query: comparison.query,
         status: comparison.status,
         summary:
-          comparison.status === "ambiguous" && suggestedQueries
-            ? "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
+          comparison.status === "ambiguous" && broadQueryKind === "graphics-card"
+            ? "정확히 같은 모델만 비교할 수 있습니다."
+            : comparison.status === "ambiguous" && suggestedQueries
+              ? "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
             : comparison.summary,
         warning: withSuggestedQueryHint(comparison.warning, suggestedQueries),
         ...(suggestedQueries ? { suggestedQueries } : {}),
@@ -289,14 +312,21 @@ function resolveComparisonTarget(options: {
   }
 
   const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
+  const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(options.query);
   const scopedOffers = exactQueryModel ? dedupedOffers : filterBroadSearchOffers(options.query, dedupedOffers);
 
   if (!exactQueryModel && scopedOffers.length === 0) {
     return {
       status: "ambiguous",
       query: options.query,
-      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      warning: "렌탈, 액세서리, 완본체 같은 다른 상품군만 확인되어 비교를 중단했습니다. 더 구체적인 제품명으로 다시 검색해 주세요.",
+      summary:
+        broadQueryKind === "graphics-card"
+          ? "정확히 같은 모델만 비교할 수 있습니다."
+          : "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      warning:
+        broadQueryKind === "graphics-card"
+          ? createBroadGpuAmbiguousWarning()
+          : "렌탈, 액세서리, 완본체 같은 다른 상품군만 확인되어 비교를 중단했습니다. 더 구체적인 제품명으로 다시 검색해 주세요.",
       offers: []
     };
   }
@@ -308,16 +338,21 @@ function resolveComparisonTarget(options: {
     const accessoryOnlyExactQuery = exactQueryModel
       ? hasOnlyUnsafeExactModelOffers(dedupedOffers, exactQueryModel)
       : false;
+    const broadGpuQuery = !exactQueryModel && broadQueryKind === "graphics-card";
 
     return {
       status: "ambiguous",
       query: options.query,
-      summary: accessoryOnlyExactQuery
-        ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다."
-        : "정확히 같은 모델만 비교할 수 있습니다.",
-      warning: accessoryOnlyExactQuery
-        ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
-        : createAmbiguousWarning(scopedOffers),
+      summary:
+        accessoryOnlyExactQuery && !broadGpuQuery
+          ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다."
+          : "정확히 같은 모델만 비교할 수 있습니다.",
+      warning:
+        accessoryOnlyExactQuery && !broadGpuQuery
+          ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다. 정확한 본체 상품명으로 다시 검색해 주세요."
+          : broadGpuQuery
+            ? createBroadGpuAmbiguousWarning()
+            : createAmbiguousWarning(scopedOffers),
       offers: scopedOffers
     };
   }
@@ -328,6 +363,16 @@ function resolveComparisonTarget(options: {
       query: options.query,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
+      offers: comparisonOffers
+    };
+  }
+
+  if (!exactQueryModel && broadQueryKind === "graphics-card") {
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: "정확히 같은 모델만 비교할 수 있습니다.",
+      warning: createBroadGpuAmbiguousWarning(),
       offers: comparisonOffers
     };
   }
@@ -701,7 +746,7 @@ function isBroadSearchExcludedOffer(
   }
 
   if (broadQueryKind === "graphics-card") {
-    return keywordFlags.isGpuAccessory || keywordFlags.isDesktopPc;
+    return keywordFlags.isGpuAccessory || keywordFlags.isDesktopPc || !isGraphicsDeviceLikeTitle(offer.title);
   }
 
   if (broadQueryKind === "laptop") {
@@ -756,6 +801,10 @@ function createAmbiguousWarning(offers: ProductOffer[]): string {
   }
 
   return "정확한 모델이 여러 개 섞여 있어 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.";
+}
+
+function createBroadGpuAmbiguousWarning(): string {
+  return "시리즈/계열 검색이라 동일상품 비교를 중단했습니다. RTX 5070, RTX 5070 Ti처럼 정확한 모델로 다시 검색해 주세요.";
 }
 
 function withSuggestedQueryHint(warning: string | undefined, suggestedQueries: string[] | undefined): string | undefined {
