@@ -1,38 +1,38 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-13T03:08:54.410Z
+- 생성 시각: 2026-03-13T03:29:46.841Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 87 pass / 6 soft_fail / 7 fail
-- 통과율: 87.0%
+- 전체 결과: 92 pass / 4 soft_fail / 4 fail
+- 통과율: 92.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 노트북 | 20 | 19 | 1 | 0 | 95.0% |
+| 노트북 | 20 | 20 | 0 | 0 | 100.0% |
 | 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
-| 키보드 | 20 | 16 | 2 | 2 | 80.0% |
-| 모니터 | 20 | 18 | 1 | 1 | 90.0% |
+| 키보드 | 20 | 19 | 1 | 0 | 95.0% |
+| 모니터 | 20 | 19 | 1 | 0 | 95.0% |
 | PC 부품 | 20 | 15 | 1 | 4 | 75.0% |
 
 ## 의도별 통과율
 
 | 의도 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| broad search | 20 | 18 | 0 | 2 | 90.0% |
-| exact-ish search | 20 | 18 | 1 | 1 | 90.0% |
+| broad search | 20 | 20 | 0 | 0 | 100.0% |
+| exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
 | exact compare | 20 | 18 | 1 | 1 | 90.0% |
 | broad ambiguous safety | 20 | 18 | 2 | 0 | 90.0% |
-| purchase/explain | 20 | 15 | 2 | 3 | 75.0% |
+| purchase/explain | 20 | 16 | 1 | 3 | 80.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 4
+- missing_suggested_queries: 3
 - expected_status: ok -> ambiguous: 2
 - expected_status: ambiguous -> ok: 1
 - must_contain_missing: 2TB: 1
-- must_contain_missing: 32: 1
+- must_contain_missing: 9800X3D: 1
 
 ## 다음 개선 우선순위
 
@@ -75,7 +75,7 @@
 ### laptop-exact-ish-search-2 · pass
 - prompt: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고 본체 위주로 보여줘
 - expected_behavior: 정확한 갤럭시북 모델 검색은 모델 코드와 본체 위주 결과를 유지해야 한다.
-- observed_summary: 검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데 액세서리 말고
+- observed_summary: 검색 결과가 없습니다: 삼성 쪽은 NT960XGQ-A51A 이 모델로 찾고 싶은데
 - notes: (none)
 
 ### laptop-exact-ish-search-3 · pass
@@ -105,7 +105,7 @@
 ### laptop-exact-compare-3 · pass
 - prompt: 15IRX9 하나 보고 있는데 같은 모델끼리 최저가 비교 좀 해줘
 - expected_behavior: Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다.
+- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-4 · pass
@@ -144,11 +144,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### laptop-purchase-explain-2 · soft_fail
+### laptop-purchase-explain-2 · pass
 - prompt: 4060 노트북 알아보는 중인데 너무 막연하면 멈추고, 다음에 뭘 물어보면 좋을지도 알려줘
 - expected_behavior: 4060 노트북 explain은 노트북 모델 코드 기준 추천을 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### laptop-purchase-explain-3 · pass
 - prompt: NT960XGQ-A51A 이건 지금 사도 괜찮은 가격대인지 한번 설명해줘
@@ -159,7 +159,7 @@
 ### laptop-purchase-explain-4 · pass
 - prompt: 15IRX9 보는데 지금 들어가도 될 가격인지 너무 길지 않게 봐줘
 - expected_behavior: 정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1649000원이고 최고가와의 차이는 1050000원입니다.
+- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
 - notes: (none)
 
 ### graphics-card-broad-search-1 · pass
@@ -207,7 +207,7 @@
 ### graphics-card-exact-ish-search-4 · pass
 - prompt: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만 한번 정리해줘
 - expected_behavior: 정확한 PowerColor 검색은 브랜드/모델명이 살아 있어야 한다.
-- observed_summary: 검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만
+- observed_summary: 검색 결과가 없습니다: PowerColor RX 9070 Hellhound
 - notes: (none)
 
 ### graphics-card-exact-compare-1 · pass
@@ -285,7 +285,7 @@
 ### keyboard-broad-search-1 · pass
 - prompt: 게이밍 키보드 찾는 중인데 사무용 느낌 강한 거나 오피스용은 빼고 뭐가 뜨는지 볼래
 - expected_behavior: 게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.
-- observed_summary: 검색 결과가 없습니다: 게이밍 키보드 찾는 중인데 뭐가 뜨는지
+- observed_summary: 게이밍 키보드 뭐가 뜨는지 기준 4개 모델, 8개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-broad-search-2 · pass
@@ -300,17 +300,17 @@
 - observed_summary: 텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다.
 - notes: (none)
 
-### keyboard-broad-search-4 · fail
+### keyboard-broad-search-4 · pass
 - prompt: 저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고 보여줘
 - expected_behavior: 사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.
-- observed_summary: 저소음 기준 8개 모델, 10개 판매처를 찾았습니다.
-- notes: must_contain_missing: 키보드
+- observed_summary: 저소음 사무용 키보드 기준 2개 모델, 4개 판매처를 찾았습니다.
+- notes: (none)
 
-### keyboard-exact-ish-search-1 · fail
+### keyboard-exact-ish-search-1 · pass
 - prompt: 키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만 검색해줘
 - expected_behavior: 정확한 Keychron 검색은 모델명이 유지되어야 한다.
-- observed_summary: 검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 로 뜨는 것들만
-- notes: must_contain_missing: Keychron
+- observed_summary: Keychron K2 Pro 기준 1개 모델, 4개 판매처를 찾았습니다.
+- notes: (none)
 
 ### keyboard-exact-ish-search-2 · pass
 - prompt: 로지텍 mx mini라고들 하던데 정확히는 MX Mechanical Mini잖아, 그걸로 찾아줘
@@ -318,11 +318,11 @@
 - observed_summary: 로지텍 mx mini라고들 하던데 는 MX Mechanical Mini잖아 그걸로 기준 1개 모델, 7개 판매처를 찾았습니다.
 - notes: (none)
 
-### keyboard-exact-ish-search-3 · soft_fail
+### keyboard-exact-ish-search-3 · pass
 - prompt: 앱코 K660 하나 보는데 키캡 같은 액세서리 말고 본체만 검색해줘
 - expected_behavior: 앱코 K660 검색은 모델명을 유지해야 한다.
-- observed_summary: 검색 결과가 없습니다: 앱코 K660 하나 키캡 같은 액세서리 말고
-- notes: must_not_contain: 키캡
+- observed_summary: ABKO K660 기준 1개 모델, 10개 판매처를 찾았습니다.
+- notes: (none)
 
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 이 모델 궁금해서 정확히 맞는 것만 한번 찾아봐줘
@@ -339,7 +339,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 13곳입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -351,7 +351,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75는 정확히 같은 제품 기준으로 얼마 차이 나는지 보고 싶어
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -405,7 +405,7 @@
 ### monitor-broad-search-1 · pass
 - prompt: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고 본체 위주로 정리해줘
 - expected_behavior: 27인치 4K 모니터 broad search는 모니터 본품 중심이어야 한다.
-- observed_summary: 검색 결과가 없습니다: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고
+- observed_summary: 27인치 4K 모니터 기준 8개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-broad-search-2 · pass
@@ -420,11 +420,11 @@
 - observed_summary: 울트라와이드 모니터 기준 9개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
-### monitor-broad-search-4 · fail
+### monitor-broad-search-4 · pass
 - prompt: 고주사율 게이밍 모니터 보는 중인데 TV나 다른 기기 말고 모니터만 보여줘
 - expected_behavior: 32인치 QHD 모니터 broad search는 과도하게 흩어지지 않아야 한다.
-- observed_summary: 검색 결과가 없습니다: 고주사율 게이밍 모니터 TV나 다른 기기 말고 모니터만
-- notes: must_contain_missing: 32
+- observed_summary: 고주사율 게이밍 모니터 기준 9개 모델, 10개 판매처를 찾았습니다.
+- notes: (none)
 
 ### monitor-exact-ish-search-1 · pass
 - prompt: LG 27GR93U 이 모델로 검색 좀 해줘, 비슷한 다른 모델 말고
@@ -441,7 +441,7 @@
 ### monitor-exact-ish-search-3 · pass
 - prompt: MSI 321URX 생각 중이라 그 모델 기준 결과만 보여줘
 - expected_behavior: 정확한 MSI 모니터 검색은 모델 코드가 살아 있어야 한다.
-- observed_summary: 검색 결과가 없습니다: MSI 321URX 생각 중이라 기준 결과만
+- observed_summary: MSI 321URX 기준 결과만 기준 1개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-exact-ish-search-4 · pass
@@ -459,7 +459,7 @@
 ### monitor-exact-compare-2 · pass
 - prompt: U2723QE 판매처별 차이 좀 비교해줘
 - expected_behavior: Dell U2723QE exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-3 · pass
@@ -519,7 +519,7 @@
 ### monitor-purchase-explain-4 · pass
 - prompt: U2723QE 이 모델은 지금 들어가도 될 가격인지 좀 봐줘
 - expected_behavior: Dell U2723QE explain은 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 429000원이고 최고가와의 차이는 983530원입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 872960원이고 최고가와의 차이는 539570원입니다.
 - notes: (none)
 
 ### pc-part-broad-search-1 · pass
@@ -531,7 +531,7 @@
 ### pc-part-broad-search-2 · pass
 - prompt: 850W 파워 찾는 중이라 파워 본체 위주로만 정리해줘
 - expected_behavior: 850W 파워 broad search는 파워 본품 중심이어야 한다.
-- observed_summary: 검색 결과가 없습니다: 850W 파워 찾는 중이라 파워 만
+- observed_summary: 850W 파워 파워 만 기준 7개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-3 · pass

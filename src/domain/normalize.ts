@@ -232,11 +232,15 @@ const TRAILING_SEARCH_PATTERNS = [
 const NATURAL_LANGUAGE_FILLER_PATTERNS = [
   /알아보는\s*중인데/giu,
   /알아보는\s*중이라/giu,
+  /찾는\s*중인데/giu,
+  /찾는\s*중이라/giu,
   /게임도\s*좀\s*할\s*거라/giu,
   /영상편집도\s*할\s*거라/giu,
   /보는\s*중인데/giu,
   /보는\s*중이라/giu,
   /생각\s*중인데/giu,
+  /생각\s*중이라/giu,
+  /하나\s*보는데/giu,
   /궁금해서/giu,
   /보긴\s*하는데/giu,
   /하고\s*싶은데/giu,
@@ -258,6 +262,7 @@ const NATURAL_LANGUAGE_FILLER_PATTERNS = [
   /애매하면/giu,
   /안\s*되면/giu,
   /너무\s*막연하면/giu,
+  /멈추고/giu,
   /너무\s*길지\s*않게/giu,
   /가격\s*차이만\s*깔끔하게/giu,
   /가격\s*차이만/giu,
@@ -271,6 +276,8 @@ const NATURAL_LANGUAGE_FILLER_PATTERNS = [
   /키보드\s*본체끼리(?:만)?/giu,
   /본체만/giu,
   /중에서도/giu,
+  /로\s*뜨는\s*것들만/giu,
+  /다음에\s*뭘\s*물어보면\s*좋을지(?:도)?/giu,
   /보고\s*싶어/giu,
   /\b이건\b/giu,
   /\b이거는\b/giu,
@@ -301,7 +308,9 @@ const NATURAL_LANGUAGE_BROAD_TRUNCATION_PATTERNS = [
 ] as const;
 
 const NATURAL_LANGUAGE_ALIAS_REPLACEMENTS = [
-  { pattern: /갤북(?=\d|\s|$)/giu, replacement: "갤럭시북", alias: "갤럭시북" }
+  { pattern: /갤북(?=\d|\s|$)/giu, replacement: "갤럭시북", alias: "갤럭시북" },
+  { pattern: /키크론/giu, replacement: "Keychron", alias: "Keychron" },
+  { pattern: /앱코/giu, replacement: "ABKO", alias: "ABKO" }
 ] as const;
 
 const NATURAL_LANGUAGE_ALIAS_HINTS = [
@@ -319,8 +328,11 @@ const EXCLUDED_TERM_DEFINITIONS = [
   "학생용",
   "업무용",
   "인체공학",
+  "게이밍",
   "마우스",
   "마우스패드",
+  "키캡",
+  "액세서리",
   "브라켓",
   "완본체",
   "조립PC",
@@ -344,7 +356,9 @@ const EXCLUDED_TERM_DEFINITIONS = [
   "커버",
   "거치대",
   "스탠드",
-  "외장"
+  "외장",
+  "TV",
+  "다른 기기"
 ] as const;
 
 type NotebookFamilyLinePattern = {
@@ -1347,10 +1361,32 @@ function extractExcludedTerms(value: string): string[] {
     return [];
   }
 
-  const normalized = normalizeQuery(value);
-  return EXCLUDED_TERM_DEFINITIONS
-    .filter((term) => normalized.includes(normalizeQuery(term)))
-    .sort((left, right) => value.indexOf(left) - value.indexOf(right));
+  const matches = Array.from(value.matchAll(new RegExp(EXCLUSION_CUE_PATTERN.source, "giu")));
+  const terms = new Map<string, number>();
+
+  for (const match of matches) {
+    const cueIndex = match.index ?? 0;
+    const beforeWindow = value.slice(Math.max(0, cueIndex - 20), cueIndex);
+    const afterWindow = value.slice(cueIndex + match[0].length, cueIndex + match[0].length + 20);
+    const normalizedBeforeWindow = normalizeQuery(beforeWindow);
+    const normalizedAfterWindow = normalizeQuery(afterWindow);
+
+    for (const term of EXCLUDED_TERM_DEFINITIONS) {
+      const normalizedTerm = normalizeQuery(term);
+      const termIndex = value.indexOf(term);
+
+      if (
+        normalizedBeforeWindow.includes(normalizedTerm) ||
+        normalizedAfterWindow.includes(normalizedTerm)
+      ) {
+        terms.set(term, termIndex >= 0 ? termIndex : cueIndex);
+      }
+    }
+  }
+
+  return Array.from(terms.entries())
+    .sort((left, right) => left[1] - right[1])
+    .map(([term]) => term);
 }
 
 function removeExcludedClauses(value: string, excludedTerms: string[]): string {
@@ -1359,8 +1395,8 @@ function removeExcludedClauses(value: string, excludedTerms: string[]): string {
   for (const term of excludedTerms) {
     const escaped = escapeRegExp(term);
     cleaned = cleaned
-      .replace(new RegExp(`${escaped}[^,.!?]{0,40}?(?:빼고|말고|제외(?:하고|해)?|섞지\\s*말고)`, "giu"), " ")
-      .replace(new RegExp(`${escaped}(?:나|이나)?`, "giu"), " ");
+      .replace(new RegExp(`${escaped}[^,.!?]{0,50}?(?:빼고|말고|제외(?:하고|해)?|섞지\\s*말고)`, "giu"), " ")
+      .replace(new RegExp(`(?:와|과|나|이나)?\\s*${escaped}[^,.!?]{0,50}?(?:빼고|말고|제외(?:하고|해)?|섞지\\s*말고)`, "giu"), " ");
   }
 
   return cleaned;
@@ -1392,7 +1428,11 @@ function cleanupNaturalLanguageArtifacts(value: string): string {
   return value
     .replace(/\b(나|이나|같은\s*건|같은건|느낌\s*나는\s*건|느낌나는건)\b/giu, " ")
     .replace(/\b(보고\s*싶은데|가능\s*여부|가능\s*여부부터|가능\s*여부먼저)\b/giu, " ")
+    .replace(/RGB\s*번쩍이는/giu, " ")
     .replace(/보는데/giu, " ")
+    .replace(/(키보드|모니터|노트북)\s*만/giu, "$1")
+    .replace(/(키보드|모니터|노트북)(?:\s+\1)+/giu, "$1")
+    .replace(/\b하나\b/giu, " ")
     .replace(/(?:^|\s)(이건|이거는|이거|이\s*모델은|이\s*모델)(?=\s|$)/gu, " ")
     .replace(/(전부|전체|라인)(를|은|는|이|가)/gu, "$1")
     .replace(/([A-Za-z0-9-]+)(은|는|이|가)(?=\s|$)/gu, "$1")

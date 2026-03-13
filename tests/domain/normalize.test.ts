@@ -215,6 +215,44 @@ describe("normalize helpers", () => {
     expect(condenseNaturalLanguageQuery("9800X3D 가격 차이만 정확히 보고 싶어").baseQuery).toBe("9800X3D");
   });
 
+  test("condenseNaturalLanguageQuery preserves exact-ish search queries and broad search exclusions", () => {
+    const keychron = condenseNaturalLanguageQuery(
+      "키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만 검색해줘"
+    );
+    const abko = condenseNaturalLanguageQuery(
+      "앱코 K660 하나 보는데 키캡 같은 액세서리 말고 본체만 검색해줘"
+    );
+    const officeKeyboard = condenseNaturalLanguageQuery(
+      "저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고 보여줘"
+    );
+    const gamingMonitor = condenseNaturalLanguageQuery(
+      "고주사율 게이밍 모니터 보는 중인데 TV나 다른 기기 말고 모니터만 보여줘"
+    );
+    const broadExplain = condenseNaturalLanguageQuery(
+      "4060 노트북 알아보는 중인데 너무 막연하면 멈추고, 다음에 뭘 물어보면 좋을지도 알려줘"
+    );
+
+    expect(keychron.baseQuery).toBe("Keychron K2 Pro");
+    expect(keychron.intentHints.exactIsh).toBe(true);
+    expect(keychron.categoryHints.keyboard).toBe(true);
+
+    expect(abko.baseQuery).toBe("ABKO K660");
+    expect(abko.excludedTerms).toContain("키캡");
+    expect(abko.intentHints.exactIsh).toBe(true);
+
+    expect(officeKeyboard.baseQuery).toBe("저소음 사무용 키보드");
+    expect(officeKeyboard.excludedTerms).toContain("게이밍");
+    expect(officeKeyboard.categoryHints.keyboard).toBe(true);
+
+    expect(gamingMonitor.baseQuery).toBe("고주사율 게이밍 모니터");
+    expect(gamingMonitor.excludedTerms).toContain("TV");
+    expect(gamingMonitor.categoryHints.monitor).toBe(true);
+
+    expect(broadExplain.baseQuery).toBe("4060 노트북");
+    expect(broadExplain.intentHints.broad).toBe(true);
+    expect(broadExplain.categoryHints.laptop).toBe(true);
+  });
+
   test("extractExactQueryModel preserves exact models inside longer prompts but keeps explicit family prompts broad", () => {
     expect(extractExactQueryModel("그램 16 중에서도 16Z90T GA5CK 이거 가격 비교만 딱 해줘")).toBe("16Z90T-GA5CK");
     expect(extractExactQueryModel("RTX 5070은 정확히 그 모델끼리만 가격 비교해줘")).toBe("RTX 5070");

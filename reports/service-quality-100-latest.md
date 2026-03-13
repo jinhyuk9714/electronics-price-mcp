@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T03:08:21.060Z
+- 생성 시각: 2026-03-13T03:29:46.712Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -101,7 +101,7 @@
 ### laptop-exact-compare-3 · pass
 - prompt: 15IRX9 가격 비교해 줘
 - expected_behavior: Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다.
+- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-4 · pass
@@ -155,7 +155,7 @@
 ### laptop-purchase-explain-4 · pass
 - prompt: 15IRX9 지금 사도 괜찮아?
 - expected_behavior: 정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1649000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1649000원이고 최고가와의 차이는 1050000원입니다.
+- observed_summary: 레노버 리전 5i 15IRX9 i7 4060 24GB, 1TB 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
 - notes: (none)
 
 ### graphics-card-broad-search-1 · pass
@@ -317,13 +317,13 @@
 ### keyboard-exact-ish-search-3 · pass
 - prompt: 앱코 K660 검색해 줘
 - expected_behavior: 앱코 K660 검색은 모델명을 유지해야 한다.
-- observed_summary: 앱코 K660 기준 1개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: ABKO K660 기준 1개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 5개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 6개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass
@@ -347,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -455,7 +455,7 @@
 ### monitor-exact-compare-2 · pass
 - prompt: Dell U2723QE 가격 비교해 줘
 - expected_behavior: Dell U2723QE exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-3 · pass
@@ -515,7 +515,7 @@
 ### monitor-purchase-explain-4 · pass
 - prompt: Dell U2723QE 지금 사도 돼?
 - expected_behavior: Dell U2723QE explain은 ok 상태를 목표로 한다.
-- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 429000원이고 최고가와의 차이는 983530원입니다.
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 872960원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 872960원이고 최고가와의 차이는 539570원입니다.
 - notes: (none)
 
 ### pc-part-broad-search-1 · pass

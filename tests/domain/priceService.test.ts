@@ -3217,6 +3217,190 @@ describe("PriceService", () => {
     expect(receivedQuery).toBe("갤럭시북4 프로 16");
   });
 
+  test("searchProducts preserves exact-ish keyboard queries while stripping narrative tails", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "Keychron K2 Pro 무선 기계식 키보드",
+                brand: "Keychron",
+                mallName: "몰A",
+                price: 149000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.searchProducts({
+      query: "키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만 검색해줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(receivedQuery).toBe("Keychron K2 Pro");
+    expect(result.summary).toContain("Keychron K2 Pro");
+    expect(result.groups[0]?.normalizedModel).toBe("KEYCHRON K2 PRO");
+  });
+
+  test("searchProducts removes accessory exclusions from exact-ish keyboard queries", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "앱코 K660 카일 광축 키보드",
+                brand: "앱코",
+                mallName: "몰A",
+                price: 39000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "앱코 K660 전용 PBT 키캡 세트",
+                brand: "앱코",
+                mallName: "몰B",
+                price: 18000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.searchProducts({
+      query: "앱코 K660 하나 보는데 키캡 같은 액세서리 말고 본체만 검색해줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(receivedQuery).toBe("ABKO K660");
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).not.toContain("키캡");
+  });
+
+  test("searchProducts preserves office-keyboard intent and removes gaming exclusions from broad prompts", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "저소음 사무용 무선 키보드",
+                brand: "Logitech",
+                mallName: "몰A",
+                price: 59000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "RGB 게이밍 기계식 키보드",
+                brand: "ABKO",
+                mallName: "몰B",
+                price: 79000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.searchProducts({
+      query: "저소음 사무용 키보드 찾는 중인데 RGB 번쩍이는 게이밍 느낌은 빼고 보여줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(receivedQuery).toBe("저소음 사무용 키보드");
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("키보드");
+    expect(result.offers[0]?.title).not.toContain("게이밍");
+  });
+
+  test("searchProducts preserves gaming monitor intent while excluding TVs and other devices", async () => {
+    let receivedQuery = "";
+
+    const service = new PriceService({
+      provider: {
+        async searchProducts(input) {
+          receivedQuery = input.query;
+          return {
+            query: input.query,
+            offers: [
+              {
+                source: "naver-shopping",
+                sourceProductId: "100",
+                title: "32인치 240Hz 고주사율 게이밍 모니터",
+                brand: "MSI",
+                mallName: "몰A",
+                price: 329000,
+                link: "https://example.com/a",
+                image: "https://example.com/a.jpg"
+              },
+              {
+                source: "naver-shopping",
+                sourceProductId: "101",
+                title: "55인치 스마트 TV 게이밍 모드 지원",
+                brand: "Samsung",
+                mallName: "몰B",
+                price: 649000,
+                link: "https://example.com/b",
+                image: "https://example.com/b.jpg"
+              }
+            ]
+          };
+        }
+      }
+    });
+
+    const result = await service.searchProducts({
+      query: "고주사율 게이밍 모니터 보는 중인데 TV나 다른 기기 말고 모니터만 보여줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(receivedQuery).toBe("고주사율 게이밍 모니터");
+    expect(result.offers).toHaveLength(1);
+    expect(result.groups[0]?.title).toContain("32");
+    expect(result.offers[0]?.title).toContain("모니터");
+  });
+
   test("compareProductPrices condenses broad Galaxy Book prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
