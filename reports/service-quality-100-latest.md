@@ -1,18 +1,18 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T00:35:15.786Z
+- 생성 시각: 2026-03-13T00:44:23.495Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 92 pass / 8 soft_fail / 0 fail
-- 통과율: 92.0%
+- 전체 결과: 99 pass / 1 soft_fail / 0 fail
+- 통과율: 99.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 노트북 | 20 | 19 | 1 | 0 | 95.0% |
+| 노트북 | 20 | 20 | 0 | 0 | 100.0% |
 | 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
-| 키보드 | 20 | 14 | 6 | 0 | 70.0% |
+| 키보드 | 20 | 20 | 0 | 0 | 100.0% |
 | 모니터 | 20 | 20 | 0 | 0 | 100.0% |
 | PC 부품 | 20 | 20 | 0 | 0 | 100.0% |
 
@@ -20,33 +20,29 @@
 
 | 의도 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| broad search | 20 | 16 | 4 | 0 | 80.0% |
+| broad search | 20 | 20 | 0 | 0 | 100.0% |
 | exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
 | exact compare | 20 | 20 | 0 | 0 | 100.0% |
-| broad ambiguous safety | 20 | 17 | 3 | 0 | 85.0% |
-| purchase/explain | 20 | 19 | 1 | 0 | 95.0% |
+| broad ambiguous safety | 20 | 19 | 1 | 0 | 95.0% |
+| purchase/explain | 20 | 20 | 0 | 0 | 100.0% |
 
 ## 실패 패턴 상위 5개
 
-- must_not_contain: 사무용: 5
-- must_not_contain: 오피스: 3
 - missing_suggested_queries: 1
-- must_not_contain: 게이밍: 1
-- must_not_contain: 마우스: 1
 
 ## 다음 개선 우선순위
 
-- 검색 의도 대비 노이즈 제거 규칙을 더 촘촘하게 다듬기
 - ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기
 - 카테고리별 broad 검색 필터를 다시 점검하기
+- exact-ish 검색에서 모델 코드 인식률을 높이기
 
 ## 문장별 결과
 
-### laptop-broad-search-1 · soft_fail
+### laptop-broad-search-1 · pass
 - prompt: 게이밍 노트북 검색해 줘
 - expected_behavior: 게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.
-- observed_summary: 게이밍 노트북 기준 7개 모델, 8개 판매처를 찾았습니다.
-- notes: must_not_contain: 사무용; must_not_contain: 인강용
+- observed_summary: 게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다.
+- notes: (none)
 
 ### laptop-broad-search-2 · pass
 - prompt: 4060 노트북 찾아줘
@@ -282,29 +278,29 @@
 - observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
-### keyboard-broad-search-1 · soft_fail
+### keyboard-broad-search-1 · pass
 - prompt: 게이밍 키보드 찾아줘
 - expected_behavior: 게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.
-- observed_summary: 게이밍 키보드 기준 8개 모델, 10개 판매처를 찾았습니다.
-- notes: must_not_contain: 사무용; must_not_contain: 오피스
+- observed_summary: 게이밍 키보드 기준 4개 모델, 4개 판매처를 찾았습니다.
+- notes: (none)
 
-### keyboard-broad-search-2 · soft_fail
+### keyboard-broad-search-2 · pass
 - prompt: 무선 기계식 키보드 검색해 줘
 - expected_behavior: 무선 기계식 키보드 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: 무선 기계식 키보드 기준 10개 모델, 10개 판매처를 찾았습니다.
-- notes: must_not_contain: 사무용
+- observed_summary: 무선 기계식 키보드 기준 7개 모델, 7개 판매처를 찾았습니다.
+- notes: (none)
 
 ### keyboard-broad-search-3 · pass
 - prompt: 텐키리스 게이밍 키보드 찾아줘
 - expected_behavior: TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.
-- observed_summary: 텐키리스 게이밍 키보드 기준 9개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다.
 - notes: (none)
 
-### keyboard-broad-search-4 · soft_fail
+### keyboard-broad-search-4 · pass
 - prompt: 저소음 사무용 키보드 검색해 줘
 - expected_behavior: 사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.
-- observed_summary: 저소음 사무용 키보드 기준 5개 모델, 10개 판매처를 찾았습니다.
-- notes: must_not_contain: 게이밍
+- observed_summary: 저소음 사무용 키보드 기준 1개 모델, 4개 판매처를 찾았습니다.
+- notes: (none)
 
 ### keyboard-exact-ish-search-1 · pass
 - prompt: Keychron K2 Pro 검색해 줘
@@ -351,14 +347,14 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
 - notes: (none)
 
-### keyboard-broad-ambiguous-safety-1 · soft_fail
+### keyboard-broad-ambiguous-safety-1 · pass
 - prompt: 게이밍 키보드 가격 비교해 줘
 - expected_behavior: 게이밍 키보드 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: must_not_contain: 오피스; must_not_contain: 사무용
+- notes: (none)
 
 ### keyboard-broad-ambiguous-safety-2 · pass
 - prompt: 무선 키보드 가격 비교해 줘
@@ -372,17 +368,17 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### keyboard-broad-ambiguous-safety-4 · soft_fail
+### keyboard-broad-ambiguous-safety-4 · pass
 - prompt: 로지텍 기계식 키보드 가격 비교해 줘
 - expected_behavior: 브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: must_not_contain: 마우스
+- notes: (none)
 
-### keyboard-purchase-explain-1 · soft_fail
+### keyboard-purchase-explain-1 · pass
 - prompt: 게이밍 키보드 지금 사도 돼?
 - expected_behavior: 게이밍 키보드 explain은 동일상품이 아니면 멈춰야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: must_not_contain: 오피스; must_not_contain: 사무용
+- notes: (none)
 
 ### keyboard-purchase-explain-2 · pass
 - prompt: Keychron 키보드 지금 사도 괜찮아?

@@ -970,6 +970,155 @@ describe("PriceService", () => {
     expect(new Set(tufIds).size).toBe(2);
   });
 
+  test("searchProducts removes office noise from broad gaming keyboard searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "게이밍 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "DrunkDeer A75 PRO 게이밍 키보드 래피드트리거",
+            brand: "DrunkDeer",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "로지텍 사무용 오피스 무선 키보드 저소음",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 59000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "인체공학 오피스 키보드 손목보호",
+            brand: null,
+            mallName: "몰C",
+            price: 39000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "게이밍 키보드 찾아줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("게이밍");
+    expect(result.offers.some((offer) => offer.title.includes("사무용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("오피스"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("인체공학"))).toBe(false);
+  });
+
+  test("searchProducts removes gaming noise from broad office keyboard searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "저소음 사무용 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 저소음 사무용 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰A",
+            price: 69000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "RGB 게이밍 기계식 키보드 104키",
+            brand: null,
+            mallName: "몰B",
+            price: 89000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "저소음 사무용 키보드 검색해 줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("사무용");
+    expect(result.offers.some((offer) => offer.title.includes("게이밍"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("RGB"))).toBe(false);
+  });
+
+  test("searchProducts removes office and study noise from broad gaming laptop searches", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "게이밍 노트북",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "HP 빅터스 16 게이밍 노트북 RTX 4060",
+            brand: "HP",
+            mallName: "몰A",
+            price: 1599000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG 그램 16 사무용 노트북 가벼운 업무용",
+            brand: "LG",
+            mallName: "몰B",
+            price: 1499000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "삼성 갤럭시북 인강용 학생용 노트북",
+            brand: "Samsung",
+            mallName: "몰C",
+            price: 1199000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "게이밍 노트북 검색해 줘",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("게이밍");
+    expect(result.offers.some((offer) => offer.title.includes("사무용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("업무용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("인강용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("학생용"))).toBe(false);
+  });
+
   test("searchProducts keeps ROG sub-lines and LOQ exact codes separate", async () => {
     const service = new PriceService({
       provider: createProvider({
@@ -1463,6 +1612,87 @@ describe("PriceService", () => {
 
     expect(result.status).toBe("ambiguous");
     expect(result.suggestedQueries).toBeUndefined();
+  });
+
+  test("compareProductPrices removes office noise from broad gaming keyboard comparisons", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "게이밍 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "DrunkDeer A75 PRO 게이밍 키보드 래피드트리거",
+            brand: "DrunkDeer",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "로지텍 사무용 오피스 무선 키보드 저소음",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 59000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "게이밍 키보드 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("게이밍");
+    expect(result.offers.some((offer) => offer.title.includes("사무용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("오피스"))).toBe(false);
+  });
+
+  test("explainPurchaseOptions removes office noise from broad gaming keyboard explanations", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "게이밍 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "DrunkDeer A75 PRO 게이밍 키보드 래피드트리거",
+            brand: "DrunkDeer",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "로지텍 사무용 오피스 무선 키보드 저소음",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 59000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "게이밍 키보드 지금 사도 돼?",
+      focus: "lowest_price"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]?.title).toContain("게이밍");
+    expect(result.offers.some((offer) => offer.title.includes("사무용"))).toBe(false);
+    expect(result.offers.some((offer) => offer.title.includes("오피스"))).toBe(false);
   });
 
   test("searchProducts normalizes notebook model codes and prefers the highest-confidence group title", async () => {

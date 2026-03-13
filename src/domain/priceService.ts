@@ -9,6 +9,7 @@ import {
   isGraphicsDeviceLikeTitle,
   isAmbiguousComparison,
   isBroadExploratoryQuery,
+  isQueryIntentMismatch,
   normalizeBrand,
   normalizeQuery,
   resolvePrimaryModelForQuery,
@@ -317,6 +318,7 @@ function resolveComparisonTarget(options: {
 
   const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
   const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(options.query);
+  const supplementalQueryKind = exactQueryModel ? "other" : detectSupplementalQueryKind(options.query);
   const scopedOffers = exactQueryModel ? dedupedOffers : filterBroadSearchOffers(options.query, dedupedOffers);
 
   if (!exactQueryModel && scopedOffers.length === 0) {
@@ -362,6 +364,16 @@ function resolveComparisonTarget(options: {
   }
 
   if (!exactQueryModel && detectBroadQueryKind(options.query) === "laptop") {
+    return {
+      status: "ambiguous",
+      query: options.query,
+      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      warning: createAmbiguousWarning(comparisonOffers),
+      offers: comparisonOffers
+    };
+  }
+
+  if (!exactQueryModel && supplementalQueryKind === "keyboard") {
     return {
       status: "ambiguous",
       query: options.query,
@@ -974,6 +986,10 @@ function isBroadSearchExcludedOffer(
   offer: ProductOffer,
   broadQueryKind: "graphics-card" | "laptop" | "other"
 ): boolean {
+  if (isQueryIntentMismatch(query, offer.title)) {
+    return true;
+  }
+
   if (isComparisonExcludedOffer(query, offer)) {
     return true;
   }

@@ -189,6 +189,21 @@ const NOTEBOOK_ACCESSORY_KEYWORDS = [
 
 const GPU_ACCESSORY_KEYWORDS = ["브라켓", "지지대", "안티 새깅", "라이저", "수직 거치", "쿨러"] as const;
 
+const KEYBOARD_MOUSE_KEYWORDS = ["마우스", "MOUSE", "마우스패드", "MOUSEPAD"] as const;
+const KEYBOARD_OFFICE_TITLE_KEYWORDS = ["사무용", "오피스", "OFFICE", "저소음 사무용"] as const;
+const KEYBOARD_ERGONOMIC_KEYWORDS = ["인체공학", "ERGONOMIC"] as const;
+const KEYBOARD_GAMING_TITLE_KEYWORDS = ["게이밍", "GAMING", "RGB", "RAPIDTRIGGER", "RAPID TRIGGER"] as const;
+const KEYBOARD_MEMBRANE_KEYWORDS = ["멤브레인", "MEMBRANE"] as const;
+const KEYBOARD_FULLSIZE_KEYWORDS = ["풀배열", "104키", "108키", "110키", "NUMPAD", "숫자키", "키패드"] as const;
+const KEYBOARD_OFFICE_QUERY_CUES = ["사무용", "오피스", "OFFICE", "업무용"] as const;
+const KEYBOARD_TENKEYLESS_QUERY_CUES = ["텐키리스", "TKL"] as const;
+const KEYBOARD_MECHANICAL_QUERY_CUES = ["기계식", "MECHANICAL"] as const;
+const KEYBOARD_WIRELESS_QUERY_CUES = ["무선", "WIRELESS"] as const;
+const KEYBOARD_GAMING_QUERY_CUES = ["게이밍", "GAMING"] as const;
+
+const LAPTOP_GAMING_QUERY_CUES = ["게이밍", "GAMING"] as const;
+const LAPTOP_OFFICE_TITLE_KEYWORDS = ["사무용", "인강용", "학생용", "업무용"] as const;
+
 const COMPLETE_PC_KEYWORDS = [
   "조립PC",
   "게이밍PC",
@@ -215,6 +230,23 @@ type NotebookFamilyLinePattern = {
   patterns: readonly RegExp[];
   brands?: readonly string[];
 };
+
+export type BroadQueryIntentProfile =
+  | {
+      category: "keyboard";
+      gaming: boolean;
+      office: boolean;
+      mechanical: boolean;
+      wireless: boolean;
+      tenkeyless: boolean;
+    }
+  | {
+      category: "laptop";
+      gaming: boolean;
+    }
+  | {
+      category: "other";
+    };
 
 const NOTEBOOK_FAMILY_LINE_PATTERNS: readonly NotebookFamilyLinePattern[] = [
   {
@@ -503,6 +535,82 @@ export function classifyOfferTitle(value: string): {
     isGpuAccessory: GPU_ACCESSORY_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword)),
     isNotebookAccessory: NOTEBOOK_ACCESSORY_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))
   };
+}
+
+export function getBroadQueryIntentProfile(value: string): BroadQueryIntentProfile {
+  const simplifiedQuery = simplifyIntentQuery(value);
+  const normalizedQuery = normalizeQuery(simplifiedQuery);
+
+  if (detectSupplementalQueryKind(simplifiedQuery) === "keyboard") {
+    return {
+      category: "keyboard",
+      gaming: KEYBOARD_GAMING_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)),
+      office: KEYBOARD_OFFICE_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)),
+      mechanical: KEYBOARD_MECHANICAL_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)),
+      wireless: KEYBOARD_WIRELESS_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)),
+      tenkeyless: KEYBOARD_TENKEYLESS_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))
+    };
+  }
+
+  if (detectBroadQueryKind(simplifiedQuery) === "laptop") {
+    return {
+      category: "laptop",
+      gaming: LAPTOP_GAMING_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))
+    };
+  }
+
+  return {
+    category: "other"
+  };
+}
+
+export function isQueryIntentMismatch(query: string, title: string): boolean {
+  const profile = getBroadQueryIntentProfile(query);
+  const normalizedTitle = normalizeQuery(title);
+
+  if (profile.category === "keyboard") {
+    if (KEYBOARD_MOUSE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+      return true;
+    }
+
+    if (profile.gaming) {
+      if (KEYBOARD_OFFICE_TITLE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+        return true;
+      }
+
+      if (KEYBOARD_ERGONOMIC_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+        return true;
+      }
+    }
+
+    if (profile.office) {
+      if (KEYBOARD_GAMING_TITLE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+        return true;
+      }
+    }
+
+    if (profile.mechanical) {
+      if (KEYBOARD_MEMBRANE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+        return true;
+      }
+
+      if (KEYBOARD_OFFICE_TITLE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+        return true;
+      }
+    }
+
+    if (profile.tenkeyless && KEYBOARD_FULLSIZE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  if (profile.category === "laptop" && profile.gaming) {
+    return LAPTOP_OFFICE_TITLE_KEYWORDS.some((keyword) => normalizedTitle.includes(keyword));
+  }
+
+  return false;
 }
 
 export function isGraphicsDeviceLikeTitle(value: string): boolean {

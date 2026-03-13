@@ -1,21 +1,21 @@
 {
-  "generatedAt": "2026-03-13T00:35:15.786Z",
+  "generatedAt": "2026-03-13T00:44:23.495Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
     "total": 100,
-    "pass": 92,
-    "softFail": 8,
+    "pass": 99,
+    "softFail": 1,
     "fail": 0,
-    "passRate": 0.92,
+    "passRate": 0.99,
     "byCategory": [
       {
         "key": "노트북",
         "total": 20,
-        "pass": 19,
-        "softFail": 1,
+        "pass": 20,
+        "softFail": 0,
         "fail": 0,
-        "passRate": 0.95
+        "passRate": 1
       },
       {
         "key": "그래픽카드",
@@ -28,10 +28,10 @@
       {
         "key": "키보드",
         "total": 20,
-        "pass": 14,
-        "softFail": 6,
+        "pass": 20,
+        "softFail": 0,
         "fail": 0,
-        "passRate": 0.7
+        "passRate": 1
       },
       {
         "key": "모니터",
@@ -54,10 +54,10 @@
       {
         "key": "broad search",
         "total": 20,
-        "pass": 16,
-        "softFail": 4,
+        "pass": 20,
+        "softFail": 0,
         "fail": 0,
-        "passRate": 0.8
+        "passRate": 1
       },
       {
         "key": "exact-ish search",
@@ -78,50 +78,30 @@
       {
         "key": "broad ambiguous safety",
         "total": 20,
-        "pass": 17,
-        "softFail": 3,
-        "fail": 0,
-        "passRate": 0.85
-      },
-      {
-        "key": "purchase/explain",
-        "total": 20,
         "pass": 19,
         "softFail": 1,
         "fail": 0,
         "passRate": 0.95
+      },
+      {
+        "key": "purchase/explain",
+        "total": 20,
+        "pass": 20,
+        "softFail": 0,
+        "fail": 0,
+        "passRate": 1
       }
     ],
     "failurePatterns": [
       {
-        "pattern": "must_not_contain: 사무용",
-        "count": 5
-      },
-      {
-        "pattern": "must_not_contain: 오피스",
-        "count": 3
-      },
-      {
         "pattern": "missing_suggested_queries",
-        "count": 1
-      },
-      {
-        "pattern": "must_not_contain: 게이밍",
-        "count": 1
-      },
-      {
-        "pattern": "must_not_contain: 마우스",
-        "count": 1
-      },
-      {
-        "pattern": "must_not_contain: 인강용",
         "count": 1
       }
     ],
     "nextImprovementPriorities": [
-      "검색 의도 대비 노이즈 제거 규칙을 더 촘촘하게 다듬기",
       "ambiguous 응답에서 suggestedQueries 생성 커버리지를 늘리기",
-      "카테고리별 broad 검색 필터를 다시 점검하기"
+      "카테고리별 broad 검색 필터를 다시 점검하기",
+      "exact-ish 검색에서 모델 코드 인식률을 높이기"
     ]
   },
   "results": [
@@ -131,12 +111,12 @@
       "category": "laptop",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observedSummary": "게이밍 노트북 기준 7개 모델, 8개 판매처를 찾았습니다.",
-      "notes": "must_not_contain: 사무용; must_not_contain: 인강용",
+      "observedSummary": "게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "게이밍 노트북 broad search에서 비게이밍/렌탈 노이즈가 크게 섞이지 않아야 한다.",
-      "observed_summary": "게이밍 노트북 기준 7개 모델, 8개 판매처를 찾았습니다."
+      "observed_summary": "게이밍 노트북 기준 3개 모델, 3개 판매처를 찾았습니다."
     },
     {
       "id": "laptop-broad-search-2",
@@ -651,12 +631,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.",
-      "observedSummary": "게이밍 키보드 기준 8개 모델, 10개 판매처를 찾았습니다.",
-      "notes": "must_not_contain: 사무용; must_not_contain: 오피스",
+      "observedSummary": "게이밍 키보드 기준 4개 모델, 4개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 broad search에 오피스 키보드가 과하게 섞이지 않아야 한다.",
-      "observed_summary": "게이밍 키보드 기준 8개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "게이밍 키보드 기준 4개 모델, 4개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-broad-search-2",
@@ -664,12 +644,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "무선 기계식 키보드 검색은 키보드 본체 중심이어야 한다.",
-      "observedSummary": "무선 기계식 키보드 기준 10개 모델, 10개 판매처를 찾았습니다.",
-      "notes": "must_not_contain: 사무용",
+      "observedSummary": "무선 기계식 키보드 기준 7개 모델, 7개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "무선 기계식 키보드 검색은 키보드 본체 중심이어야 한다.",
-      "observed_summary": "무선 기계식 키보드 기준 10개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "무선 기계식 키보드 기준 7개 모델, 7개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-broad-search-3",
@@ -679,10 +659,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observedSummary": "텐키리스 게이밍 키보드 기준 9개 모델, 10개 판매처를 찾았습니다.",
+      "observedSummary": "텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.",
-      "observed_summary": "텐키리스 게이밍 키보드 기준 9개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "텐키리스 게이밍 키보드 기준 5개 모델, 5개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-broad-search-4",
@@ -690,12 +670,12 @@
       "category": "keyboard",
       "intent": "broad-search",
       "executor": "search-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.",
-      "observedSummary": "저소음 사무용 키보드 기준 5개 모델, 10개 판매처를 찾았습니다.",
-      "notes": "must_not_contain: 게이밍",
+      "observedSummary": "저소음 사무용 키보드 기준 1개 모델, 4개 판매처를 찾았습니다.",
+      "notes": "",
       "expected_behavior": "사무용 키보드 검색은 게이밍 키워드가 과하게 섞이지 않아야 한다.",
-      "observed_summary": "저소음 사무용 키보드 기준 5개 모델, 10개 판매처를 찾았습니다."
+      "observed_summary": "저소음 사무용 키보드 기준 1개 모델, 4개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-exact-ish-search-1",
@@ -796,10 +776,10 @@
       "executor": "compare-api",
       "status": "pass",
       "expectedBehavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observedSummary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.",
+      "observedSummary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.",
       "notes": "",
       "expected_behavior": "DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.",
-      "observed_summary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다."
+      "observed_summary": "드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다."
     },
     {
       "id": "keyboard-broad-ambiguous-safety-1",
@@ -807,10 +787,10 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "must_not_contain: 오피스; must_not_contain: 사무용",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -846,10 +826,10 @@
       "category": "keyboard",
       "intent": "broad-ambiguous-safety",
       "executor": "compare-api",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "must_not_contain: 마우스",
+      "notes": "",
       "expected_behavior": "브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
@@ -859,10 +839,10 @@
       "category": "keyboard",
       "intent": "purchase-explain",
       "executor": "explain-mcp",
-      "status": "soft_fail",
+      "status": "pass",
       "expectedBehavior": "게이밍 키보드 explain은 동일상품이 아니면 멈춰야 한다.",
       "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
-      "notes": "must_not_contain: 오피스; must_not_contain: 사무용",
+      "notes": "",
       "expected_behavior": "게이밍 키보드 explain은 동일상품이 아니면 멈춰야 한다.",
       "observed_summary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요."
     },
