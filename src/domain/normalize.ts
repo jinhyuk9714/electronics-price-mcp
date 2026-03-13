@@ -261,9 +261,17 @@ const NATURAL_LANGUAGE_FILLER_PATTERNS = [
   /너무\s*길지\s*않게/giu,
   /가격\s*차이만\s*깔끔하게/giu,
   /가격\s*차이만/giu,
+  /판매처별로/giu,
   /판매처별로\s*얼마\s*차이\s*나는지/giu,
+  /얼마\s*차이\s*나는지/giu,
   /정확히\s*같은\s*(?:모델|제품)(?:끼리|기준(?:으로)?)?(?:만)?/giu,
   /같은\s*(?:모델|제품)(?:끼리|기준(?:으로)?)?(?:만)?/giu,
+  /그\s*모델(?:끼리|기준(?:으로)?)?(?:만)?/giu,
+  /본체끼리(?:만)?/giu,
+  /키보드\s*본체끼리(?:만)?/giu,
+  /본체만/giu,
+  /중에서도/giu,
+  /보고\s*싶어/giu,
   /\b이건\b/giu,
   /\b이거는\b/giu,
   /\b이거\b/giu,
@@ -809,8 +817,14 @@ export function condenseNaturalLanguageQuery(value: string): NaturalLanguageQuer
   baseQuery = stripTrailingIntentPhrases(baseQuery);
   baseQuery = normalizeNaturalLanguageShapes(baseQuery);
   baseQuery = cleanupNaturalLanguageArtifacts(baseQuery);
-
-  const finalBaseQuery = baseQuery || stripTrailingIntentPhrases(aliasResult.text) || originalQuery;
+  let finalBaseQuery = baseQuery || stripTrailingIntentPhrases(aliasResult.text) || originalQuery;
+  const preliminaryExactModel =
+    extractNotebookModelCode(finalBaseQuery) ||
+    extractGpuQueryModel(finalBaseQuery)?.model ||
+    extractNonLaptopExactModel(finalBaseQuery);
+  if (preliminaryExactModel) {
+    finalBaseQuery = trimTrailingGenericProductNouns(finalBaseQuery);
+  }
   const categoryHints = {
     laptop: hasAnyCue(finalBaseQuery, NOTEBOOK_QUERY_CUES),
     graphicsCard: hasAnyCue(finalBaseQuery, GRAPHICS_QUERY_CUES),
@@ -1109,11 +1123,11 @@ function extractNonLaptopExactModel(value: string): string | null {
     return "KEYCHRON K2 PRO";
   }
 
-  if ((normalized.includes("LOGITECH") || normalized.includes("로지텍")) && /\bMX\s+MECHANICAL\s+MINI\b/.test(normalized)) {
+  if (/\bMX\s+MECHANICAL\s+MINI\b/.test(normalized)) {
     return "LOGITECH MX MECHANICAL MINI";
   }
 
-  if ((normalized.includes("LOGITECH") || normalized.includes("로지텍")) && /\bMX\s+MECHANICAL\b/.test(normalized)) {
+  if (/\bMX\s+MECHANICAL\b/.test(normalized)) {
     return "LOGITECH MX MECHANICAL";
   }
 
@@ -1145,7 +1159,7 @@ function extractNonLaptopExactModel(value: string): string | null {
     return "ASUS TUF B650M-PLUS";
   }
 
-  if (/\bRYZEN\s*7\s*9800X3D\b/.test(normalized)) {
+  if (/\b(?:RYZEN\s*7\s*)?9800X3D\b/.test(normalized)) {
     return "RYZEN 7 9800X3D";
   }
 
@@ -1345,6 +1359,7 @@ function normalizeNaturalLanguageShapes(value: string): string {
     .replace(/갤럭시북\s*4/giu, "갤럭시북4")
     .replace(/\b(RTX\s*\d{4}(?:\s*(?:TI|SUPER))?|RX\s*\d{4}(?:\s*(?:XT|GRE))?|\d{4})\s*들어간\s*노트북/giu, "$1 노트북")
     .replace(/\b(\d{4})\s*급\s*그래픽카드/giu, "$1 그래픽카드")
+    .replace(/\b(RTX\s*\d{4}|RX\s*\d{4})\s*(?:XT|TI|SUPER|GRE)\s*말고/giu, "$1 ")
     .replace(/전체를/giu, "전체")
     .replace(/라인으로/giu, "라인")
     .replace(/\s+/g, " ")
@@ -1358,11 +1373,17 @@ function cleanupNaturalLanguageArtifacts(value: string): string {
     .replace(/보는데/giu, " ")
     .replace(/(?:^|\s)(이건|이거는|이거|이\s*모델은|이\s*모델)(?=\s|$)/gu, " ")
     .replace(/(전부|전체|라인)(를|은|는|이|가)/gu, "$1")
-    .replace(/([A-Za-z0-9-]+)(은|는|이|가)\b/gu, "$1")
-    .replace(/([가-힣A-Za-z0-9-]+)(을|를)/gu, "$1")
+    .replace(/([A-Za-z0-9-]+)(은|는|이|가)(?=\s|$)/gu, "$1")
+    .replace(/([가-힣A-Za-z0-9-]+)(을|를)(?=\s|$)/gu, "$1")
     .replace(/(?:^|\s)(알아|봐)(?=\s|$)/gu, " ")
     .replace(/\s*,\s*/g, " ")
     .replace(/\s+/g, " ")
+    .trim();
+}
+
+function trimTrailingGenericProductNouns(value: string): string {
+  return value
+    .replace(/\s*(키보드|모니터|그래픽카드|그래픽 카드|메인보드|파워|메모리|SSD|CPU|프로세서)\s*$/iu, "")
     .trim();
 }
 

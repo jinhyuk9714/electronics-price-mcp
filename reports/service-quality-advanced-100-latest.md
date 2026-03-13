@@ -1,38 +1,38 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-13T02:25:09.848Z
+- 생성 시각: 2026-03-13T02:56:38.594Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 67 pass / 13 soft_fail / 20 fail
-- 통과율: 67.0%
+- 전체 결과: 81 pass / 12 soft_fail / 7 fail
+- 통과율: 81.0%
 
 ## 카테고리별 통과율
 
 | 카테고리 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| 노트북 | 20 | 16 | 3 | 1 | 80.0% |
-| 그래픽카드 | 20 | 16 | 1 | 3 | 80.0% |
-| 키보드 | 20 | 11 | 3 | 6 | 55.0% |
-| 모니터 | 20 | 12 | 3 | 5 | 60.0% |
-| PC 부품 | 20 | 12 | 3 | 5 | 60.0% |
+| 노트북 | 20 | 17 | 3 | 0 | 85.0% |
+| 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
+| 키보드 | 20 | 15 | 3 | 2 | 75.0% |
+| 모니터 | 20 | 17 | 2 | 1 | 85.0% |
+| PC 부품 | 20 | 13 | 3 | 4 | 65.0% |
 
 ## 의도별 통과율
 
 | 의도 | total | pass | soft_fail | fail | pass_rate |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| broad search | 20 | 17 | 0 | 3 | 85.0% |
+| broad search | 20 | 18 | 0 | 2 | 90.0% |
 | exact-ish search | 20 | 18 | 1 | 1 | 90.0% |
-| exact compare | 20 | 9 | 1 | 10 | 45.0% |
+| exact compare | 20 | 18 | 1 | 1 | 90.0% |
 | broad ambiguous safety | 20 | 14 | 6 | 0 | 70.0% |
-| purchase/explain | 20 | 9 | 5 | 6 | 45.0% |
+| purchase/explain | 20 | 13 | 4 | 3 | 65.0% |
 
 ## 실패 패턴 상위 5개
 
-- expected_status: ok -> ambiguous: 12
 - missing_suggested_queries: 10
-- error: Unexpected token 'I', "Internal S"... is not valid JSON: 2
-- expected_status: ok -> not_found: 2
+- expected_status: ok -> ambiguous: 2
 - expected_status: ambiguous -> ok: 1
+- must_contain_missing: 2TB: 1
+- must_contain_missing: 32: 1
 
 ## 다음 개선 우선순위
 
@@ -90,16 +90,16 @@
 - observed_summary: 빅터스 쪽에서 15-FB2061AX 이걸 보는 거라 모델 맞는 것들만 기준 1개 모델, 6개 판매처를 찾았습니다.
 - notes: (none)
 
-### laptop-exact-compare-1 · fail
+### laptop-exact-compare-1 · pass
 - prompt: 그램 16 중에서도 16Z90T GA5CK 이거 가격 비교만 딱 해줘
 - expected_behavior: 정확한 그램 모델 비교는 ok 상태여야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: 16Z90T; must_contain_missing: GA5CK
+- observed_summary: 16Z90T-GA5CK ultra5 / 16GB / 256GB / Win 11 홈 노트북_D 기준 최저가 3000000원, 최고가 3000000원, 판매처 1곳입니다.
+- notes: (none)
 
 ### laptop-exact-compare-2 · pass
 - prompt: NT960XGQ-A51A 이 모델은 지금 판매처별로 얼마 차이 나는지 비교해줘
 - expected_behavior: 정확한 갤럭시북 모델 비교는 ok 상태여야 한다.
-- observed_summary: 삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 6곳입니다.
+- observed_summary: 삼성전자 갤럭시북4 프로 NT960XGQ-A51A 16GB, 2TB 기준 최저가 2498900원, 최고가 4750100원, 판매처 7곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-3 · pass
@@ -111,7 +111,7 @@
 ### laptop-exact-compare-4 · pass
 - prompt: 15-FB2061AX 이거는 다른 거 섞지 말고 정확히 같은 모델만 비교해줘
 - expected_behavior: HP exact compare는 모델 코드 기준으로 ok가 되어야 한다.
-- observed_summary: HP VICTUS 15-fb2061AX 8GB, 512GB 기준 최저가 1349000원, 최고가 2849160원, 판매처 9곳입니다.
+- observed_summary: HP VICTUS 15-fb2061AX 8GB, 512GB 기준 최저가 1349000원, 최고가 2849160원, 판매처 10곳입니다.
 - notes: (none)
 
 ### laptop-broad-ambiguous-safety-1 · pass
@@ -180,11 +180,11 @@
 - observed_summary: 라데온 9070 쪽 카드만 기준 6개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
-### graphics-card-broad-search-4 · fail
+### graphics-card-broad-search-4 · pass
 - prompt: 5070 Ti 라인 보는데 지지대나 완본체 말고 본품만 검색 좀 해줘
 - expected_behavior: 5070 Ti broad search는 그래픽카드 본품 중심이어야 한다.
-- observed_summary: Unexpected token 'I', "Internal S"... is not valid JSON
-- notes: error: Unexpected token 'I', "Internal S"... is not valid JSON; must_contain_missing: 5070; must_contain_missing: TI
+- observed_summary: 검색 결과가 없습니다: 5070 Ti 라인 지지대나
+- notes: (none)
 
 ### graphics-card-exact-ish-search-1 · pass
 - prompt: 조탁 5070 Twin Edge 쪽이 궁금해서 ZOTAC RTX 5070 Twin Edge로 보이는 것만 찾아줘
@@ -195,7 +195,7 @@
 ### graphics-card-exact-ish-search-2 · pass
 - prompt: ASUS TUF 5070 Ti 쪽으로 보는데 그 모델명 기준으로 검색해줘
 - expected_behavior: 정확한 ASUS GPU 검색은 모델 계열이 유지되어야 한다.
-- observed_summary: 검색 결과가 없습니다: ASUS TUF 5070 Ti 그 모델명 기준으로
+- observed_summary: 검색 결과가 없습니다: ASUS TUF 5070 Ti 명 기준으로
 - notes: (none)
 
 ### graphics-card-exact-ish-search-3 · pass
@@ -210,28 +210,28 @@
 - observed_summary: 검색 결과가 없습니다: PowerColor RX 9070 Hellhound 이 모델로 뜨는 것들만
 - notes: (none)
 
-### graphics-card-exact-compare-1 · fail
+### graphics-card-exact-compare-1 · pass
 - prompt: RTX 5070은 정확히 그 모델끼리만 가격 비교해줘
 - expected_behavior: RTX 5070 exact compare는 ok 상태여야 한다.
-- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
-- notes: expected_status: ok -> ambiguous
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다.
+- notes: (none)
 
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti는 다른 급 섞지 말고 같은 모델만 비교해줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 1936120원, 판매처 19곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478540원, 최고가 1936120원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · soft_fail
 - prompt: RX 9070 이건 XT 말고 일반형끼리만 비교해줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: RGB 16GB GDDR6 HDMI 3xDP AMD RDNA 4 RX -97TRGBBA가 탑재된 XFX 머큐리 라데온 RX 9070XT OC 게이밍 에디션 XFX Swift AMD 기준 최저가 853200원, 최고가 853200원, 판매처 1곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다.
 - notes: must_not_contain: RX 9070 XT
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT는 정확히 XT끼리만 가격 비교해줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: PowerColor 라데온 RX 9070 XT HELLHOUND D6 16GB 대원씨티에스 기준 최저가 1080000원, 최고가 1432310원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -258,16 +258,16 @@
 - observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
 - notes: (none)
 
-### graphics-card-purchase-explain-1 · fail
+### graphics-card-purchase-explain-1 · pass
 - prompt: RTX 5070 지금 들어가도 되는 가격인지 짧게 설명해줘
 - expected_behavior: RTX 5070 explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
-- notes: expected_status: ok -> ambiguous
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다. 현재 최저가는 931000원이고 최고가와의 차이는 339000원입니다.
+- notes: (none)
 
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT는 지금 사도 괜찮은 가격대인지 한번 봐줘
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535010원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534940원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -297,7 +297,7 @@
 ### keyboard-broad-search-3 · pass
 - prompt: 텐키리스 게이밍 키보드 쪽으로 보고 싶어서 풀배열 오피스용 말고 맞는 것만 보여줘
 - expected_behavior: TKL 게이밍 키보드 검색은 게이밍/텐키리스 의도와 크게 어긋나지 않아야 한다.
-- observed_summary: 검색 결과가 없습니다: 텐키리스 게이밍 키보드 보고 싶어서 풀배열 맞는 것만
+- observed_summary: 텐키리스 게이밍 키보드 서 풀배열 맞는 것만 기준 2개 모델, 2개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-broad-search-4 · fail
@@ -309,7 +309,7 @@
 ### keyboard-exact-ish-search-1 · fail
 - prompt: 키크론 K2 Pro 생각 중이라 정확히 그 모델로 뜨는 것들만 검색해줘
 - expected_behavior: 정확한 Keychron 검색은 모델명이 유지되어야 한다.
-- observed_summary: 검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 그 모델로 뜨는 것들만
+- observed_summary: 검색 결과가 없습니다: 키크론 K2 Pro 생각 중이라 로 뜨는 것들만
 - notes: must_contain_missing: Keychron
 
 ### keyboard-exact-ish-search-2 · pass
@@ -336,11 +336,11 @@
 - observed_summary: Keychron K2 Pro 갈축 84키 무선 키보드 갈색 스위치 기준 최저가 115000원, 최고가 232100원, 판매처 6곳입니다.
 - notes: (none)
 
-### keyboard-exact-compare-2 · fail
+### keyboard-exact-compare-2 · pass
 - prompt: MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
+- notes: (none)
 
 ### keyboard-exact-compare-3 · pass
 - prompt: 앱코 K660 가격 차이만 깔끔하게 비교해줘
@@ -348,11 +348,11 @@
 - observed_summary: 앱코 NCORE K660 ARC 오테뮤 기계식 키보드 블랙, 청축 기준 최저가 28900원, 최고가 93890원, 판매처 20곳입니다.
 - notes: (none)
 
-### keyboard-exact-compare-4 · fail
+### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75는 정확히 같은 제품 기준으로 얼마 차이 나는지 보고 싶어
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: DrunkDeer; must_contain_missing: A75
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
+- notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
 - prompt: 게이밍 키보드 전체를 바로 비교하는 건 넓을 수 있으니까 안 되면 멈추고 알려줘
@@ -390,17 +390,17 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### keyboard-purchase-explain-3 · fail
+### keyboard-purchase-explain-3 · pass
 - prompt: MX Mechanical Mini는 지금 들어가도 괜찮은 가격대인지 설명해줘
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: MX Mechanical
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
+- notes: (none)
 
-### keyboard-purchase-explain-4 · fail
+### keyboard-purchase-explain-4 · pass
 - prompt: 앱코 K660 이거 지금 사도 무난한 가격인지 간단히 봐줘
 - expected_behavior: 앱코 K660 explain은 ok 상태를 목표로 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: 앱코; must_contain_missing: K660
+- observed_summary: 앱코 NCORE K660 ARC 오테뮤 기계식 키보드 블랙, 청축 기준 최저가 28900원, 최고가 93890원, 판매처 20곳입니다. 현재 최저가는 28900원이고 최고가와의 차이는 64990원입니다.
+- notes: (none)
 
 ### monitor-broad-search-1 · pass
 - prompt: 27인치 4K 모니터 찾는 중인데 TV나 이상한 액세서리 말고 본체 위주로 정리해줘
@@ -441,7 +441,7 @@
 ### monitor-exact-ish-search-3 · pass
 - prompt: MSI 321URX 생각 중이라 그 모델 기준 결과만 보여줘
 - expected_behavior: 정확한 MSI 모니터 검색은 모델 코드가 살아 있어야 한다.
-- observed_summary: 검색 결과가 없습니다: MSI 321URX 생각 중이라 그 모델 기준 결과만
+- observed_summary: 검색 결과가 없습니다: MSI 321URX 생각 중이라 기준 결과만
 - notes: (none)
 
 ### monitor-exact-ish-search-4 · pass
@@ -450,29 +450,29 @@
 - observed_summary: 검색 결과가 없습니다: 삼성 S27DG500 이 모델로
 - notes: (none)
 
-### monitor-exact-compare-1 · fail
+### monitor-exact-compare-1 · pass
 - prompt: 27GR93U는 정확히 같은 모델끼리 가격 비교해줘
 - expected_behavior: LG 27GR93U exact compare는 ok 상태를 목표로 한다.
-- observed_summary: Unexpected token 'I', "Internal S"... is not valid JSON
-- notes: error: Unexpected token 'I', "Internal S"... is not valid JSON; expected_status: ok -> undefined; must_contain_missing: 27GR93U
+- observed_summary: LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다.
+- notes: (none)
 
-### monitor-exact-compare-2 · fail
+### monitor-exact-compare-2 · pass
 - prompt: U2723QE 판매처별 차이 좀 비교해줘
 - expected_behavior: Dell U2723QE exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.
-- notes: expected_status: ok -> not_found; must_contain_missing: U2723QE
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다.
+- notes: (none)
 
-### monitor-exact-compare-3 · fail
+### monitor-exact-compare-3 · pass
 - prompt: 321URX 이건 정확 모델 기준으로 최저가 비교해줘
 - expected_behavior: MSI 321URX exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 정확히 같은 모델만 비교할 수 있습니다.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: 321URX
+- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371420원, 최고가 2263850원, 판매처 19곳입니다.
+- notes: (none)
 
-### monitor-exact-compare-4 · fail
+### monitor-exact-compare-4 · pass
 - prompt: S27DG500 가격 비교 좀 해줘, 다른 비슷한 모델 섞지 말고
 - expected_behavior: 삼성 S27DG500 exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 비교할 제품을 찾지 못했습니다. 검색어를 더 구체적으로 입력해 주세요.
-- notes: expected_status: ok -> not_found; must_contain_missing: S27DG500
+- observed_summary: 삼성 모니터 오디세이 G5 게이밍 S27DG500 68.4cm(27인치) QHD IPS 기준 최저가 301840원, 최고가 9570000원, 판매처 18곳입니다.
+- notes: (none)
 
 ### monitor-broad-ambiguous-safety-1 · pass
 - prompt: 27인치 4K 모니터 전체를 바로 비교하는 건 넓을 수 있으니까 가능 여부 먼저 봐줘
@@ -516,11 +516,11 @@
 - observed_summary: LG 울트라기어 27GR93U 27.0W9 598X337mm 정보 보안기 프라이버시 필터 기준 최저가 61740원, 최고가 1859000원, 판매처 14곳입니다. 현재 최저가는 61740원이고 최고가와의 차이는 1797260원입니다.
 - notes: (none)
 
-### monitor-purchase-explain-4 · soft_fail
+### monitor-purchase-explain-4 · pass
 - prompt: U2723QE 이 모델은 지금 들어가도 될 가격인지 좀 봐줘
 - expected_behavior: Dell U2723QE explain은 ok 상태를 목표로 한다.
-- observed_summary: [대여] 델 4K 모니터 단기렌탈 U2723QE USB-C 2박3일 기준 최저가 26400원, 최고가 1425100원, 판매처 17곳입니다. 현재 최저가는 26400원이고 최고가와의 차이는 1398700원입니다.
-- notes: must_not_contain: 렌탈
+- observed_summary: 델 해외 U2723QE Dell U2723QE 27 in 16:9 4K UHD HDR IPS Monitor with USB Type C Docking 1st Seller 683 기준 최저가 429000원, 최고가 1412530원, 판매처 20곳입니다. 현재 최저가는 429000원이고 최고가와의 차이는 983530원입니다.
+- notes: (none)
 
 ### pc-part-broad-search-1 · pass
 - prompt: B650 메인보드 보는 중인데 메인보드 말고 다른 완본체나 엉뚱한 건 빼고 보여줘
@@ -555,7 +555,7 @@
 ### pc-part-exact-ish-search-2 · pass
 - prompt: Ryzen 7 9800X3D 이 CPU로 뜨는 것만 찾아줘
 - expected_behavior: 정확한 CPU 검색은 모델명을 유지해야 한다.
-- observed_summary: Ryzen 7 9800X3D 이 CPU로 뜨는 것만 기준 1개 모델, 6개 판매처를 찾았습니다.
+- observed_summary: Ryzen 7 9800X3D 이 CPU로 뜨는 것만 기준 1개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-ish-search-3 · pass
@@ -567,7 +567,7 @@
 ### pc-part-exact-ish-search-4 · pass
 - prompt: SuperFlower SF-850F14XG 이 파워 검색해줘
 - expected_behavior: 정확한 파워 검색은 모델명을 유지해야 한다.
-- observed_summary: SuperFlower SF-850F14XG 이 파워 기준 1개 모델, 9개 판매처를 찾았습니다.
+- observed_summary: SuperFlower SF-850F14XG 이 기준 1개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-compare-1 · fail
@@ -576,22 +576,22 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: expected_status: ok -> ambiguous; must_contain_missing: B650M-PLUS; must_contain_missing: ASUS
 
-### pc-part-exact-compare-2 · fail
+### pc-part-exact-compare-2 · pass
 - prompt: 9800X3D 가격 차이만 정확히 비교해줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다.
+- notes: (none)
 
 ### pc-part-exact-compare-3 · pass
 - prompt: SN850X 2TB는 용량까지 맞는 것끼리만 비교해줘
 - expected_behavior: SSD exact compare는 ok 상태를 목표로 한다.
-- observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 3301020원, 판매처 16곳입니다.
+- observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 1697500원, 판매처 17곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-4 · pass
 - prompt: SF-850F14XG는 같은 파워 모델끼리만 가격 비교해줘
 - expected_behavior: 파워 exact compare는 ok 상태를 목표로 한다.
-- observed_summary: 슈퍼플라워 SF-850F14XG LEADEX VII GOLD BLACK ATX 3.0 (PCIE5) 기준 최저가 178990원, 최고가 299200원, 판매처 20곳입니다.
+- observed_summary: SuperFlower SF-850F14XG LEADEX VII GOLD ATX 3.1 (PCIE5) 기준 최저가 178990원, 최고가 219300원, 판매처 20곳입니다.
 - notes: (none)
 
 ### pc-part-broad-ambiguous-safety-1 · pass
@@ -633,12 +633,12 @@
 ### pc-part-purchase-explain-3 · fail
 - prompt: 9800X3D는 요즘 사도 괜찮은 가격인지 봐줘
 - expected_behavior: SSD exact explain은 ok 상태를 목표로 한다.
-- observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: expected_status: ok -> ambiguous; must_contain_missing: SN850X; must_contain_missing: 2TB
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667080원이고 최고가와의 차이는 646030원입니다.
+- notes: must_contain_missing: SN850X; must_contain_missing: 2TB
 
 ### pc-part-purchase-explain-4 · fail
 - prompt: SN850X 2TB 지금 사도 무난한 가격인지 설명해줘
 - expected_behavior: 파워 broad explain은 ambiguous로 멈추고 재질문을 유도해야 한다.
-- observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 3301020원, 판매처 16곳입니다. 현재 최저가는 313500원이고 최고가와의 차이는 2987520원입니다.
+- observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 1697500원, 판매처 17곳입니다. 현재 최저가는 313500원이고 최고가와의 차이는 1384000원입니다.
 - notes: expected_status: ambiguous -> ok; must_contain_missing: 정확히 같은 모델; missing_suggested_queries
 

@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T02:25:06.519Z
+- 생성 시각: 2026-03-13T02:56:04.224Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -89,7 +89,7 @@
 ### laptop-exact-compare-1 · pass
 - prompt: 16Z90T GA5CK 가격 비교해 줘
 - expected_behavior: 정확한 그램 모델 비교는 ok 상태여야 한다.
-- observed_summary: 16Z90T - GA5CK ultra5 / 16GB / 256GB / Win 11 홈 노트북_D 기준 최저가 3000000원, 최고가 3000000원, 판매처 1곳입니다.
+- observed_summary: 16Z90T-GA5CK ultra5 / 16GB / 256GB / Win 11 홈 노트북_D 기준 최저가 3000000원, 최고가 3000000원, 판매처 1곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-2 · pass
@@ -173,13 +173,13 @@
 ### graphics-card-broad-search-3 · pass
 - prompt: RX 9070 그래픽카드 찾아줘
 - expected_behavior: 라데온 broad search는 부속품과 완본체를 줄여야 한다.
-- observed_summary: RX 9070 그래픽카드 기준 1개 모델, 1개 판매처를 찾았습니다.
+- observed_summary: RX 9070 기준 1개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-broad-search-4 · pass
 - prompt: 5070 Ti 그래픽카드 검색해 줘
 - expected_behavior: 5070 Ti broad search는 그래픽카드 본품 중심이어야 한다.
-- observed_summary: 5070 Ti 그래픽카드 기준 1개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 5070 Ti 기준 1개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-exact-ish-search-1 · pass
@@ -209,25 +209,25 @@
 ### graphics-card-exact-compare-1 · pass
 - prompt: RTX 5070 가격 비교해 줘
 - expected_behavior: RTX 5070 exact compare는 ok 상태여야 한다.
-- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 10곳입니다.
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti 가격 비교해 줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 1936120원, 판매처 20곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478540원, 최고가 1936120원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 가격 비교해 줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: 기가바이트 라데온 RX 9070 GAMING OC D6 16GB 피씨디렉트 기준 최저가 908670원, 최고가 1069000원, 판매처 5곳입니다.
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 932160원, 최고가 1069000원, 판매처 5곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT 가격 비교해 줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432310원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -257,13 +257,13 @@
 ### graphics-card-purchase-explain-1 · pass
 - prompt: RTX 5070 지금 사도 돼?
 - expected_behavior: RTX 5070 explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 10곳입니다. 현재 최저가는 931000원이고 최고가와의 차이는 339000원입니다.
+- observed_summary: 조텍 GAMING 지포스 RTX 5070 AMP White D7 12GB 기준 최저가 931000원, 최고가 1270000원, 판매처 11곳입니다. 현재 최저가는 931000원이고 최고가와의 차이는 339000원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT 지금 사도 괜찮은 가격대야?
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432310원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535010원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432240원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534940원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -323,7 +323,7 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 6개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 5개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass
@@ -335,7 +335,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: 로지텍 MX Mechanical Mini 가격 비교해 줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157290원, 판매처 14곳입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -347,7 +347,7 @@
 ### keyboard-exact-compare-4 · pass
 - prompt: DrunkDeer A75 가격 비교해 줘
 - expected_behavior: DrunkDeer A75 exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 11곳입니다.
+- observed_summary: 드렁크디어 DrunkDeer A75 PRO 게이밍 키보드 블랙그레이 기준 최저가 115700원, 최고가 332900원, 판매처 10곳입니다.
 - notes: (none)
 
 ### keyboard-broad-ambiguous-safety-1 · pass
@@ -389,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157290원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40790원입니다.
+- observed_summary: 로지텍 MX Mechanical MINI 그래파이트, 갈축 기준 최저가 116500원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 116500원이고 최고가와의 차이는 40780원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass
@@ -461,7 +461,7 @@
 ### monitor-exact-compare-3 · pass
 - prompt: MSI MPG 321URX 가격 비교해 줘
 - expected_behavior: MSI 321URX exact compare는 ok 상태를 목표로 한다.
-- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371420원, 최고가 2263850원, 판매처 20곳입니다.
+- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371420원, 최고가 2263850원, 판매처 19곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-4 · pass
@@ -551,7 +551,7 @@
 ### pc-part-exact-ish-search-2 · pass
 - prompt: Ryzen 7 9800X3D 찾아줘
 - expected_behavior: 정확한 CPU 검색은 모델명을 유지해야 한다.
-- observed_summary: Ryzen 7 9800X3D 기준 1개 모델, 8개 판매처를 찾았습니다.
+- observed_summary: Ryzen 7 9800X3D 기준 1개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-ish-search-3 · pass
@@ -575,7 +575,7 @@
 ### pc-part-exact-compare-2 · pass
 - prompt: Ryzen 7 9800X3D 가격 비교해 줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 817430원, 최고가 1313110원, 판매처 18곳입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-3 · pass
@@ -623,7 +623,7 @@
 ### pc-part-purchase-explain-2 · pass
 - prompt: Ryzen 7 9800X3D 지금 사도 괜찮아?
 - expected_behavior: CPU exact explain은 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 817430원, 최고가 1313110원, 판매처 18곳입니다. 현재 최저가는 817430원이고 최고가와의 차이는 495680원입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 667080원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 667080원이고 최고가와의 차이는 646030원입니다.
 - notes: (none)
 
 ### pc-part-purchase-explain-3 · pass

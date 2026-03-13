@@ -294,7 +294,8 @@ export class PriceService {
     }
 
     const condensedQuery = condenseNaturalLanguageQuery(query);
-    const providerQuery = condensedQuery.baseQuery;
+    const exactQueryModel = extractExactQueryModel(query);
+    const providerQuery = exactQueryModel ?? condensedQuery.baseQuery;
 
     const search = await this.fetchNormalizedOffers({
       query: providerQuery,
@@ -343,17 +344,18 @@ function resolveComparisonTarget(options: {
     return null;
   }
 
-  const condensedQuery = condenseNaturalLanguageQuery(options.query);
-  const baseQuery = options.forcedExactModel ? simplifyIntentQuery(options.query) : condensedQuery.baseQuery;
-  const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(baseQuery);
-  const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(baseQuery);
-  const supplementalQueryKind = exactQueryModel ? "other" : detectSupplementalQueryKind(baseQuery);
+    const condensedQuery = condenseNaturalLanguageQuery(options.query);
+    const baseQuery = options.forcedExactModel ? simplifyIntentQuery(options.query) : condensedQuery.baseQuery;
+    const exactQueryModel = options.forcedExactModel ?? extractExactQueryModel(options.query);
+    const resolvedQuery = exactQueryModel ?? baseQuery;
+    const broadQueryKind = exactQueryModel ? "other" : detectBroadQueryKind(baseQuery);
+    const supplementalQueryKind = exactQueryModel ? "other" : detectSupplementalQueryKind(baseQuery);
   const scopedOffers = exactQueryModel ? dedupedOffers : filterBroadSearchOffers(options.query, dedupedOffers);
 
   if (!exactQueryModel && scopedOffers.length === 0) {
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary:
         broadQueryKind === "graphics-card"
           ? "정확히 같은 모델만 비교할 수 있습니다."
@@ -377,7 +379,7 @@ function resolveComparisonTarget(options: {
 
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary:
         accessoryOnlyExactQuery && !broadGpuQuery
           ? "본체가 아닌 액세서리나 구성변형이 섞여 있어 비교를 중단했습니다."
@@ -395,7 +397,7 @@ function resolveComparisonTarget(options: {
   if (!exactQueryModel && broadQueryKind === "laptop") {
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -405,7 +407,7 @@ function resolveComparisonTarget(options: {
   if (!exactQueryModel && supplementalQueryKind === "keyboard") {
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -415,7 +417,7 @@ function resolveComparisonTarget(options: {
   if (!exactQueryModel && broadQueryKind === "graphics-card") {
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary: "정확히 같은 모델만 비교할 수 있습니다.",
       warning: createBroadGpuAmbiguousWarning(),
       offers: comparisonOffers
@@ -425,7 +427,7 @@ function resolveComparisonTarget(options: {
   if ((!exactQueryModel && (isAmbiguousComparison(baseQuery, comparisonOffers) || groups.length !== 1)) || groups.length !== 1) {
     return {
       status: "ambiguous",
-      query: baseQuery,
+      query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
       offers: comparisonOffers
@@ -436,7 +438,7 @@ function resolveComparisonTarget(options: {
 
   return {
     status: "ok",
-    query: baseQuery,
+    query: resolvedQuery,
     group,
     offers: comparisonOffers.filter((offer) => offer.productId === group.productId)
   };

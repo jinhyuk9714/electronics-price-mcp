@@ -209,6 +209,21 @@ describe("normalize helpers", () => {
       "U2723QE"
     );
     expect(condenseNaturalLanguageQuery("9800X3D 가격 차이만 정확히 비교해줘").baseQuery).toBe("9800X3D");
+    expect(
+      condenseNaturalLanguageQuery("MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘").baseQuery
+    ).toBe("MX Mechanical Mini");
+    expect(condenseNaturalLanguageQuery("9800X3D 가격 차이만 정확히 보고 싶어").baseQuery).toBe("9800X3D");
+  });
+
+  test("extractExactQueryModel preserves exact models inside longer prompts but keeps explicit family prompts broad", () => {
+    expect(extractExactQueryModel("그램 16 중에서도 16Z90T GA5CK 이거 가격 비교만 딱 해줘")).toBe("16Z90T-GA5CK");
+    expect(extractExactQueryModel("RTX 5070은 정확히 그 모델끼리만 가격 비교해줘")).toBe("RTX 5070");
+    expect(extractExactQueryModel("MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘")).toBe(
+      "LOGITECH MX MECHANICAL MINI"
+    );
+    expect(extractExactQueryModel("9800X3D 가격 차이만 정확히 보고 싶어")).toBe("RYZEN 7 9800X3D");
+    expect(extractExactQueryModel("그램 16 라인으로 보긴 하는데 모델이 많을 것 같아서, 바로 비교 말고 가능 여부부터 봐줘")).toBeNull();
+    expect(extractExactQueryModel("B650 메인보드 전체 가격 비교는 너무 넓을 것 같은데 일단 가능 여부만 봐줘")).toBeNull();
   });
 
   test("isGraphicsDeviceLikeTitle excludes non-device graphics false positives", () => {

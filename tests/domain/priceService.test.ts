@@ -2917,9 +2917,190 @@ describe("PriceService", () => {
       query: "Keychron K2 Pro 이건 정확히 같은 모델끼리 가격 비교해줘"
     });
 
-    expect(result.query).toBe("Keychron K2 Pro");
+    expect(result.query).toBe("KEYCHRON K2 PRO");
     expect(result.status).toBe("ok");
     expect(result.summary).toContain("Keychron K2 Pro");
+  });
+
+  test("compareProductPrices rescues exact notebook and GPU models from longer natural-language prompts", async () => {
+    const notebookService = new PriceService({
+      provider: createProvider({
+        query: "16Z90T-GA5CK",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG전자 그램 16Z90T-GA5CK 16GB, 256GB",
+            brand: "LG",
+            mallName: "몰A",
+            price: 1999000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 그램 16Z90T-GA5CK 16GB, 512GB",
+            brand: "LG",
+            mallName: "몰B",
+            price: 2199000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const gpuService = new PriceService({
+      provider: createProvider({
+        query: "RTX 5070",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "ZOTAC GAMING GeForce RTX 5070 Twin Edge",
+            brand: "ZOTAC",
+            mallName: "몰A",
+            price: 931000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "MSI GeForce RTX 5070 Gaming Trio",
+            brand: "MSI",
+            mallName: "몰B",
+            price: 999000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const notebookResult = await notebookService.compareProductPrices({
+      query: "그램 16 중에서도 16Z90T GA5CK 이거 가격 비교만 딱 해줘"
+    });
+    const gpuResult = await gpuService.compareProductPrices({
+      query: "RTX 5070은 정확히 그 모델끼리만 가격 비교해줘"
+    });
+
+    expect(notebookResult.query).toBe("16Z90T-GA5CK");
+    expect(notebookResult.status).toBe("ok");
+    expect(notebookResult.summary).toContain("16Z90T-GA5CK");
+
+    expect(gpuResult.query).toBe("RTX 5070");
+    expect(gpuResult.status).toBe("ok");
+    expect(gpuResult.summary).toContain("RTX 5070");
+  });
+
+  test("compareProductPrices rescues bare exact monitor keyboard and pc-part prompts", async () => {
+    const keyboardService = new PriceService({
+      provider: createProvider({
+        query: "LOGITECH MX MECHANICAL MINI",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "300",
+            title: "로지텍 MX Mechanical Mini 갈축",
+            brand: "Logitech",
+            mallName: "몰A",
+            price: 116500,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "301",
+            title: "로지텍 MX Mechanical Mini 적축",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 129000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const monitorService = new PriceService({
+      provider: createProvider({
+        query: "DELL U2723QE",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "400",
+            title: "DELL U2723QE 27인치 4K UHD IPS",
+            brand: "Dell",
+            mallName: "몰A",
+            price: 429000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "401",
+            title: "DELL U2723QE USB-C 허브 모니터",
+            brand: "Dell",
+            mallName: "몰B",
+            price: 519000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          }
+        ]
+      })
+    });
+
+    const pcPartService = new PriceService({
+      provider: createProvider({
+        query: "RYZEN 7 9800X3D",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "500",
+            title: "AMD Ryzen 7 9800X3D 정품 멀티팩",
+            brand: "AMD",
+            mallName: "몰A",
+            price: 817430,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "501",
+            title: "AMD Ryzen 7 9800X3D 벌크",
+            brand: "AMD",
+            mallName: "몰B",
+            price: 845000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      })
+    });
+
+    const keyboardResult = await keyboardService.compareProductPrices({
+      query: "MX Mechanical Mini는 마우스 같은 거 섞지 말고 키보드 본체끼리만 비교해줘"
+    });
+    const monitorResult = await monitorService.compareProductPrices({
+      query: "U2723QE 판매처별 차이 좀 비교해줘"
+    });
+    const pcPartResult = await pcPartService.compareProductPrices({
+      query: "9800X3D 가격 차이만 정확히 보고 싶어"
+    });
+
+    expect(keyboardResult.query).toBe("LOGITECH MX MECHANICAL MINI");
+    expect(keyboardResult.status).toBe("ok");
+    expect(keyboardResult.summary).toContain("MX Mechanical Mini");
+
+    expect(monitorResult.query).toBe("DELL U2723QE");
+    expect(monitorResult.status).toBe("ok");
+    expect(monitorResult.summary).toContain("U2723QE");
+
+    expect(pcPartResult.query).toBe("RYZEN 7 9800X3D");
+    expect(pcPartResult.status).toBe("ok");
+    expect(pcPartResult.summary).toContain("9800X3D");
   });
 
   test("explainPurchaseOptions supports exact notebook models embedded in long natural-language prompts", async () => {
@@ -2958,5 +3139,60 @@ describe("PriceService", () => {
     expect(result.query).toBe("NT960XGQ-A51A");
     expect(result.status).toBe("ok");
     expect(result.summary).toContain("NT960XGQ");
+  });
+
+  test("explainPurchaseOptions rescues exact monitor and pc-part prompts embedded in natural language", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "DELL U2723QE",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "600",
+            title: "DELL U2723QE 27인치 4K UHD IPS",
+            brand: "Dell",
+            mallName: "몰A",
+            price: 429000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "601",
+            title: "AMD Ryzen 7 9800X3D 정품 멀티팩",
+            brand: "AMD",
+            mallName: "몰B",
+            price: 817430,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "602",
+            title: "AMD Ryzen 7 9800X3D 벌크",
+            brand: "AMD",
+            mallName: "몰C",
+            price: 845000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const monitorResult = await service.explainPurchaseOptions({
+      query: "U2723QE 이 모델은 지금 들어가도 될 가격인지 좀 봐줘"
+    });
+    const cpuResult = await service.explainPurchaseOptions({
+      query: "9800X3D 가격 차이만 정확히 보고 싶어"
+    });
+
+    expect(monitorResult.query).toBe("DELL U2723QE");
+    expect(monitorResult.status).toBe("ok");
+    expect(monitorResult.summary).toContain("U2723QE");
+
+    expect(cpuResult.query).toBe("RYZEN 7 9800X3D");
+    expect(cpuResult.status).toBe("ok");
+    expect(cpuResult.summary).toContain("9800X3D");
   });
 });
