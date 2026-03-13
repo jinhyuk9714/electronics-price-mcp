@@ -1,6 +1,7 @@
 import {
   classifyOfferTitle,
   detectBroadQueryKind,
+  detectSupplementalQueryKind,
   extractExactQueryModel,
   extractGpuModel,
   extractNotebookFamilyKey,
@@ -65,6 +66,9 @@ const SUGGESTION_QUERY_STOPWORDS = new Set([
   "RADEON",
   "라데온"
 ]);
+
+const KEYBOARD_NOISE_KEYWORDS = ["마우스", "MOUSE", "마우스패드", "MOUSEPAD"] as const;
+const OFFICE_KEYWORDS = ["사무용", "오피스", "OFFICE"] as const;
 
 type ComparisonTarget =
   | {
@@ -511,12 +515,17 @@ function createSuggestedQueries(
     return undefined;
   }
 
-  const candidates = buildGroups(offers)
+  const suggestionCategory = detectSuggestionCategory(simplifiedQuery);
+  const exactGroups = buildGroups(offers)
     .filter((group): group is ProductGroup & { normalizedModel: string } => Boolean(group.normalizedModel))
     .filter((group) =>
       detectBroadQueryKind(simplifiedQuery) === "laptop" ? !isGpuLikeModel(group.normalizedModel) : true
     )
-    .filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group))
+    .filter((group) => isSuggestionCategoryCompatible(suggestionCategory, simplifiedQuery, group));
+
+  const candidates = (exactGroups.filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group, suggestionCategory)).length > 0
+    ? exactGroups.filter((group) => isSuggestedGroupRelevant(simplifiedQuery, group, suggestionCategory))
+    : getSuggestedFallbackGroups(simplifiedQuery, suggestionCategory, exactGroups))
     .sort((left, right) => {
       if (right.matchConfidence !== left.matchConfidence) {
         return right.matchConfidence - left.matchConfidence;
@@ -549,19 +558,249 @@ function createSuggestedQueries(
   return suggestions.length > 0 ? suggestions : undefined;
 }
 
-function isSuggestedGroupRelevant(query: string, group: ProductGroup): boolean {
-  const tokens = normalizeQuery(query)
-    .split(" ")
-    .filter((token) => token.length > 1 && !SUGGESTION_QUERY_STOPWORDS.has(token));
+function isSuggestedGroupRelevant(
+  query: string,
+  group: ProductGroup,
+  suggestionCategory: "laptop" | "graphics-card" | "keyboard" | "monitor" | "pc-part" | "other" = detectSuggestionCategory(
+    query
+  )
+): boolean {
+  const tokens = extractSuggestedTokens(query, suggestionCategory);
 
   if (tokens.length === 0) {
     return true;
   }
 
-  const haystack = normalizeQuery(`${group.title} ${group.normalizedModel ?? ""}`);
+  const haystack = normalizeQuery(`${group.title} ${group.normalizedModel ?? ""} ${group.brand ?? ""}`);
   const matchCount = tokens.filter((token) => haystack.includes(token)).length;
 
-  return matchCount >= Math.min(2, tokens.length);
+  return matchCount >= (suggestionCategory === "keyboard" || suggestionCategory === "monitor" || suggestionCategory === "pc-part" ? 1 : Math.min(2, tokens.length));
+}
+
+function detectSuggestionCategory(query: string): "laptop" | "graphics-card" | "keyboard" | "monitor" | "pc-part" | "other" {
+  const broadQueryKind = detectBroadQueryKind(query);
+  if (broadQueryKind !== "other") {
+    return broadQueryKind;
+  }
+
+  return detectSupplementalQueryKind(query);
+}
+
+function extractSuggestedTokens(
+  query: string,
+  category: "laptop" | "graphics-card" | "keyboard" | "monitor" | "pc-part" | "other"
+): string[] {
+  const normalizedQuery = normalizeQuery(query);
+  const tokens = normalizedQuery
+    .split(" ")
+    .filter((token) => token.length > 1 && !SUGGESTION_QUERY_STOPWORDS.has(token));
+
+  if (category === "keyboard") {
+    return uniqueSuggestionTokens([
+      ...extractBrandHintTokens(normalizedQuery),
+      ...(normalizedQuery.includes("기계식") || normalizedQuery.includes("MECHANICAL") ? ["MECHANICAL"] : []),
+      ...(normalizedQuery.includes("무선") || normalizedQuery.includes("WIRELESS") ? ["WIRELESS"] : []),
+      ...(normalizedQuery.includes("게이밍") || normalizedQuery.includes("GAMING") ? ["GAMING"] : []),
+      ...tokens
+    ]);
+  }
+
+  if (category === "monitor") {
+    return uniqueSuggestionTokens([
+      ...extractBrandHintTokens(normalizedQuery),
+      ...extractMonitorHintTokens(normalizedQuery),
+      ...tokens
+    ]);
+  }
+
+  if (category === "pc-part") {
+    return uniqueSuggestionTokens([
+      ...extractBrandHintTokens(normalizedQuery),
+      ...extractPcPartHintTokens(normalizedQuery),
+      ...tokens
+    ]);
+  }
+
+  return uniqueSuggestionTokens(tokens);
+}
+
+function extractBrandHintTokens(normalizedQuery: string): string[] {
+  const aliasEntries = [
+    { canonical: "KEYCHRON", cues: ["KEYCHRON", "키크론"] },
+    { canonical: "LOGITECH", cues: ["LOGITECH", "로지텍"] },
+    { canonical: "ABKO", cues: ["ABKO", "앱코"] },
+    { canonical: "DRUNKDEER", cues: ["DRUNKDEER"] },
+    { canonical: "LG", cues: ["LG", "엘지"] },
+    { canonical: "DELL", cues: ["DELL"] },
+    { canonical: "MSI", cues: ["MSI", "엠에스아이"] },
+    { canonical: "SAMSUNG", cues: ["SAMSUNG", "삼성"] },
+    { canonical: "ASUS", cues: ["ASUS", "아수스", "에이수스"] },
+    { canonical: "ASROCK", cues: ["ASROCK", "애즈락"] },
+    { canonical: "BIOSTAR", cues: ["BIOSTAR", "바이오스타"] },
+    { canonical: "GIGABYTE", cues: ["GIGABYTE", "기가바이트"] },
+    { canonical: "COOLERMASTER", cues: ["COOLERMASTER", "쿨러마스터"] },
+    { canonical: "SUPERFLOWER", cues: ["SUPERFLOWER"] },
+    { canonical: "KLEVV", cues: ["KLEVV", "클레브", "에센코어"] },
+    { canonical: "WD", cues: ["WD"] },
+    { canonical: "AMD", cues: ["AMD"] }
+  ] as const;
+
+  return aliasEntries
+    .filter((entry) => entry.cues.some((cue) => normalizedQuery.includes(cue)))
+    .map((entry) => entry.canonical);
+}
+
+function extractMonitorHintTokens(normalizedQuery: string): string[] {
+  const hints: string[] = [];
+  const sizeMatch = normalizedQuery.match(/\b(24|27|29|32|34|38|40|43)\s*(인치|형)?\b/);
+  if (sizeMatch?.[1]) {
+    hints.push(sizeMatch[1]);
+  }
+
+  if (normalizedQuery.includes("4K") || normalizedQuery.includes("UHD")) {
+    hints.push("4K");
+    hints.push("UHD");
+  }
+
+  if (normalizedQuery.includes("QHD")) {
+    hints.push("QHD");
+  }
+
+  if (normalizedQuery.includes("FHD")) {
+    hints.push("FHD");
+  }
+
+  if (normalizedQuery.includes("울트라와이드") || normalizedQuery.includes("ULTRAWIDE")) {
+    hints.push("울트라와이드");
+    hints.push("ULTRAWIDE");
+  }
+
+  return hints;
+}
+
+function extractPcPartHintTokens(normalizedQuery: string): string[] {
+  const hints: string[] = [];
+
+  for (const match of normalizedQuery.matchAll(/\b(B\d{3,4}M?)\b/g)) {
+    hints.push(match[1]);
+  }
+
+  for (const match of normalizedQuery.matchAll(/\b(\d{3,4})W\b/g)) {
+    hints.push(`${match[1]}W`);
+    hints.push(match[1]);
+  }
+
+  for (const match of normalizedQuery.matchAll(/\b(16GB|32GB|64GB|1TB|2TB|4TB)\b/g)) {
+    hints.push(match[1]);
+  }
+
+  for (const hint of ["DDR5", "DDR4", "NVME", "SSD", "RYZEN", "INTEL"]) {
+    if (normalizedQuery.includes(hint)) {
+      hints.push(hint);
+    }
+  }
+
+  return hints;
+}
+
+function uniqueSuggestionTokens(tokens: string[]): string[] {
+  return Array.from(new Set(tokens.filter((token) => token.length > 0)));
+}
+
+function getSuggestedFallbackGroups(
+  query: string,
+  category: "laptop" | "graphics-card" | "keyboard" | "monitor" | "pc-part" | "other",
+  groups: Array<ProductGroup & { normalizedModel: string }>
+): Array<ProductGroup & { normalizedModel: string }> {
+  if (category !== "keyboard" && category !== "monitor" && category !== "pc-part") {
+    return [];
+  }
+
+  const normalizedQuery = normalizeQuery(query);
+  const brandHints = extractBrandHintTokens(normalizedQuery);
+
+  return groups.filter((group) => {
+    const haystack = normalizeQuery(`${group.title} ${group.normalizedModel} ${group.brand ?? ""}`);
+
+    if (brandHints.length > 0 && !brandHints.some((hint) => haystack.includes(hint))) {
+      return false;
+    }
+
+    return isSuggestionCategoryCompatible(category, query, group);
+  });
+}
+
+function isSuggestionCategoryCompatible(
+  category: "laptop" | "graphics-card" | "keyboard" | "monitor" | "pc-part" | "other",
+  query: string,
+  group: ProductGroup
+): boolean {
+  const normalizedQuery = normalizeQuery(query);
+  const haystack = normalizeQuery(`${group.title} ${group.normalizedModel ?? ""} ${group.brand ?? ""}`);
+
+  if (category === "keyboard") {
+    if (KEYBOARD_NOISE_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
+      return false;
+    }
+
+    if (
+      (normalizedQuery.includes("게이밍") || normalizedQuery.includes("GAMING")) &&
+      OFFICE_KEYWORDS.some((keyword) => haystack.includes(keyword))
+    ) {
+      return false;
+    }
+
+    const brandHints = extractBrandHintTokens(normalizedQuery);
+    return brandHints.length === 0 || brandHints.some((hint) => haystack.includes(hint));
+  }
+
+  if (category === "monitor") {
+    const querySize = extractMonitorHintTokens(normalizedQuery).find((token) => /^\d{2}$/.test(token));
+    const haystackSize = extractMonitorHintTokens(haystack).find((token) => /^\d{2}$/.test(token));
+
+    if (querySize && haystackSize && querySize !== haystackSize) {
+      return false;
+    }
+
+    const queryHasQhd = normalizedQuery.includes("QHD");
+    const queryHasUhd = normalizedQuery.includes("4K") || normalizedQuery.includes("UHD");
+
+    if (queryHasQhd && (haystack.includes("4K") || haystack.includes("UHD"))) {
+      return false;
+    }
+
+    if (queryHasUhd && haystack.includes("QHD")) {
+      return false;
+    }
+  }
+
+  if (category === "pc-part") {
+    for (const chipset of extractPcPartHintTokens(normalizedQuery).filter((token) => /^B\d{3,4}M?$/.test(token))) {
+      if (!haystack.includes(chipset)) {
+        return false;
+      }
+    }
+
+    for (const capacity of extractPcPartHintTokens(normalizedQuery).filter((token) => /(GB|TB)$/.test(token))) {
+      if (!haystack.includes(capacity)) {
+        return false;
+      }
+    }
+
+    if (normalizedQuery.includes("DDR5") && !haystack.includes("DDR5")) {
+      return false;
+    }
+
+    const wattHint = extractPcPartHintTokens(normalizedQuery).find((token) => token.endsWith("W"));
+    if (wattHint) {
+      const numericWatt = wattHint.replace("W", "");
+      if (!haystack.includes(wattHint) && !haystack.includes(numericWatt)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 function calculateMatchConfidence(query: string, normalizedModel: string | null, title: string): number {

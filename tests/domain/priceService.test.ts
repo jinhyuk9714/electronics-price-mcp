@@ -1826,6 +1826,353 @@ describe("PriceService", () => {
     ]);
   });
 
+  test("compareProductPrices suggests exact keyboard follow-ups for broad Keychron queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "Keychron 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "키크론 B1 PRO 레트로 그린 팬터그래프 키보드",
+            brand: "키크론",
+            mallName: "몰A",
+            price: 59000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "키크론 K5 SE 블루투스 무선 슬림 기계식 키보드",
+            brand: "키크론",
+            mallName: "몰B",
+            price: 99000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "앱코 K660 카일 광축 키보드",
+            brand: "앱코",
+            mallName: "몰C",
+            price: 49000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "Keychron 키보드 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확한 모델");
+    expect(result.warning).toContain("추천 검색어");
+    expect(result.suggestedQueries).toEqual([
+      "KEYCHRON B1 PRO 가격 비교해 줘",
+      "KEYCHRON K5 SE 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests exact keyboard follow-ups for broad Keychron queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "Keychron 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "키크론 B1 PRO 레트로 그린 팬터그래프 키보드",
+            brand: "키크론",
+            mallName: "몰A",
+            price: 59000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "키크론 K5 SE 블루투스 무선 슬림 기계식 키보드",
+            brand: "키크론",
+            mallName: "몰B",
+            price: 99000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "Keychron 키보드 지금 사도 괜찮아?"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확한 모델");
+    expect(result.warning).toContain("추천 검색어");
+    expect(result.suggestedQueries).toEqual([
+      "KEYCHRON B1 PRO 지금 사도 괜찮은 가격대야?",
+      "KEYCHRON K5 SE 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
+  test("compareProductPrices excludes mouse noise and suggests exact Logitech keyboard models", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "로지텍 기계식 키보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "로지텍 MX Mechanical Mini 무선 키보드",
+            brand: "로지텍",
+            mallName: "몰A",
+            price: 169000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "Logitech MX Mechanical tactile 무선 키보드",
+            brand: "Logitech",
+            mallName: "몰B",
+            price: 179000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "로지텍 MX Master 3S 무선 마우스",
+            brand: "로지텍",
+            mallName: "몰C",
+            price: 129000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "로지텍 기계식 키보드 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LOGITECH MX MECHANICAL MINI 가격 비교해 줘",
+      "LOGITECH MX MECHANICAL 가격 비교해 줘"
+    ]);
+    expect(result.suggestedQueries?.some((query) => query.includes("마우스"))).toBe(false);
+  });
+
+  test("compareProductPrices suggests exact monitor models for size and resolution broad queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27인치 4K 모니터",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "MSI MD271UL 68~69cm(27인치) 4K UHD 모니터",
+            brand: "MSI",
+            mallName: "몰A",
+            price: 359000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "LG전자 27US550 68~69cm(27인치) UHD 모니터",
+            brand: "LG",
+            mallName: "몰B",
+            price: 329000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "MSI MPG 321URX QD-OLED 32인치 게이밍 모니터",
+            brand: "MSI",
+            mallName: "몰C",
+            price: 1499000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.compareProductPrices({
+      query: "27인치 4K 모니터 가격 비교해 줘"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.suggestedQueries).toEqual([
+      "LG 27US550 가격 비교해 줘",
+      "MSI MD271UL 가격 비교해 줘"
+    ]);
+    expect(result.suggestedQueries?.some((query) => query.includes("321URX"))).toBe(false);
+  });
+
+  test("compareProductPrices suggests exact pc-part models for motherboard and memory spec queries", async () => {
+    const boardService = new PriceService({
+      provider: createProvider({
+        query: "B650 메인보드",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "바이오스타 B650 MT-E PRO 제이씨현",
+            brand: "바이오스타",
+            mallName: "몰A",
+            price: 139000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "ASRock B650 M PRO RS 대원씨티에스",
+            brand: "ASRock",
+            mallName: "몰B",
+            price: 189000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "ASUS TUF B650M-PLUS WIFI 메인보드",
+            brand: "ASUS",
+            mallName: "몰C",
+            price: 219000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const memoryService = new PriceService({
+      provider: createProvider({
+        query: "DDR5 32GB 메모리",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "200",
+            title: "삼성전자 삼성 DDR5 PC5-44800 32GB , 1개",
+            brand: "삼성전자",
+            mallName: "몰D",
+            price: 114000,
+            link: "https://example.com/d",
+            image: "https://example.com/d.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "201",
+            title: "에센코어 클레브 DDR5 PC5-44800 KLEVV CL46 32GB , 1개",
+            brand: "클레브",
+            mallName: "몰E",
+            price: 109000,
+            link: "https://example.com/e",
+            image: "https://example.com/e.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "202",
+            title: "삼성전자 삼성 DDR5 PC5-44800 16GB , 1개",
+            brand: "삼성전자",
+            mallName: "몰F",
+            price: 59000,
+            link: "https://example.com/f",
+            image: "https://example.com/f.jpg"
+          }
+        ]
+      })
+    });
+
+    const board = await boardService.compareProductPrices({
+      query: "B650 메인보드 가격 비교해 줘"
+    });
+    const memory = await memoryService.compareProductPrices({
+      query: "DDR5 32GB 메모리 가격 비교해 줘"
+    });
+
+    expect(board.status).toBe("ambiguous");
+    expect(board.suggestedQueries).toEqual([
+      "BIOSTAR B650MT-E PRO 가격 비교해 줘",
+      "ASROCK B650M PRO RS 가격 비교해 줘",
+      "ASUS TUF B650M-PLUS 가격 비교해 줘"
+    ]);
+
+    expect(memory.status).toBe("ambiguous");
+    expect(memory.suggestedQueries).toEqual([
+      "KLEVV DDR5 PC5-44800 32GB 가격 비교해 줘",
+      "SAMSUNG DDR5 PC5-44800 32GB 가격 비교해 줘"
+    ]);
+  });
+
+  test("explainPurchaseOptions suggests exact pc-part models for broad power queries", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "850W 파워",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "기가바이트 UD850GM PG5 80PLUS GOLD 풀모듈러 ATX 3.0",
+            brand: "기가바이트",
+            mallName: "몰A",
+            price: 129000,
+            link: "https://example.com/a",
+            image: "https://example.com/a.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "101",
+            title: "쿨러마스터 MWE GOLD 850 V3 ATX3.1 850W 화이트",
+            brand: "쿨러마스터",
+            mallName: "몰B",
+            price: 139000,
+            link: "https://example.com/b",
+            image: "https://example.com/b.jpg"
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "102",
+            title: "SuperFlower SF-850F14XG LEADEX VII GOLD ATX3.1",
+            brand: "SuperFlower",
+            mallName: "몰C",
+            price: 179000,
+            link: "https://example.com/c",
+            image: "https://example.com/c.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.explainPurchaseOptions({
+      query: "850W 파워 지금 사도 괜찮은 가격대야?"
+    });
+
+    expect(result.status).toBe("ambiguous");
+    expect(result.summary).toContain("정확한 모델");
+    expect(result.warning).toContain("추천 검색어");
+    expect(result.suggestedQueries).toEqual([
+      "GIGABYTE UD850GM PG5 지금 사도 괜찮은 가격대야?",
+      "COOLERMASTER MWE GOLD 850 V3 지금 사도 괜찮은 가격대야?",
+      "SUPERFLOWER SF-850F14XG 지금 사도 괜찮은 가격대야?"
+    ]);
+  });
+
   test("explainPurchaseOptions keeps broad GPU family queries ambiguous and suggests exact models", async () => {
     const service = new PriceService({
       provider: createProvider({

@@ -1,10 +1,10 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-13T00:22:38.106Z
+- 생성 시각: 2026-03-13T00:35:15.786Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
-- 전체 결과: 82 pass / 18 soft_fail / 0 fail
-- 통과율: 82.0%
+- 전체 결과: 92 pass / 8 soft_fail / 0 fail
+- 통과율: 92.0%
 
 ## 카테고리별 통과율
 
@@ -12,9 +12,9 @@
 | --- | ---: | ---: | ---: | ---: | ---: |
 | 노트북 | 20 | 19 | 1 | 0 | 95.0% |
 | 그래픽카드 | 20 | 19 | 1 | 0 | 95.0% |
-| 키보드 | 20 | 12 | 8 | 0 | 60.0% |
-| 모니터 | 20 | 17 | 3 | 0 | 85.0% |
-| PC 부품 | 20 | 15 | 5 | 0 | 75.0% |
+| 키보드 | 20 | 14 | 6 | 0 | 70.0% |
+| 모니터 | 20 | 20 | 0 | 0 | 100.0% |
+| PC 부품 | 20 | 20 | 0 | 0 | 100.0% |
 
 ## 의도별 통과율
 
@@ -23,14 +23,14 @@
 | broad search | 20 | 16 | 4 | 0 | 80.0% |
 | exact-ish search | 20 | 20 | 0 | 0 | 100.0% |
 | exact compare | 20 | 20 | 0 | 0 | 100.0% |
-| broad ambiguous safety | 20 | 11 | 9 | 0 | 55.0% |
-| purchase/explain | 20 | 15 | 5 | 0 | 75.0% |
+| broad ambiguous safety | 20 | 17 | 3 | 0 | 85.0% |
+| purchase/explain | 20 | 19 | 1 | 0 | 95.0% |
 
 ## 실패 패턴 상위 5개
 
-- missing_suggested_queries: 12
 - must_not_contain: 사무용: 5
 - must_not_contain: 오피스: 3
+- missing_suggested_queries: 1
 - must_not_contain: 게이밍: 1
 - must_not_contain: 마우스: 1
 
@@ -219,7 +219,7 @@
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti 가격 비교해 줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1481660원, 최고가 1936120원, 판매처 20곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1478650원, 최고가 1936120원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · pass
@@ -231,7 +231,7 @@
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT 가격 비교해 줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432360원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432350원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -267,7 +267,7 @@
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT 지금 사도 괜찮은 가격대야?
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432360원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535060원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1432350원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 535050원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -366,17 +366,17 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### keyboard-broad-ambiguous-safety-3 · soft_fail
+### keyboard-broad-ambiguous-safety-3 · pass
 - prompt: Keychron 키보드 가격 비교해 줘
 - expected_behavior: 브랜드 단위 Keychron compare는 ambiguous로 멈추고 모델 추천을 주는 편이 좋다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### keyboard-broad-ambiguous-safety-4 · soft_fail
 - prompt: 로지텍 기계식 키보드 가격 비교해 줘
 - expected_behavior: 브랜드 단위 로지텍 기계식 키보드 compare는 ambiguous여야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: must_not_contain: 마우스; missing_suggested_queries
+- notes: must_not_contain: 마우스
 
 ### keyboard-purchase-explain-1 · soft_fail
 - prompt: 게이밍 키보드 지금 사도 돼?
@@ -384,11 +384,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: must_not_contain: 오피스; must_not_contain: 사무용
 
-### keyboard-purchase-explain-2 · soft_fail
+### keyboard-purchase-explain-2 · pass
 - prompt: Keychron 키보드 지금 사도 괜찮아?
 - expected_behavior: Keychron 브랜드 explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
@@ -405,7 +405,7 @@
 ### monitor-broad-search-1 · pass
 - prompt: 27인치 4K 모니터 검색해 줘
 - expected_behavior: 27인치 4K 모니터 broad search는 모니터 본품 중심이어야 한다.
-- observed_summary: 27인치 4K 모니터 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 27인치 4K 모니터 기준 8개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-broad-search-2 · pass
@@ -417,13 +417,13 @@
 ### monitor-broad-search-3 · pass
 - prompt: 울트라와이드 모니터 검색해 줘
 - expected_behavior: 울트라와이드 모니터 broad search는 모니터 본체 위주여야 한다.
-- observed_summary: 울트라와이드 모니터 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 울트라와이드 모니터 기준 9개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-broad-search-4 · pass
 - prompt: 32인치 QHD 모니터 찾아줘
 - expected_behavior: 32인치 QHD 모니터 broad search는 과도하게 흩어지지 않아야 한다.
-- observed_summary: 32인치 QHD 모니터 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: 32인치 QHD 모니터 기준 9개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### monitor-exact-ish-search-1 · pass
@@ -474,11 +474,11 @@
 - observed_summary: 삼성 모니터 오디세이 G5 게이밍 S27DG500 68.4cm(27인치) QHD IPS 기준 최저가 301840원, 최고가 9570000원, 판매처 18곳입니다.
 - notes: (none)
 
-### monitor-broad-ambiguous-safety-1 · soft_fail
+### monitor-broad-ambiguous-safety-1 · pass
 - prompt: 27인치 4K 모니터 가격 비교해 줘
 - expected_behavior: 27인치 4K 모니터 broad compare는 ambiguous로 멈추고 모델 추천을 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### monitor-broad-ambiguous-safety-2 · pass
 - prompt: 게이밍 모니터 가격 비교해 줘
@@ -486,11 +486,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### monitor-broad-ambiguous-safety-3 · soft_fail
+### monitor-broad-ambiguous-safety-3 · pass
 - prompt: 32인치 QHD 모니터 가격 비교해 줘
 - expected_behavior: 32인치 QHD broad compare는 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### monitor-broad-ambiguous-safety-4 · pass
 - prompt: 울트라와이드 모니터 가격 비교해 줘
@@ -498,11 +498,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### monitor-purchase-explain-1 · soft_fail
+### monitor-purchase-explain-1 · pass
 - prompt: 27인치 4K 모니터 지금 사도 돼?
 - expected_behavior: 27인치 4K monitor explain은 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### monitor-purchase-explain-2 · pass
 - prompt: 게이밍 모니터 지금 사도 괜찮아?
@@ -525,7 +525,7 @@
 ### pc-part-broad-search-1 · pass
 - prompt: B650 메인보드 검색해 줘
 - expected_behavior: B650 메인보드 broad search는 완본체와 렌탈 노이즈를 줄여야 한다.
-- observed_summary: B650 메인보드 기준 10개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: B650 메인보드 기준 8개 모델, 10개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-2 · pass
@@ -537,7 +537,7 @@
 ### pc-part-broad-search-3 · pass
 - prompt: DDR5 32GB 메모리 검색해 줘
 - expected_behavior: DDR5 32GB 메모리 broad search는 메모리 본품 중심이어야 한다.
-- observed_summary: DDR5 32GB 메모리 기준 9개 모델, 10개 판매처를 찾았습니다.
+- observed_summary: DDR5 32GB 메모리 기준 8개 모델, 9개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-broad-search-4 · pass
@@ -594,23 +594,23 @@
 - observed_summary: SuperFlower SF-850F14XG LEADEX VII GOLD ATX 3.1 (PCIE5) 기준 최저가 179000원, 최고가 219300원, 판매처 20곳입니다.
 - notes: (none)
 
-### pc-part-broad-ambiguous-safety-1 · soft_fail
+### pc-part-broad-ambiguous-safety-1 · pass
 - prompt: B650 메인보드 가격 비교해 줘
 - expected_behavior: B650 broad compare는 ambiguous로 멈추고 모델 재질문을 유도해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
-### pc-part-broad-ambiguous-safety-2 · soft_fail
+### pc-part-broad-ambiguous-safety-2 · pass
 - prompt: 850W 파워 가격 비교해 줘
 - expected_behavior: 파워 broad compare는 ambiguous로 멈추고 follow-up query를 제안해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
-### pc-part-broad-ambiguous-safety-3 · soft_fail
+### pc-part-broad-ambiguous-safety-3 · pass
 - prompt: DDR5 32GB 메모리 가격 비교해 줘
 - expected_behavior: 메모리 broad compare는 동일상품 비교를 시도하지 않고 멈춰야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### pc-part-broad-ambiguous-safety-4 · pass
 - prompt: NVMe SSD 2TB 가격 비교해 줘
@@ -618,11 +618,11 @@
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
 - notes: (none)
 
-### pc-part-purchase-explain-1 · soft_fail
+### pc-part-purchase-explain-1 · pass
 - prompt: B650 메인보드 지금 사도 돼?
 - expected_behavior: B650 explain은 broad query면 ambiguous로 멈추고 follow-up query를 줘야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 
 ### pc-part-purchase-explain-2 · pass
 - prompt: Ryzen 7 9800X3D 지금 사도 괜찮아?
@@ -636,9 +636,9 @@
 - observed_summary: WD SN850X NVMe 2TB 기준 최저가 313500원, 최고가 1697500원, 판매처 17곳입니다. 현재 최저가는 313500원이고 최고가와의 차이는 1384000원입니다.
 - notes: (none)
 
-### pc-part-purchase-explain-4 · soft_fail
+### pc-part-purchase-explain-4 · pass
 - prompt: 850W 파워 지금 사도 괜찮은 가격대야?
 - expected_behavior: 파워 broad explain은 ambiguous로 멈추고 재질문을 유도해야 한다.
 - observed_summary: 정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.
-- notes: missing_suggested_queries
+- notes: (none)
 

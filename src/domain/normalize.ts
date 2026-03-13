@@ -8,6 +8,14 @@ const BRAND_ALIASES: Record<string, string> = {
   "asus": "ASUS",
   "아수스": "ASUS",
   "에이수스": "ASUS",
+  "asrock": "ASRock",
+  "애즈락": "ASRock",
+  "biostar": "BIOSTAR",
+  "바이오스타": "BIOSTAR",
+  "gigabyte": "GIGABYTE",
+  "기가바이트": "GIGABYTE",
+  "coolermaster": "CoolerMaster",
+  "쿨러마스터": "CoolerMaster",
   "msi": "MSI",
   "엠에스아이": "MSI",
   "hp": "HP",
@@ -16,10 +24,14 @@ const BRAND_ALIASES: Record<string, string> = {
   "wd": "WD",
   "wd_black": "WD",
   "wd black": "WD",
+  "키크론": "Keychron",
   "keychron": "Keychron",
   "앱코": "ABKO",
   "abko": "ABKO",
   "drunkdeer": "DrunkDeer",
+  "클레브": "KLEVV",
+  "klevv": "KLEVV",
+  "에센코어": "KLEVV",
   "superflower": "SuperFlower",
   "lenovo": "Lenovo",
   "레노버": "Lenovo",
@@ -74,6 +86,72 @@ const GRAPHICS_QUERY_CUES = [
   "그래픽카드",
   "그래픽 카드",
   "GPU"
+] as const;
+
+const KEYBOARD_QUERY_CUES = [
+  "키보드",
+  "KEYBOARD",
+  "기계식",
+  "MECHANICAL",
+  "무선",
+  "WIRELESS",
+  "KEYCHRON",
+  "키크론",
+  "LOGITECH",
+  "로지텍",
+  "ABKO",
+  "앱코",
+  "DRUNKDEER"
+] as const;
+
+const MONITOR_QUERY_CUES = [
+  "모니터",
+  "MONITOR",
+  "4K",
+  "UHD",
+  "QHD",
+  "FHD",
+  "울트라와이드",
+  "ULTRAWIDE"
+] as const;
+
+const PC_PART_QUERY_CUES = [
+  "메인보드",
+  "MOTHERBOARD",
+  "파워",
+  "PSU",
+  "메모리",
+  "MEMORY",
+  "램",
+  "RAM",
+  "DDR5",
+  "DDR4",
+  "SSD",
+  "NVME",
+  "RYZEN",
+  "INTEL",
+  "B650"
+] as const;
+
+const MONITOR_DEVICE_CUES = ["모니터", "MONITOR", "인치", "QHD", "UHD", "4K", "FHD", "OLED"] as const;
+
+const CANONICAL_BRAND_CUES = [
+  { canonical: "KEYCHRON", cues: ["KEYCHRON", "키크론"] },
+  { canonical: "LOGITECH", cues: ["LOGITECH", "로지텍"] },
+  { canonical: "ABKO", cues: ["ABKO", "앱코"] },
+  { canonical: "DRUNKDEER", cues: ["DRUNKDEER"] },
+  { canonical: "LG", cues: ["LG", "엘지"] },
+  { canonical: "DELL", cues: ["DELL"] },
+  { canonical: "MSI", cues: ["MSI", "엠에스아이"] },
+  { canonical: "SAMSUNG", cues: ["SAMSUNG", "삼성"] },
+  { canonical: "ASUS", cues: ["ASUS", "아수스", "에이수스"] },
+  { canonical: "ASROCK", cues: ["ASROCK", "애즈락"] },
+  { canonical: "BIOSTAR", cues: ["BIOSTAR", "바이오스타"] },
+  { canonical: "GIGABYTE", cues: ["GIGABYTE", "기가바이트"] },
+  { canonical: "COOLERMASTER", cues: ["COOLERMASTER", "쿨러마스터"] },
+  { canonical: "SUPERFLOWER", cues: ["SUPERFLOWER"] },
+  { canonical: "WD", cues: ["WD", "WD BLACK", "WD_BLACK"] },
+  { canonical: "KLEVV", cues: ["KLEVV", "클레브", "에센코어"] }
 ] as const;
 
 const GPU_VENDOR_OR_FAMILY_CUES = ["NVIDIA", "엔비디아", "GEFORCE", "지포스", "RADEON", "라데온"] as const;
@@ -246,6 +324,31 @@ export function detectBroadQueryKind(value: string): "graphics-card" | "laptop" 
   return "other";
 }
 
+export function detectSupplementalQueryKind(value: string): "keyboard" | "monitor" | "pc-part" | "other" {
+  const normalizedQuery = normalizeQuery(simplifyIntentQuery(value));
+
+  if (KEYBOARD_QUERY_CUES.some((cue) => normalizedQuery.includes(cue))) {
+    return "keyboard";
+  }
+
+  if (
+    MONITOR_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)) ||
+    /\b(24|27|29|32|34|38|40|43)\s*(인치|형)\b/.test(normalizedQuery)
+  ) {
+    return "monitor";
+  }
+
+  if (
+    PC_PART_QUERY_CUES.some((cue) => normalizedQuery.includes(cue)) ||
+    /\b\d{3,4}W\b/.test(normalizedQuery) ||
+    /\b(16GB|32GB|64GB|1TB|2TB|4TB)\b/.test(normalizedQuery)
+  ) {
+    return "pc-part";
+  }
+
+  return "other";
+}
+
 export function extractGpuModel(value: string): string | null {
   const normalized = normalizeModelText(value);
 
@@ -347,6 +450,7 @@ export function resolvePrimaryModelForQuery(query: string, title: string): strin
   const simplifiedQuery = simplifyIntentQuery(query);
   const exactQueryModel = extractExactQueryModel(simplifiedQuery);
   const broadQueryKind = detectBroadQueryKind(simplifiedQuery);
+  const supplementalQueryKind = detectSupplementalQueryKind(simplifiedQuery);
   const notebookModelCode = extractNotebookModelCode(title);
   const gpuModel = extractGpuModel(title);
   const nonLaptopExactModel = extractNonLaptopExactModel(title);
@@ -365,6 +469,18 @@ export function resolvePrimaryModelForQuery(query: string, title: string): strin
 
   if (broadQueryKind === "graphics-card") {
     return gpuModel;
+  }
+
+  if (supplementalQueryKind === "keyboard") {
+    return nonLaptopExactModel ?? extractBroadKeyboardModel(title);
+  }
+
+  if (supplementalQueryKind === "monitor") {
+    return nonLaptopExactModel ?? extractBroadMonitorModel(title);
+  }
+
+  if (supplementalQueryKind === "pc-part") {
+    return nonLaptopExactModel ?? extractBroadPcPartModel(simplifiedQuery, title);
   }
 
   return nonLaptopExactModel ?? notebookModelCode ?? gpuModel;
@@ -514,6 +630,161 @@ function hasBroadGpuFamilyCue(value: string): boolean {
   const normalized = normalizeQuery(value);
 
   return GPU_VENDOR_OR_FAMILY_CUES.some((cue) => normalized.includes(cue));
+}
+
+function extractBroadKeyboardModel(value: string): string | null {
+  const normalized = normalizeQuery(value);
+
+  if (!(normalized.includes("KEYCHRON") || normalized.includes("키크론"))) {
+    return null;
+  }
+
+  const modelMatch = normalized.match(/\b([A-Z]\d{1,2})(?:\s*(PRO|MAX|SE2|SE|HE|PLUS))?\b/);
+  if (!modelMatch) {
+    return null;
+  }
+
+  const suffix = modelMatch[2] ? ` ${modelMatch[2]}` : "";
+  return `KEYCHRON ${modelMatch[1]}${suffix}`;
+}
+
+function extractBroadMonitorModel(value: string): string | null {
+  const normalized = normalizeQuery(value);
+
+  if (!MONITOR_DEVICE_CUES.some((cue) => normalized.includes(cue))) {
+    return null;
+  }
+
+  const candidates = [
+    ...normalized.matchAll(/\b([A-Z]{1,3}\d{2,3}[A-Z]{1,4}\d{0,3}[A-Z]?)\b/g),
+    ...normalized.matchAll(/\b(\d{2,3}[A-Z]{1,4}\d{0,3}[A-Z]?)\b/g)
+  ]
+    .map((match) => match[1])
+    .filter((candidate) => isLikelyMonitorModelCode(candidate));
+
+  const candidate = candidates[0];
+  if (!candidate) {
+    return null;
+  }
+
+  const brand = extractCanonicalBrandFromText(normalized);
+  return brand ? `${brand} ${candidate}` : candidate;
+}
+
+function extractBroadPcPartModel(query: string, value: string): string | null {
+  const normalizedQuery = normalizeQuery(query);
+  const normalizedTitle = normalizeQuery(value);
+
+  if (normalizedQuery.includes("B650") || normalizedQuery.includes("메인보드")) {
+    return extractBroadMotherboardModel(normalizedTitle);
+  }
+
+  if (
+    normalizedQuery.includes("파워") ||
+    normalizedQuery.includes("PSU") ||
+    /\b\d{3,4}W\b/.test(normalizedQuery)
+  ) {
+    return extractBroadPowerModel(normalizedTitle);
+  }
+
+  if (normalizedQuery.includes("DDR5") || normalizedQuery.includes("DDR4") || normalizedQuery.includes("메모리")) {
+    return extractBroadMemoryModel(normalizedTitle);
+  }
+
+  return null;
+}
+
+function extractBroadMotherboardModel(normalizedTitle: string): string | null {
+  const tokens = normalizedTitle.split(" ");
+  const index = tokens.findIndex((token) => token === "B650" || token.startsWith("B650"));
+  if (index === -1) {
+    return null;
+  }
+
+  const modelTokens: string[] = [];
+
+  for (let current = index; current < tokens.length && modelTokens.length < 4; current += 1) {
+    const token = tokens[current]!;
+    if (!/^[A-Z0-9-]+$/.test(token)) {
+      break;
+    }
+
+    modelTokens.push(token);
+  }
+
+  if (modelTokens.length === 0) {
+    return null;
+  }
+
+  const brand = extractCanonicalBrandFromText(normalizedTitle);
+  const model = modelTokens
+    .join(" ")
+    .replace(/^B650 M\b/, "B650M")
+    .replace(/^B650 M-/, "B650M-")
+    .replace(/^B650 MT-E\b/, "B650MT-E");
+
+  return brand ? `${brand} ${model}` : model;
+}
+
+function extractBroadPowerModel(normalizedTitle: string): string | null {
+  const brand = extractCanonicalBrandFromText(normalizedTitle);
+  const patterns = [
+    /\b(UD850GM(?:\s+PG5)?)\b/,
+    /\b(MWE\s+GOLD\s+850(?:\s+V\d+)?)\b/,
+    /\b(WIZMAX\s+850W)\b/,
+    /\b(MASTERX(?:\s+[A-Z])?\s+850W)\b/,
+    /\b(SF-850F14XG)\b/
+  ] as const;
+
+  for (const pattern of patterns) {
+    const match = normalizedTitle.match(pattern);
+    if (match?.[1]) {
+      return brand ? `${brand} ${match[1]}` : match[1];
+    }
+  }
+
+  return null;
+}
+
+function extractBroadMemoryModel(normalizedTitle: string): string | null {
+  const brand = extractCanonicalBrandFromText(normalizedTitle);
+  const ddrMatch = normalizedTitle.match(/\b(DDR4|DDR5)\b/);
+  const speedMatch = normalizedTitle.match(/\b(PC5-\d{4,5}|PC4-\d{4,5})\b/);
+  const capacityMatch = normalizedTitle.match(/\b(16GB|32GB|64GB)\b/);
+
+  if (!brand || !ddrMatch?.[1] || !capacityMatch?.[1]) {
+    return null;
+  }
+
+  const parts = [brand, ddrMatch[1]];
+  if (speedMatch?.[1]) {
+    parts.push(speedMatch[1]);
+  }
+  parts.push(capacityMatch[1]);
+
+  return parts.join(" ");
+}
+
+function extractCanonicalBrandFromText(normalizedTitle: string): string | null {
+  for (const entry of CANONICAL_BRAND_CUES) {
+    if (entry.cues.some((cue) => normalizedTitle.includes(cue))) {
+      return entry.canonical;
+    }
+  }
+
+  return null;
+}
+
+function isLikelyMonitorModelCode(candidate: string): boolean {
+  if (candidate.length < 5 || candidate.length > 10) {
+    return false;
+  }
+
+  if (!/[A-Z]/.test(candidate) || !/\d/.test(candidate)) {
+    return false;
+  }
+
+  return !["HDR", "HDMI", "OLED", "IPS", "UHD", "QHD", "FHD", "USB", "TYPE"].includes(candidate);
 }
 
 function extractNonLaptopExactModel(value: string): string | null {
