@@ -24,7 +24,7 @@ name = "electronics-price-mcp-danawa-canary"
 [env.danawa-canary.vars]
 ENABLE_DANAWA = "true"
 ENABLE_STATIC_CATALOG = "true"
-STATIC_CATALOG_DATASET = "core-exact-v1"
+STATIC_CATALOG_DATASET = "canary-eval-v1"
 
 [env.danawa-canary.observability]
 enabled = true

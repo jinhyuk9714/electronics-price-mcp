@@ -1,4 +1,5 @@
 import coreExactV1Records from "../../data/static-catalog/core-exact-v1.json";
+import canaryEvalV1Records from "../../data/static-catalog/canary-eval-v1.json";
 import {
   extractExactQueryModel,
   normalizeBrand,
@@ -12,7 +13,7 @@ import type {
   SearchProviderResult
 } from "../domain/types.js";
 
-export type StaticCatalogDatasetName = "core-exact-v1";
+export type StaticCatalogDatasetName = "core-exact-v1" | "canary-eval-v1";
 
 export interface StaticCatalogOfferRecord {
   sourceProductId: string;
@@ -33,7 +34,11 @@ export interface StaticCatalogRecord {
 }
 
 const BUILTIN_DATASETS: Record<StaticCatalogDatasetName, StaticCatalogRecord[]> = {
-  "core-exact-v1": validateStaticCatalogRecords(coreExactV1Records, "core-exact-v1")
+  "core-exact-v1": validateStaticCatalogRecords(coreExactV1Records, "core-exact-v1"),
+  "canary-eval-v1": mergeStaticCatalogRecords(
+    validateStaticCatalogRecords(coreExactV1Records, "core-exact-v1"),
+    validateStaticCatalogRecords(canaryEvalV1Records, "canary-eval-v1")
+  )
 };
 
 export class StaticCatalogSearchProvider implements SearchProvider {
@@ -79,11 +84,24 @@ export class StaticCatalogSearchProvider implements SearchProvider {
 }
 
 export function getStaticCatalogDatasetRecords(datasetName: string): StaticCatalogRecord[] {
-  if (datasetName === "core-exact-v1") {
+  if (datasetName === "core-exact-v1" || datasetName === "canary-eval-v1") {
     return BUILTIN_DATASETS[datasetName];
   }
 
   throw new Error(`지원하지 않는 정적 카탈로그 데이터셋입니다: ${datasetName}`);
+}
+
+function mergeStaticCatalogRecords(
+  baseRecords: StaticCatalogRecord[],
+  overrideRecords: StaticCatalogRecord[]
+): StaticCatalogRecord[] {
+  const merged = new Map(baseRecords.map((record) => [record.id, record] as const));
+
+  for (const record of overrideRecords) {
+    merged.set(record.id, record);
+  }
+
+  return Array.from(merged.values());
 }
 
 function validateStaticCatalogRecords(records: unknown, datasetName: string): StaticCatalogRecord[] {

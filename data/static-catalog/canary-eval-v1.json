@@ -1,0 +1,122 @@
+[
+  {
+    "id": "keyboard-abko-k660",
+    "category": "keyboard",
+    "normalizedModel": "ABKO K660",
+    "title": "앱코 ABKO K660 완전방수 카일 광축 키보드",
+    "brand": "앱코",
+    "keywords": ["ABKO K660", "앱코 K660", "게이밍 키보드", "기계식 키보드", "광축 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-k660-eland",
+        "mallName": "전자랜드",
+        "price": 59900,
+        "link": "https://static-catalog.example.com/keyboard/k660/eland",
+        "image": "https://static-catalog.example.com/images/k660.jpg"
+      },
+      {
+        "sourceProductId": "static-k660-11st",
+        "mallName": "11번가",
+        "price": 64900,
+        "link": "https://static-catalog.example.com/keyboard/k660/11st",
+        "image": "https://static-catalog.example.com/images/k660.jpg"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-drunkdeer-a75",
+    "category": "keyboard",
+    "normalizedModel": "DRUNKDEER A75",
+    "title": "DrunkDeer A75 래피드트리거 게이밍 키보드",
+    "brand": "DrunkDeer",
+    "keywords": ["DrunkDeer A75", "A75", "게이밍 키보드", "래피드트리거", "기계식 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-a75-smartstore",
+        "mallName": "smartstore",
+        "price": 139000,
+        "link": "https://static-catalog.example.com/keyboard/a75/smartstore",
+        "image": "https://static-catalog.example.com/images/a75.jpg"
+      },
+      {
+        "sourceProductId": "static-a75-11st",
+        "mallName": "11ST",
+        "price": 142000,
+        "link": "https://static-catalog.example.com/keyboard/a75/11st",
+        "image": "https://static-catalog.example.com/images/a75.jpg"
+      }
+    ]
+  },
+  {
+    "id": "monitor-s27dg500",
+    "category": "monitor",
+    "normalizedModel": "SAMSUNG S27DG500",
+    "title": "삼성전자 오디세이 G5 S27DG500 27인치 게이밍 모니터",
+    "brand": "삼성전자",
+    "keywords": ["S27DG500", "27인치 QHD 모니터", "게이밍 모니터", "오디세이 G5"],
+    "offers": [
+      {
+        "sourceProductId": "static-s27dg500-gmarket",
+        "mallName": "G마켓",
+        "price": 339000,
+        "link": "https://static-catalog.example.com/monitor/s27dg500/gmarket",
+        "image": "https://static-catalog.example.com/images/s27dg500.jpg"
+      },
+      {
+        "sourceProductId": "static-s27dg500-11st",
+        "mallName": "11번가",
+        "price": 349000,
+        "link": "https://static-catalog.example.com/monitor/s27dg500/11st",
+        "image": "https://static-catalog.example.com/images/s27dg500.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pcpart-samsung-ddr5-32gb",
+    "category": "pc-part",
+    "normalizedModel": "SAMSUNG DDR5 PC5-44800 32GB",
+    "title": "삼성전자 DDR5 PC5-44800 32GB 데스크탑 메모리",
+    "brand": "삼성전자",
+    "keywords": ["DDR5 32GB 메모리", "삼성 DDR5 32GB", "PC5-44800 32GB", "메모리"],
+    "offers": [
+      {
+        "sourceProductId": "static-ddr5-32gb-samsung-11st",
+        "mallName": "11번가",
+        "price": 114000,
+        "link": "https://static-catalog.example.com/pc-part/ddr5-32gb-samsung/11st",
+        "image": "https://static-catalog.example.com/images/ddr5-32gb-samsung.jpg"
+      },
+      {
+        "sourceProductId": "static-ddr5-32gb-samsung-smartstore",
+        "mallName": "네이버 스마트스토어",
+        "price": 116000,
+        "link": "https://static-catalog.example.com/pc-part/ddr5-32gb-samsung/smartstore",
+        "image": "https://static-catalog.example.com/images/ddr5-32gb-samsung.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pcpart-klevv-ddr5-32gb",
+    "category": "pc-part",
+    "normalizedModel": "KLEVV DDR5 PC5-44800 32GB",
+    "title": "에센코어 KLEVV DDR5 PC5-44800 CL46 32GB 메모리",
+    "brand": "에센코어",
+    "keywords": ["DDR5 32GB 메모리", "KLEVV DDR5 32GB", "PC5-44800 32GB", "메모리"],
+    "offers": [
+      {
+        "sourceProductId": "static-ddr5-32gb-klevv-gmarket",
+        "mallName": "gmarket",
+        "price": 109000,
+        "link": "https://static-catalog.example.com/pc-part/ddr5-32gb-klevv/gmarket",
+        "image": "https://static-catalog.example.com/images/ddr5-32gb-klevv.jpg"
+      },
+      {
+        "sourceProductId": "static-ddr5-32gb-klevv-coupang",
+        "mallName": "쿠팡",
+        "price": 111000,
+        "link": "https://static-catalog.example.com/pc-part/ddr5-32gb-klevv/coupang",
+        "image": "https://static-catalog.example.com/images/ddr5-32gb-klevv.jpg"
+      }
+    ]
+  }
+]

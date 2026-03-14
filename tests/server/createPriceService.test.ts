@@ -141,4 +141,35 @@ describe("createPriceService", () => {
     expect(compareResult.status).toBe("ambiguous");
     expect(compareResult.offers.every((offer) => offer.source === "static-catalog")).toBe(true);
   });
+
+  test("supports canary-eval-v1 as a static-only canary fallback for exact compare and broad suggestions", async () => {
+    const service = createPriceService({
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "canary-eval-v1"
+    } as never);
+
+    const k660Search = await service.searchProducts({
+      query: "앱코 K660",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+    const a75Compare = await service.compareProductPrices({
+      query: "DrunkDeer A75 가격 비교해 줘"
+    });
+    const s27dg500Compare = await service.compareProductPrices({
+      query: "삼성 S27DG500 가격 비교해 줘"
+    });
+    const ddr5Compare = await service.compareProductPrices({
+      query: "DDR5 32GB 메모리 가격 비교해 줘"
+    });
+
+    expect(k660Search.offers[0]?.title).toContain("앱코");
+    expect(a75Compare.status).toBe("ok");
+    expect(a75Compare.summary).toContain("DrunkDeer");
+    expect(s27dg500Compare.status).toBe("ok");
+    expect(s27dg500Compare.summary).toContain("S27DG500");
+    expect(ddr5Compare.status).toBe("ambiguous");
+    expect(ddr5Compare.suggestedQueries?.length).toBeGreaterThan(0);
+  });
 });

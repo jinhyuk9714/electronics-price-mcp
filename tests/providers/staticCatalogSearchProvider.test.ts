@@ -174,4 +174,60 @@ describe("StaticCatalogSearchProvider", () => {
         })
     ).toThrow("정적 카탈로그 데이터셋");
   });
+
+  test("supports canary-eval-v1 exact keyboard and monitor records", async () => {
+    const provider = new StaticCatalogSearchProvider({
+      datasetName: "canary-eval-v1"
+    });
+
+    const k660Result = await provider.searchProducts({
+      query: "앱코 K660",
+      category: "keyboard",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    const a75Result = await provider.searchProducts({
+      query: "DrunkDeer A75",
+      category: "keyboard",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    const s27dg500Result = await provider.searchProducts({
+      query: "삼성 S27DG500",
+      category: "monitor",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(k660Result.offers[0]?.title).toContain("앱코");
+    expect(k660Result.offers[0]?.brand).toBe("ABKO");
+    expect(k660Result.offers[0]?.title).toContain("K660");
+    expect(a75Result.offers[0]?.title).toContain("DrunkDeer");
+    expect(a75Result.offers[0]?.title).toContain("A75");
+    expect(s27dg500Result.offers[0]?.brand).toBe("Samsung");
+    expect(s27dg500Result.offers[0]?.title).toContain("S27DG500");
+  });
+
+  test("supports canary-eval-v1 broad pc-part prompts conservatively", async () => {
+    const provider = new StaticCatalogSearchProvider({
+      datasetName: "canary-eval-v1"
+    });
+
+    const result = await provider.searchProducts({
+      query: "DDR5 32GB 메모리",
+      category: "pc-part",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers.length).toBeGreaterThanOrEqual(2);
+    expect(result.offers.every((offer) => offer.title.includes("DDR5"))).toBe(true);
+    expect(result.offers.every((offer) => offer.title.includes("32GB"))).toBe(true);
+  });
 });

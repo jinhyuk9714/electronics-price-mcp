@@ -69,14 +69,20 @@ describe("CI workflow automation", () => {
   test("documentation explains automated CI and manual live evaluation split", () => {
     const readme = readText(`${ROOT}/README.md`);
     const operations = readText(`${ROOT}/docs/OPERATIONS.md`);
+    const wrangler = readText(`${ROOT}/wrangler.toml`);
 
     expect(readme).toContain("verify:ci");
     expect(readme).toContain("live service-quality 평가는 수동 workflow");
     expect(readme).toContain("Danawa rollout 전에는 canary workflow");
+    expect(readme).toContain("canary-eval-v1");
 
     expect(operations).toContain("ci.yml");
     expect(operations).toContain("canary-eval.yml");
     expect(operations).toContain("artifact");
     expect(operations).toContain("100 / 0 / 0");
+    expect(operations).toContain("canary-eval-v1");
+
+    expect(wrangler).toContain("[env.danawa-canary.vars]");
+    expect(wrangler).toContain('STATIC_CATALOG_DATASET = "canary-eval-v1"');
   });
 });

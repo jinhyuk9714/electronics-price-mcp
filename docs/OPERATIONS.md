@@ -52,7 +52,7 @@ Durable Object는 Wrangler binding으로 주입됩니다. `.dev.vars`에 직접 
 - `PUBLIC_BASE_URL`
 - `CHATGPT_APP_URL`
 
-공개 배포본 production은 현재 네이버 중심으로 운영됩니다. Danawa는 `danawa-canary` 환경에서 먼저 검증하고, self-host 환경에서도 secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다. `static-catalog`는 canary/dev에서 provider 부재 시 fallback 검증용으로만 켜고, production 기본값은 `ENABLE_STATIC_CATALOG=false`입니다.
+공개 배포본 production은 현재 네이버 중심으로 운영됩니다. Danawa는 `danawa-canary` 환경에서 먼저 검증하고, self-host 환경에서도 secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다. `static-catalog`는 canary/dev에서 provider 부재 시 fallback 검증용으로만 켜고, production 기본값은 `ENABLE_STATIC_CATALOG=false`입니다. `danawa-canary`의 기본 정적 dataset은 `canary-eval-v1`입니다.
 
 ## Rate Limit 정책
 
@@ -233,7 +233,7 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
 확인 순서:
 
 1. `ENABLE_STATIC_CATALOG=true`가 canary env에 들어가 있는지 확인
-2. `STATIC_CATALOG_DATASET=core-exact-v1`가 canary env에 들어가 있는지 확인
+2. `STATIC_CATALOG_DATASET=canary-eval-v1`가 canary env에 들어가 있는지 확인
 3. `npm run smoke:static-catalog -- --query "RTX 5070" --category graphics-card`로 fallback 응답을 확인
 4. exact 모델 대표 질의 `RTX 5070`, `27GR93U`, `Ryzen 7 9800X3D`, `16Z90T-GA5CK`를 수동 점검
 

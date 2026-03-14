@@ -18,3 +18,4 @@ CHATGPT_APP_URL=
 ## .dev.vars에 직접 넣지 않습니다.
 ## danawa-canary 배포에서는 wrangler.toml의 env.danawa-canary.vars가 ENABLE_DANAWA=true를 강제합니다.
 ## 정적 카탈로그는 canary/dev fallback 용도이며 production 기본값은 ENABLE_STATIC_CATALOG=false입니다.
+## danawa-canary는 STATIC_CATALOG_DATASET=canary-eval-v1를 기본으로 사용합니다.
