@@ -13,6 +13,7 @@ import type {
 import { AggregateSearchProvider } from "../providers/aggregateSearchProvider.js";
 import { DanawaSearchProvider } from "../providers/danawaSearchProvider.js";
 import { NaverShoppingClient } from "../providers/naverShoppingClient.js";
+import { StaticCatalogSearchProvider } from "../providers/staticCatalogSearchProvider.js";
 
 export interface PriceServiceLike {
   searchProducts(input: SearchProductsInput): Promise<SearchProductsResult>;
@@ -48,6 +49,14 @@ export function createSearchProviders(env?: RuntimeEnv): SearchProvider[] {
     );
   }
 
+  if (config.enableStaticCatalog) {
+    providers.push(
+      new StaticCatalogSearchProvider({
+        datasetName: config.staticCatalogDataset
+      })
+    );
+  }
+
   return providers;
 }
 
@@ -71,6 +80,8 @@ export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
     config.danawaClientId ?? "",
     config.danawaClientSecret ?? "",
     config.danawaApiBaseUrl,
+    config.enableStaticCatalog ? "static-enabled" : "static-disabled",
+    config.staticCatalogDataset,
     config.requestTimeoutMs,
     config.cacheTtlMs
   ].join("|");

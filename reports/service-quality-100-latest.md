@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T04:28:35.132Z
+- 생성 시각: 2026-03-14T05:12:42.592Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -173,7 +173,7 @@
 ### graphics-card-broad-search-3 · pass
 - prompt: RX 9070 그래픽카드 찾아줘
 - expected_behavior: 라데온 broad search는 부속품과 완본체를 줄여야 한다.
-- observed_summary: RX 9070 기준 1개 모델, 3개 판매처를 찾았습니다.
+- observed_summary: RX 9070 기준 1개 모델, 2개 판매처를 찾았습니다.
 - notes: (none)
 
 ### graphics-card-broad-search-4 · pass
@@ -215,19 +215,19 @@
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti 가격 비교해 줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1514880원, 최고가 1955220원, 판매처 20곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1511870원, 최고가 1955220원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 가격 비교해 줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 931680원, 최고가 1065430원, 판매처 5곳입니다.
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 931630원, 최고가 1065430원, 판매처 5곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT 가격 비교해 줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 19곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431700원, 판매처 19곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -263,7 +263,7 @@
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT 지금 사도 괜찮은 가격대야?
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 19곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534410원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431700원, 판매처 19곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534400원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -323,7 +323,7 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass
@@ -461,7 +461,7 @@
 ### monitor-exact-compare-3 · pass
 - prompt: MSI MPG 321URX 가격 비교해 줘
 - expected_behavior: MSI 321URX exact compare는 ok 상태를 목표로 한다.
-- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371300원, 최고가 2263850원, 판매처 19곳입니다.
+- observed_summary: MSI MPG 321URX QD-OLED 80~81cm(32인치) 기준 최저가 1371190원, 최고가 2263850원, 판매처 19곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-4 · pass

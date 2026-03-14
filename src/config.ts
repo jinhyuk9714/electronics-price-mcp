@@ -2,6 +2,8 @@ export interface RuntimeConfig {
   naverClientId?: string;
   naverClientSecret?: string;
   enableDanawa: boolean;
+  enableStaticCatalog: boolean;
+  staticCatalogDataset: string;
   danawaClientId?: string;
   danawaClientSecret?: string;
   danawaApiBaseUrl: string;
@@ -15,6 +17,8 @@ export interface RuntimeEnv {
   NAVER_CLIENT_ID?: string;
   NAVER_CLIENT_SECRET?: string;
   ENABLE_DANAWA?: string;
+  ENABLE_STATIC_CATALOG?: string;
+  STATIC_CATALOG_DATASET?: string;
   DANAWA_CLIENT_ID?: string;
   DANAWA_CLIENT_SECRET?: string;
   DANAWA_API_BASE_URL?: string;
@@ -28,12 +32,15 @@ export interface RuntimeEnv {
 
 export const DEFAULT_PUBLIC_BASE_URL = "https://electronics-price-mcp.jinhyuk9714.workers.dev";
 export const DEFAULT_DANAWA_API_BASE_URL = "http://api.danawa.com";
+export const DEFAULT_STATIC_CATALOG_DATASET = "core-exact-v1";
 
 export function readConfig(env?: RuntimeEnv): RuntimeConfig {
   return {
     naverClientId: env?.NAVER_CLIENT_ID,
     naverClientSecret: env?.NAVER_CLIENT_SECRET,
     enableDanawa: readBoolean(env?.ENABLE_DANAWA, false),
+    enableStaticCatalog: readBoolean(env?.ENABLE_STATIC_CATALOG, false),
+    staticCatalogDataset: env?.STATIC_CATALOG_DATASET || DEFAULT_STATIC_CATALOG_DATASET,
     danawaClientId: env?.DANAWA_CLIENT_ID,
     danawaClientSecret: env?.DANAWA_CLIENT_SECRET,
     danawaApiBaseUrl: env?.DANAWA_API_BASE_URL || DEFAULT_DANAWA_API_BASE_URL,

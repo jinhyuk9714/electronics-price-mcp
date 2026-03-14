@@ -442,6 +442,17 @@ function resolveComparisonTarget(options: {
     };
   }
 
+  if (!exactQueryModel && hasOnlyStaticCatalogOffers(comparisonOffers)) {
+    return {
+      status: "ambiguous",
+      query: resolvedQuery,
+      summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      warning: createAmbiguousWarning(comparisonOffers),
+      offers: comparisonOffers,
+      diagnostics: options.diagnostics
+    };
+  }
+
   if ((!exactQueryModel && (isAmbiguousComparison(baseQuery, comparisonOffers) || groups.length !== 1)) || groups.length !== 1) {
     return {
       status: "ambiguous",
@@ -1267,8 +1278,20 @@ function compareSourcePriority(
   return getSourcePriority(left) - getSourcePriority(right);
 }
 
+function hasOnlyStaticCatalogOffers(offers: ProductOffer[]): boolean {
+  return offers.length > 0 && offers.every((offer) => offer.source === "static-catalog");
+}
+
 function getSourcePriority(source: ProductOffer["source"]): number {
-  return source === "naver-shopping" ? 0 : 1;
+  if (source === "naver-shopping") {
+    return 0;
+  }
+
+  if (source === "danawa") {
+    return 1;
+  }
+
+  return 2;
 }
 
 function calculateOfferInfoScore(offer: ProductOffer): number {

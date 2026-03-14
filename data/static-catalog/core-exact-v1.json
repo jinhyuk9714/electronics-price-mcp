@@ -1,0 +1,482 @@
+[
+  {
+    "id": "laptop-16z90t-ga5ck",
+    "category": "laptop",
+    "normalizedModel": "16Z90T-GA5CK",
+    "title": "LG 그램 16 16Z90T-GA5CK",
+    "brand": "LG전자",
+    "keywords": ["16Z90T-GA5CK", "그램 16", "lg gram 16", "16인치 노트북"],
+    "offers": [
+      {
+        "sourceProductId": "static-16z90t-ga5ck-eland",
+        "mallName": "전자랜드",
+        "price": 1699000,
+        "link": "https://static-catalog.example.com/laptop/16z90t-ga5ck/eland",
+        "image": "https://static-catalog.example.com/images/16z90t-ga5ck.jpg"
+      },
+      {
+        "sourceProductId": "static-16z90t-ga5ck-compuzone",
+        "mallName": "컴퓨존",
+        "price": 1729000,
+        "link": "https://static-catalog.example.com/laptop/16z90t-ga5ck/compuzone",
+        "image": "https://static-catalog.example.com/images/16z90t-ga5ck.jpg"
+      }
+    ]
+  },
+  {
+    "id": "laptop-nt960xgq-a51a",
+    "category": "laptop",
+    "normalizedModel": "NT960XGQ-A51A",
+    "title": "삼성 갤럭시북4 프로 NT960XGQ-A51A",
+    "brand": "삼성전자",
+    "keywords": ["NT960XGQ-A51A", "갤북4 프로 16", "갤럭시북4 프로 16", "16인치 노트북"],
+    "offers": [
+      {
+        "sourceProductId": "static-nt960xgq-a51a-11st",
+        "mallName": "11번가",
+        "price": 1889000,
+        "link": "https://static-catalog.example.com/laptop/nt960xgq-a51a/11st",
+        "image": "https://static-catalog.example.com/images/nt960xgq-a51a.jpg"
+      },
+      {
+        "sourceProductId": "static-nt960xgq-a51a-ssg",
+        "mallName": "SSG닷컴",
+        "price": 1929000,
+        "link": "https://static-catalog.example.com/laptop/nt960xgq-a51a/ssg",
+        "image": "https://static-catalog.example.com/images/nt960xgq-a51a.jpg"
+      }
+    ]
+  },
+  {
+    "id": "laptop-15irx9",
+    "category": "laptop",
+    "normalizedModel": "15IRX9",
+    "title": "레노버 리전 5i 15IRX9 RTX 4060",
+    "brand": "Lenovo",
+    "keywords": ["15IRX9", "4060 노트북", "게이밍 노트북", "리전 5i"],
+    "offers": [
+      {
+        "sourceProductId": "static-15irx9-compuzone",
+        "mallName": "컴퓨존",
+        "price": 1679000,
+        "link": "https://static-catalog.example.com/laptop/15irx9/compuzone",
+        "image": "https://static-catalog.example.com/images/15irx9.jpg"
+      },
+      {
+        "sourceProductId": "static-15irx9-eland",
+        "mallName": "전자랜드",
+        "price": 1699000,
+        "link": "https://static-catalog.example.com/laptop/15irx9/eland",
+        "image": "https://static-catalog.example.com/images/15irx9.jpg"
+      }
+    ]
+  },
+  {
+    "id": "laptop-15-fb2061ax",
+    "category": "laptop",
+    "normalizedModel": "15-FB2061AX",
+    "title": "HP Victus 15-fb2061AX RTX 4060",
+    "brand": "HP",
+    "keywords": ["15-FB2061AX", "4060 노트북", "빅터스", "게이밍 노트북"],
+    "offers": [
+      {
+        "sourceProductId": "static-15-fb2061ax-hmall",
+        "mallName": "Hmall",
+        "price": 1499000,
+        "link": "https://static-catalog.example.com/laptop/15-fb2061ax/hmall",
+        "image": "https://static-catalog.example.com/images/15-fb2061ax.jpg"
+      },
+      {
+        "sourceProductId": "static-15-fb2061ax-11st",
+        "mallName": "11번가",
+        "price": 1519000,
+        "link": "https://static-catalog.example.com/laptop/15-fb2061ax/11st",
+        "image": "https://static-catalog.example.com/images/15-fb2061ax.jpg"
+      }
+    ]
+  },
+  {
+    "id": "gpu-rtx-5070",
+    "category": "graphics-card",
+    "normalizedModel": "RTX 5070",
+    "title": "ZOTAC GAMING GeForce RTX 5070 Twin Edge",
+    "brand": "ZOTAC",
+    "keywords": ["RTX 5070", "5070 그래픽카드", "엔비디아 5070", "게이밍 그래픽카드"],
+    "offers": [
+      {
+        "sourceProductId": "static-rtx5070-compuzone",
+        "mallName": "컴퓨존",
+        "price": 799000,
+        "link": "https://static-catalog.example.com/gpu/rtx5070/compuzone",
+        "image": "https://static-catalog.example.com/images/rtx5070.jpg"
+      },
+      {
+        "sourceProductId": "static-rtx5070-eland",
+        "mallName": "전자랜드",
+        "price": 809000,
+        "link": "https://static-catalog.example.com/gpu/rtx5070/eland",
+        "image": "https://static-catalog.example.com/images/rtx5070.jpg"
+      }
+    ]
+  },
+  {
+    "id": "gpu-rtx-5070-ti",
+    "category": "graphics-card",
+    "normalizedModel": "RTX 5070 TI",
+    "title": "MSI GeForce RTX 5070 Ti Ventus 2X OC",
+    "brand": "MSI",
+    "keywords": ["RTX 5070 TI", "5070 Ti 그래픽카드", "엔비디아 5070 ti", "게이밍 그래픽카드"],
+    "offers": [
+      {
+        "sourceProductId": "static-rtx5070ti-11st",
+        "mallName": "11번가",
+        "price": 999000,
+        "link": "https://static-catalog.example.com/gpu/rtx5070ti/11st",
+        "image": "https://static-catalog.example.com/images/rtx5070ti.jpg"
+      },
+      {
+        "sourceProductId": "static-rtx5070ti-compuzone",
+        "mallName": "컴퓨존",
+        "price": 1019000,
+        "link": "https://static-catalog.example.com/gpu/rtx5070ti/compuzone",
+        "image": "https://static-catalog.example.com/images/rtx5070ti.jpg"
+      }
+    ]
+  },
+  {
+    "id": "gpu-rx-9070",
+    "category": "graphics-card",
+    "normalizedModel": "RX 9070",
+    "title": "ASRock Radeon RX 9070 Challenger",
+    "brand": "ASRock",
+    "keywords": ["RX 9070", "라데온 9070", "9070 그래픽카드", "게이밍 그래픽카드"],
+    "offers": [
+      {
+        "sourceProductId": "static-rx9070-eland",
+        "mallName": "전자랜드",
+        "price": 749000,
+        "link": "https://static-catalog.example.com/gpu/rx9070/eland",
+        "image": "https://static-catalog.example.com/images/rx9070.jpg"
+      },
+      {
+        "sourceProductId": "static-rx9070-compuzone",
+        "mallName": "컴퓨존",
+        "price": 759000,
+        "link": "https://static-catalog.example.com/gpu/rx9070/compuzone",
+        "image": "https://static-catalog.example.com/images/rx9070.jpg"
+      }
+    ]
+  },
+  {
+    "id": "gpu-rx-9070-xt",
+    "category": "graphics-card",
+    "normalizedModel": "RX 9070 XT",
+    "title": "SAPPHIRE PULSE Radeon RX 9070 XT",
+    "brand": "SAPPHIRE",
+    "keywords": ["RX 9070 XT", "라데온 9070 xt", "9070 계열", "게이밍 그래픽카드"],
+    "offers": [
+      {
+        "sourceProductId": "static-rx9070xt-11st",
+        "mallName": "11번가",
+        "price": 889000,
+        "link": "https://static-catalog.example.com/gpu/rx9070xt/11st",
+        "image": "https://static-catalog.example.com/images/rx9070xt.jpg"
+      },
+      {
+        "sourceProductId": "static-rx9070xt-eland",
+        "mallName": "전자랜드",
+        "price": 899000,
+        "link": "https://static-catalog.example.com/gpu/rx9070xt/eland",
+        "image": "https://static-catalog.example.com/images/rx9070xt.jpg"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-keychron-k2-pro",
+    "category": "keyboard",
+    "normalizedModel": "KEYCHRON K2 PRO",
+    "title": "Keychron K2 Pro 무선 기계식 키보드",
+    "brand": "Keychron",
+    "keywords": ["Keychron K2 Pro", "키크론 K2 Pro", "무선 기계식 키보드", "게이밍 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-k2pro-smartstore",
+        "mallName": "네이버 스마트스토어",
+        "price": 149000,
+        "link": "https://static-catalog.example.com/keyboard/k2pro/smartstore",
+        "image": "https://static-catalog.example.com/images/k2pro.jpg"
+      },
+      {
+        "sourceProductId": "static-k2pro-29cm",
+        "mallName": "29CM",
+        "price": 152000,
+        "link": "https://static-catalog.example.com/keyboard/k2pro/29cm",
+        "image": "https://static-catalog.example.com/images/k2pro.jpg"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-keychron-q1-max",
+    "category": "keyboard",
+    "normalizedModel": "KEYCHRON Q1 MAX",
+    "title": "Keychron Q1 Max 커스텀 기계식 키보드",
+    "brand": "Keychron",
+    "keywords": ["Keychron Q1 Max", "키크론 Q1 Max", "기계식 키보드", "텐키리스 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-q1max-funiture",
+        "mallName": "펀샵",
+        "price": 269000,
+        "link": "https://static-catalog.example.com/keyboard/q1max/funshop",
+        "image": "https://static-catalog.example.com/images/q1max.jpg"
+      },
+      {
+        "sourceProductId": "static-q1max-smartstore",
+        "mallName": "네이버 스마트스토어",
+        "price": 272000,
+        "link": "https://static-catalog.example.com/keyboard/q1max/smartstore",
+        "image": "https://static-catalog.example.com/images/q1max.jpg"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-mx-mechanical-mini",
+    "category": "keyboard",
+    "normalizedModel": "LOGITECH MX MECHANICAL MINI",
+    "title": "Logitech MX Mechanical Mini 무선 키보드",
+    "brand": "Logitech",
+    "keywords": ["MX Mechanical Mini", "로지텍 기계식 키보드", "저소음 사무용 키보드", "무선 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-mxmini-11st",
+        "mallName": "11번가",
+        "price": 169000,
+        "link": "https://static-catalog.example.com/keyboard/mxmini/11st",
+        "image": "https://static-catalog.example.com/images/mxmini.jpg"
+      },
+      {
+        "sourceProductId": "static-mxmini-coupang",
+        "mallName": "쿠팡",
+        "price": 171000,
+        "link": "https://static-catalog.example.com/keyboard/mxmini/coupang",
+        "image": "https://static-catalog.example.com/images/mxmini.jpg"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-abko-k660",
+    "category": "keyboard",
+    "normalizedModel": "ABKO K660",
+    "title": "ABKO K660 완전방수 카일 광축 키보드",
+    "brand": "ABKO",
+    "keywords": ["ABKO K660", "앱코 K660", "게이밍 키보드", "기계식 키보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-k660-eland",
+        "mallName": "전자랜드",
+        "price": 59900,
+        "link": "https://static-catalog.example.com/keyboard/k660/eland",
+        "image": "https://static-catalog.example.com/images/k660.jpg"
+      },
+      {
+        "sourceProductId": "static-k660-11st",
+        "mallName": "11번가",
+        "price": 64900,
+        "link": "https://static-catalog.example.com/keyboard/k660/11st",
+        "image": "https://static-catalog.example.com/images/k660.jpg"
+      }
+    ]
+  },
+  {
+    "id": "monitor-27gr93u",
+    "category": "monitor",
+    "normalizedModel": "LG 27GR93U",
+    "title": "LG 울트라기어 27GR93U 27인치 4K 모니터",
+    "brand": "LG전자",
+    "keywords": ["27GR93U", "27인치 4K 모니터", "게이밍 모니터", "LG 울트라기어"],
+    "offers": [
+      {
+        "sourceProductId": "static-27gr93u-eland",
+        "mallName": "전자랜드",
+        "price": 799000,
+        "link": "https://static-catalog.example.com/monitor/27gr93u/eland",
+        "image": "https://static-catalog.example.com/images/27gr93u.jpg"
+      },
+      {
+        "sourceProductId": "static-27gr93u-compuzone",
+        "mallName": "컴퓨존",
+        "price": 819000,
+        "link": "https://static-catalog.example.com/monitor/27gr93u/compuzone",
+        "image": "https://static-catalog.example.com/images/27gr93u.jpg"
+      }
+    ]
+  },
+  {
+    "id": "monitor-u2723qe",
+    "category": "monitor",
+    "normalizedModel": "DELL U2723QE",
+    "title": "DELL U2723QE 27인치 4K UHD IPS 모니터",
+    "brand": "Dell",
+    "keywords": ["U2723QE", "27인치 4K 모니터", "사무용 모니터", "델 울트라샤프"],
+    "offers": [
+      {
+        "sourceProductId": "static-u2723qe-11st",
+        "mallName": "11번가",
+        "price": 689000,
+        "link": "https://static-catalog.example.com/monitor/u2723qe/11st",
+        "image": "https://static-catalog.example.com/images/u2723qe.jpg"
+      },
+      {
+        "sourceProductId": "static-u2723qe-coupang",
+        "mallName": "쿠팡",
+        "price": 699000,
+        "link": "https://static-catalog.example.com/monitor/u2723qe/coupang",
+        "image": "https://static-catalog.example.com/images/u2723qe.jpg"
+      }
+    ]
+  },
+  {
+    "id": "monitor-321urx",
+    "category": "monitor",
+    "normalizedModel": "MSI 321URX",
+    "title": "MSI MPG 321URX QD-OLED 32인치 게이밍 모니터",
+    "brand": "MSI",
+    "keywords": ["321URX", "32인치 OLED 모니터", "게이밍 모니터", "4K 모니터"],
+    "offers": [
+      {
+        "sourceProductId": "static-321urx-compuzone",
+        "mallName": "컴퓨존",
+        "price": 1599000,
+        "link": "https://static-catalog.example.com/monitor/321urx/compuzone",
+        "image": "https://static-catalog.example.com/images/321urx.jpg"
+      },
+      {
+        "sourceProductId": "static-321urx-11st",
+        "mallName": "11번가",
+        "price": 1619000,
+        "link": "https://static-catalog.example.com/monitor/321urx/11st",
+        "image": "https://static-catalog.example.com/images/321urx.jpg"
+      }
+    ]
+  },
+  {
+    "id": "monitor-s32dg80",
+    "category": "monitor",
+    "normalizedModel": "SAMSUNG S32DG80",
+    "title": "삼성 오디세이 OLED G8 S32DG80 32인치 모니터",
+    "brand": "삼성전자",
+    "keywords": ["S32DG80", "32인치 OLED 모니터", "게이밍 모니터", "삼성 오디세이"],
+    "offers": [
+      {
+        "sourceProductId": "static-s32dg80-ssg",
+        "mallName": "SSG닷컴",
+        "price": 1399000,
+        "link": "https://static-catalog.example.com/monitor/s32dg80/ssg",
+        "image": "https://static-catalog.example.com/images/s32dg80.jpg"
+      },
+      {
+        "sourceProductId": "static-s32dg80-hmall",
+        "mallName": "Hmall",
+        "price": 1419000,
+        "link": "https://static-catalog.example.com/monitor/s32dg80/hmall",
+        "image": "https://static-catalog.example.com/images/s32dg80.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pc-b650m-plus",
+    "category": "pc-part",
+    "normalizedModel": "ASUS TUF B650M-PLUS",
+    "title": "ASUS TUF B650M-PLUS WIFI 메인보드",
+    "brand": "ASUS",
+    "keywords": ["ASUS TUF B650M-PLUS", "B650 메인보드", "AM5 메인보드", "게이밍 메인보드"],
+    "offers": [
+      {
+        "sourceProductId": "static-b650mplus-compuzone",
+        "mallName": "컴퓨존",
+        "price": 249000,
+        "link": "https://static-catalog.example.com/pc-part/b650mplus/compuzone",
+        "image": "https://static-catalog.example.com/images/b650mplus.jpg"
+      },
+      {
+        "sourceProductId": "static-b650mplus-eland",
+        "mallName": "전자랜드",
+        "price": 255000,
+        "link": "https://static-catalog.example.com/pc-part/b650mplus/eland",
+        "image": "https://static-catalog.example.com/images/b650mplus.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pc-9800x3d",
+    "category": "pc-part",
+    "normalizedModel": "RYZEN 7 9800X3D",
+    "title": "AMD Ryzen 7 9800X3D 정품 멀티팩",
+    "brand": "AMD",
+    "keywords": ["Ryzen 7 9800X3D", "9800X3D", "게이밍 CPU", "AMD CPU"],
+    "offers": [
+      {
+        "sourceProductId": "static-9800x3d-11st",
+        "mallName": "11번가",
+        "price": 679000,
+        "link": "https://static-catalog.example.com/pc-part/9800x3d/11st",
+        "image": "https://static-catalog.example.com/images/9800x3d.jpg"
+      },
+      {
+        "sourceProductId": "static-9800x3d-compuzone",
+        "mallName": "컴퓨존",
+        "price": 689000,
+        "link": "https://static-catalog.example.com/pc-part/9800x3d/compuzone",
+        "image": "https://static-catalog.example.com/images/9800x3d.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pc-sn850x-2tb",
+    "category": "pc-part",
+    "normalizedModel": "WD SN850X 2TB",
+    "title": "WD_BLACK SN850X 2TB NVMe SSD",
+    "brand": "WD",
+    "keywords": ["SN850X 2TB", "NVMe SSD 2TB", "SSD 2TB", "게이밍 SSD"],
+    "offers": [
+      {
+        "sourceProductId": "static-sn850x-2tb-coupang",
+        "mallName": "쿠팡",
+        "price": 219000,
+        "link": "https://static-catalog.example.com/pc-part/sn850x-2tb/coupang",
+        "image": "https://static-catalog.example.com/images/sn850x-2tb.jpg"
+      },
+      {
+        "sourceProductId": "static-sn850x-2tb-11st",
+        "mallName": "11번가",
+        "price": 225000,
+        "link": "https://static-catalog.example.com/pc-part/sn850x-2tb/11st",
+        "image": "https://static-catalog.example.com/images/sn850x-2tb.jpg"
+      }
+    ]
+  },
+  {
+    "id": "pc-sf-850f14xg",
+    "category": "pc-part",
+    "normalizedModel": "SUPERFLOWER SF-850F14XG",
+    "title": "SUPERFLOWER SF-850F14XG LEADEX III GOLD 850W",
+    "brand": "SUPERFLOWER",
+    "keywords": ["SF-850F14XG", "850W 파워", "골드 파워서플라이", "ATX 파워"],
+    "offers": [
+      {
+        "sourceProductId": "static-sf850f14xg-eland",
+        "mallName": "전자랜드",
+        "price": 159000,
+        "link": "https://static-catalog.example.com/pc-part/sf850f14xg/eland",
+        "image": "https://static-catalog.example.com/images/sf850f14xg.jpg"
+      },
+      {
+        "sourceProductId": "static-sf850f14xg-compuzone",
+        "mallName": "컴퓨존",
+        "price": 162000,
+        "link": "https://static-catalog.example.com/pc-part/sf850f14xg/compuzone",
+        "image": "https://static-catalog.example.com/images/sf850f14xg.jpg"
+      }
+    ]
+  }
+]

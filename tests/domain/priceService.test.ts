@@ -164,6 +164,50 @@ describe("PriceService", () => {
     });
   });
 
+  test("searchProducts deduplicates same-mall exact model offers across naver and static catalog", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "static-catalog",
+            sourceProductId: "static-27gr93u",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "전자랜드",
+            price: 789000,
+            link: "https://static.example.com/27gr93u",
+            image: null
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "nv-100",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "전자랜드",
+            price: 789000,
+            link: "https://naver.example.com/27gr93u",
+            image: "https://naver.example.com/27gr93u.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]).toMatchObject({
+      source: "naver-shopping",
+      mallName: "전자랜드",
+      normalizedModel: "LG 27GR93U"
+    });
+  });
+
   test("searchProducts excludes accessory-like titles from device comparisons", async () => {
     const service = new PriceService({
       provider: createProvider({

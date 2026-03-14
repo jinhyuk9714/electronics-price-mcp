@@ -502,12 +502,14 @@ function hasRequiredApiConfig(config: {
   naverClientId?: string;
   naverClientSecret?: string;
   enableDanawa?: boolean;
+  enableStaticCatalog?: boolean;
   danawaClientId?: string;
   danawaClientSecret?: string;
 }) {
   return Boolean(
     (config.naverClientId && config.naverClientSecret) ||
-      (config.enableDanawa && config.danawaClientId && config.danawaClientSecret)
+      (config.enableDanawa && config.danawaClientId && config.danawaClientSecret) ||
+      config.enableStaticCatalog
   );
 }
 

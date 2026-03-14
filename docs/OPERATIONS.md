@@ -7,6 +7,7 @@
 - 런타임: Cloudflare Workers
 - 데이터 소스: 네이버 쇼핑 검색 API
 - 선택 소스: Danawa provider
+- 개발/검증 보조 소스: static-catalog provider
 - 전자기기 가격 비교 로직: Worker 내부 `PriceService`
 - 운영 가드레일:
   - `ELECTRONICS_RATE_LIMITER` Durable Object
@@ -43,13 +44,15 @@ Durable Object는 Wrangler binding으로 주입됩니다. `.dev.vars`에 직접 
 선택 설정:
 
 - `ENABLE_DANAWA`
+- `ENABLE_STATIC_CATALOG`
+- `STATIC_CATALOG_DATASET`
 - `DANAWA_API_BASE_URL`
 - `REQUEST_TIMEOUT_MS`
 - `CACHE_TTL_MS`
 - `PUBLIC_BASE_URL`
 - `CHATGPT_APP_URL`
 
-공개 배포본 production은 현재 네이버 중심으로 운영됩니다. Danawa는 `danawa-canary` 환경에서 먼저 검증하고, self-host 환경에서도 secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다.
+공개 배포본 production은 현재 네이버 중심으로 운영됩니다. Danawa는 `danawa-canary` 환경에서 먼저 검증하고, self-host 환경에서도 secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다. `static-catalog`는 canary/dev에서 provider 부재 시 fallback 검증용으로만 켜고, production 기본값은 `ENABLE_STATIC_CATALOG=false`입니다.
 
 ## Rate Limit 정책
 
@@ -141,6 +144,14 @@ npm run smoke:danawa -- --query "RTX 5070" --category graphics-card
 
 이 스크립트는 `DANAWA_CLIENT_ID`, `DANAWA_CLIENT_SECRET`이 없으면 skip하고, 있으면 `danawa-only`와 `naver+danawa` 시나리오를 각각 확인합니다.
 
+정적 카탈로그 smoke check:
+
+```bash
+npm run smoke:static-catalog -- --query "RTX 5070" --category graphics-card
+```
+
+이 스크립트는 `static-only`를 기본으로 확인하고, 네이버 credential이 있으면 `naver+static`도 함께 확인합니다. Danawa를 아직 붙이지 못한 canary/dev에서도 exact compare, merge, source dedupe를 계속 검증할 수 있습니다.
+
 Danawa canary 평가:
 
 ```bash
@@ -192,6 +203,20 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
 2. 배포 후 `npm run smoke:danawa`로 `danawa-only`, `naver+danawa` 시나리오를 각각 확인
 3. 의도적으로 rollout을 멈춘 상태가 아니라면 `wrangler deploy` 후 다시 점검
 
+### 1-3. Canary에서 provider credential이 아직 없음
+
+증상:
+
+- canary `/api/search`가 provider credential 부족 메시지로 끝남
+- Danawa secret 회신 전이라 canary baseline/advanced 평가를 돌릴 수 없음
+
+확인 순서:
+
+1. `ENABLE_STATIC_CATALOG=true`가 canary env에 들어가 있는지 확인
+2. `STATIC_CATALOG_DATASET=core-exact-v1`가 canary env에 들어가 있는지 확인
+3. `npm run smoke:static-catalog -- --query "RTX 5070" --category graphics-card`로 fallback 응답을 확인
+4. exact 모델 대표 질의 `RTX 5070`, `27GR93U`, `Ryzen 7 9800X3D`, `16Z90T-GA5CK`를 수동 점검
+
 ### 2. 네이버 upstream rate limit 또는 timeout
 
 증상:
@@ -232,6 +257,7 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
 권장 순서:
 
 - 먼저 canary env에만 secret을 넣고 `deploy:danawa-canary`로 별도 URL을 연다
+- Danawa secret 회신 전에는 `ENABLE_STATIC_CATALOG=true` 상태로 canary/dev smoke를 계속 돌릴 수 있다
 - smoke 경로, baseline/advanced 평가, 대표 질의 수동 확인이 모두 끝난 뒤에만 production 승격을 검토한다
 
 production 승격 전 체크리스트:

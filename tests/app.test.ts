@@ -321,6 +321,34 @@ describe("createApp", () => {
     });
   });
 
+  test("allows static catalog fallback through the public http api when explicitly enabled", async () => {
+    const app = createApp({
+      env: {
+        ENABLE_STATIC_CATALOG: "true",
+        STATIC_CATALOG_DATASET: "core-exact-v1"
+      }
+    });
+
+    const response = await app.request("https://example.com/api/search?query=RTX%205070");
+    const body = (await response.json()) as {
+      success: boolean;
+      data: {
+        query: string;
+        offers: Array<{ source: string }>;
+      };
+    };
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      success: true,
+      data: {
+        query: "RTX 5070"
+      }
+    });
+    expect(body.data.offers.length).toBeGreaterThan(0);
+    expect(body.data.offers.every((offer: { source: string }) => offer.source === "static-catalog")).toBe(true);
+  });
+
   test("includes request ids in bad-request error envelopes", async () => {
     const app = createApp({
       service: createService(),

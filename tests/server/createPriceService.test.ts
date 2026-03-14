@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { AggregateSearchProvider } from "../../src/providers/aggregateSearchProvider.js";
 import { DanawaSearchProvider } from "../../src/providers/danawaSearchProvider.js";
 import { NaverShoppingClient } from "../../src/providers/naverShoppingClient.js";
+import { StaticCatalogSearchProvider } from "../../src/providers/staticCatalogSearchProvider.js";
 import {
   createPriceService,
   createSearchProvider,
@@ -64,6 +65,29 @@ describe("createPriceService", () => {
     expect(provider).toBeInstanceOf(AggregateSearchProvider);
   });
 
+  test("returns static catalog providers when explicitly enabled", () => {
+    const providers = createSearchProviders({
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "core-exact-v1"
+    } as never);
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0]).toBeInstanceOf(StaticCatalogSearchProvider);
+  });
+
+  test("returns static catalog alongside active providers", () => {
+    const providers = createSearchProviders({
+      NAVER_CLIENT_ID: "naver-id",
+      NAVER_CLIENT_SECRET: "naver-secret",
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "core-exact-v1"
+    } as never);
+
+    expect(providers).toHaveLength(2);
+    expect(providers[0]).toBeInstanceOf(NaverShoppingClient);
+    expect(providers[1]).toBeInstanceOf(StaticCatalogSearchProvider);
+  });
+
   test("still returns an unavailable service when every provider credential is missing", async () => {
     const service = createPriceService();
 
@@ -78,5 +102,43 @@ describe("createPriceService", () => {
       query: "그램 16",
       summary: expect.stringContaining("DANAWA_CLIENT_ID")
     });
+  });
+
+  test("uses static catalog as a canary/dev fallback when enabled without real provider credentials", async () => {
+    const service = createPriceService({
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "core-exact-v1"
+    } as never);
+
+    const searchResult = await service.searchProducts({
+      query: "RTX 5070",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(searchResult.offers.length).toBeGreaterThan(0);
+    expect(searchResult.offers[0]?.source).toBe("static-catalog");
+
+    const compareResult = await service.compareProductPrices({
+      query: "RTX 5070 가격 비교해 줘"
+    });
+
+    expect(compareResult.status).toBe("ok");
+    expect(compareResult.offers.every((offer) => offer.source === "static-catalog")).toBe(true);
+  });
+
+  test("keeps broad compare ambiguous when only static catalog results are available", async () => {
+    const service = createPriceService({
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "core-exact-v1"
+    } as never);
+
+    const compareResult = await service.compareProductPrices({
+      query: "B650 메인보드 가격 비교해 줘"
+    });
+
+    expect(compareResult.status).toBe("ambiguous");
+    expect(compareResult.offers.every((offer) => offer.source === "static-catalog")).toBe(true);
   });
 });
