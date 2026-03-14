@@ -5,6 +5,8 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import { createMcpServer } from "./server/createMcpServer.js";
 import { createPriceService, type PriceServiceLike } from "./server/createPriceService.js";
 import { readConfig, type RuntimeEnv } from "./config.js";
+import type { ProviderRequestDiagnostics } from "./domain/providerDiagnostics.js";
+import { readProviderDiagnostics } from "./domain/providerDiagnostics.js";
 import type {
   CompareProductPricesInput,
   CompareProductPricesResult,
@@ -62,6 +64,9 @@ type AppVariables = {
   resultStatus: string;
   rateLimited: boolean;
   upstreamError: boolean;
+  providerStatuses: Record<string, string> | null;
+  providerOfferCounts: Record<string, number> | null;
+  partialProviderFailure: boolean;
 };
 
 export function createApp(options?: AppOptions) {
@@ -78,6 +83,9 @@ export function createApp(options?: AppOptions) {
     c.set("resultStatus", "ok");
     c.set("rateLimited", false);
     c.set("upstreamError", false);
+    c.set("providerStatuses", null);
+    c.set("providerOfferCounts", null);
+    c.set("partialProviderFailure", false);
 
     let response: Response;
 
@@ -281,6 +289,7 @@ function createInstrumentedService(
 
       try {
         const result = await service.searchProducts(input);
+        applyProviderDiagnostics(c, service, result);
         c.set("resultStatus", result.offers.length > 0 ? "ok" : "not_found");
         return result;
       } catch (error) {
@@ -294,6 +303,7 @@ function createInstrumentedService(
 
       try {
         const result = await service.compareProductPrices(input);
+        applyProviderDiagnostics(c, service, result);
         c.set("resultStatus", result.status);
         return result;
       } catch (error) {
@@ -307,6 +317,7 @@ function createInstrumentedService(
 
       try {
         const result = await service.explainPurchaseOptions(input);
+        applyProviderDiagnostics(c, service, result);
         c.set("resultStatus", result.status);
         return result;
       } catch (error) {
@@ -343,6 +354,21 @@ function createRootMetadata(env?: RuntimeEnv) {
     tools: TOOL_NAMES,
     exampleQuestions: EXAMPLE_QUESTIONS
   };
+}
+
+function applyProviderDiagnostics(
+  c: Context<{ Bindings: RuntimeEnv; Variables: AppVariables }>,
+  service: PriceServiceLike,
+  result: { [key: string]: unknown }
+) {
+  const diagnostics =
+    service.getLastProviderDiagnostics?.() ??
+    readProviderDiagnostics(result) ??
+    null;
+
+  c.set("providerStatuses", diagnostics?.providerStatuses ?? null);
+  c.set("providerOfferCounts", diagnostics?.providerOfferCounts ?? null);
+  c.set("partialProviderFailure", diagnostics?.partialProviderFailure ?? false);
 }
 
 function resolveRateLimiter(customRateLimiter: RateLimiter | undefined, env?: RuntimeEnv) {
@@ -407,7 +433,10 @@ function logRequest(
     rateLimited: c.get("rateLimited"),
     tool: c.get("tool"),
     resultStatus: c.get("resultStatus"),
-    upstreamError: c.get("upstreamError")
+    upstreamError: c.get("upstreamError"),
+    providerStatuses: c.get("providerStatuses"),
+    providerOfferCounts: c.get("providerOfferCounts"),
+    partialProviderFailure: c.get("partialProviderFailure")
   };
 
   const serialized = JSON.stringify(entry);
@@ -472,18 +501,19 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
 function hasRequiredApiConfig(config: {
   naverClientId?: string;
   naverClientSecret?: string;
+  enableDanawa?: boolean;
   danawaClientId?: string;
   danawaClientSecret?: string;
 }) {
   return Boolean(
     (config.naverClientId && config.naverClientSecret) ||
-      (config.danawaClientId && config.danawaClientSecret)
+      (config.enableDanawa && config.danawaClientId && config.danawaClientSecret)
   );
 }
 
 function createUnavailableResponse(requestId: string) {
   return createErrorEnvelope(
-    "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.",
+    "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 ENABLE_DANAWA=true와 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.",
     requestId
   );
 }

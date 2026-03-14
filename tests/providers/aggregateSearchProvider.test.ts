@@ -21,8 +21,9 @@ function createOffer(id: string, title = `상품 ${id}`): ProviderOffer {
   };
 }
 
-function createProvider(result: SearchProviderResult): SearchProvider {
+function createProvider(result: SearchProviderResult, source: ProviderOffer["source"] = "naver-shopping"): SearchProvider {
   return {
+    source,
     async searchProducts() {
       return result;
     }
@@ -58,6 +59,7 @@ describe("AggregateSearchProvider", () => {
   test("keeps successful offers when one provider fails", async () => {
     const provider = new AggregateSearchProvider([
       {
+        source: "danawa",
         async searchProducts() {
           throw new Error("upstream exploded");
         }
@@ -82,11 +84,13 @@ describe("AggregateSearchProvider", () => {
   test("throws when every provider fails", async () => {
     const provider = new AggregateSearchProvider([
       {
+        source: "naver-shopping",
         async searchProducts() {
           throw new Error("first failure");
         }
       },
       {
+        source: "danawa",
         async searchProducts() {
           throw new Error("second failure");
         }
@@ -114,9 +118,11 @@ describe("AggregateSearchProvider", () => {
     });
     const provider = new AggregateSearchProvider([
       {
+        source: "naver-shopping",
         searchProducts
       },
       {
+        source: "danawa",
         searchProducts
       }
     ]);
@@ -133,5 +139,43 @@ describe("AggregateSearchProvider", () => {
 
     expect(searchProducts).toHaveBeenCalledTimes(2);
     expect(seenInputs).toEqual([input, input]);
+  });
+
+  test("reports per-provider statuses and offer counts when one provider fails", async () => {
+    const provider = new AggregateSearchProvider([
+      createProvider(
+        {
+          query: "27GR93U",
+          offers: [createOffer("100", "LG 울트라기어 27GR93U")]
+        },
+        "naver-shopping"
+      ),
+      {
+        source: "danawa",
+        async searchProducts() {
+          throw new Error("danawa upstream exploded");
+        }
+      }
+    ]);
+
+    const result = await provider.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.providerReports).toEqual([
+      {
+        source: "naver-shopping",
+        status: "success",
+        offerCount: 1
+      },
+      {
+        source: "danawa",
+        status: "error",
+        offerCount: 0
+      }
+    ]);
   });
 });

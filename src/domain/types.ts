@@ -8,6 +8,7 @@ export type ProductCategory =
 export type SearchSort = "relevance" | "price_asc" | "price_desc";
 export type ExplainFocus = "lowest_price" | "seller_variety" | "brand";
 export type SearchSource = "naver-shopping" | "danawa";
+export type ProviderExecutionStatus = "success" | "error";
 
 export interface SearchProviderInput {
   query: string;
@@ -31,10 +32,18 @@ export interface ProviderOffer {
 export interface SearchProviderResult {
   query: string;
   offers: ProviderOffer[];
+  providerReports?: ProviderExecutionReport[];
 }
 
 export interface SearchProvider {
+  source: SearchSource;
   searchProducts(input: SearchProviderInput): Promise<SearchProviderResult>;
+}
+
+export interface ProviderExecutionReport {
+  source: SearchSource;
+  status: ProviderExecutionStatus;
+  offerCount: number;
 }
 
 export interface ProductOffer extends ProviderOffer {

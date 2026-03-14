@@ -161,7 +161,14 @@ describe("createApp", () => {
     const response = await app.request(
       "https://example.com/api/search?query=%EA%B7%B8%EB%9E%A816&sort=relevance&excludeUsed=true&limit=10"
     );
-    const body = await response.json();
+    const body = (await response.json()) as {
+      success: boolean;
+      data: {
+        query: string;
+        summary: string;
+        providerStatuses?: unknown;
+      };
+    };
 
     expect(response.status).toBe(200);
     expect(body).toMatchObject({
@@ -483,5 +490,80 @@ describe("createApp", () => {
     expect(promptResponse.status).toBe(200);
     expect(openApiResponse.status).toBe(200);
     expect(limiterCalls).toBe(0);
+  });
+
+  test("includes provider diagnostics in structured request logs without exposing them in the response body", async () => {
+    const logLines: string[] = [];
+    const app = createApp({
+      service: {
+        async searchProducts(): Promise<SearchProductsResult> {
+          return {
+            query: "27GR93U",
+            summary: "27GR93U 기준 1개 모델, 1개 판매처를 찾았습니다.",
+            offers: [],
+            groups: []
+          };
+        },
+        async compareProductPrices(): Promise<CompareProductPricesResult> {
+          throw new Error("unused");
+        },
+        async explainPurchaseOptions(): Promise<ExplainPurchaseOptionsResult> {
+          throw new Error("unused");
+        },
+        getLastProviderDiagnostics() {
+          return {
+            providerStatuses: {
+              "naver-shopping": "success" as const,
+              danawa: "error" as const
+            },
+            providerOfferCounts: {
+              "naver-shopping": 1,
+              danawa: 0
+            },
+            partialProviderFailure: true
+          };
+        }
+      },
+      logger: {
+        log(line: string) {
+          logLines.push(line);
+        },
+        error(line: string) {
+          logLines.push(line);
+        }
+      }
+    });
+
+    const response = await app.request("https://example.com/api/search?query=27GR93U");
+    const body = (await response.json()) as {
+      success: boolean;
+      data: {
+        query: string;
+        summary: string;
+        providerStatuses?: unknown;
+      };
+    };
+    const logEntry = JSON.parse(logLines.at(-1) ?? "{}");
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      success: true,
+      data: {
+        query: "27GR93U",
+        summary: "27GR93U 기준 1개 모델, 1개 판매처를 찾았습니다."
+      }
+    });
+    expect(body.data.providerStatuses).toBeUndefined();
+    expect(logEntry).toMatchObject({
+      providerStatuses: {
+        "naver-shopping": "success",
+        danawa: "error"
+      },
+      providerOfferCounts: {
+        "naver-shopping": 1,
+        danawa: 0
+      },
+      partialProviderFailure: true
+    });
   });
 });

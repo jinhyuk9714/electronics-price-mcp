@@ -1,6 +1,6 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-14T04:00:05.913Z
+- 생성 시각: 2026-03-14T04:17:23.624Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -101,7 +101,7 @@
 ### laptop-exact-compare-3 · pass
 - prompt: 15IRX9 하나 보고 있는데 같은 모델끼리 최저가 비교 좀 해줘
 - expected_behavior: Lenovo exact compare는 모델 코드 기준으로 ok가 되어야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다.
+- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 11곳입니다.
 - notes: (none)
 
 ### laptop-exact-compare-4 · pass
@@ -155,7 +155,7 @@
 ### laptop-purchase-explain-4 · pass
 - prompt: 15IRX9 보는데 지금 들어가도 될 가격인지 너무 길지 않게 봐줘
 - expected_behavior: 정확한 Lenovo explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 12곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
+- observed_summary: 레노버 2024 리전 5i 15IRX9 코어i7 인텔 13세대 지포스 RTX 4060 기준 최저가 1549000원, 최고가 2699000원, 판매처 11곳입니다. 현재 최저가는 1549000원이고 최고가와의 차이는 1150000원입니다.
 - notes: (none)
 
 ### graphics-card-broad-search-1 · pass
@@ -227,7 +227,7 @@
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT는 정확히 XT끼리만 가격 비교해줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 19곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -263,7 +263,7 @@
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT는 지금 사도 괜찮은 가격대인지 한번 봐줘
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534410원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431710원, 판매처 19곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534410원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -449,7 +449,7 @@
 ### monitor-exact-compare-1 · pass
 - prompt: 27GR93U는 정확히 같은 모델끼리 가격 비교해줘
 - expected_behavior: LG 27GR93U exact compare는 ok 상태를 목표로 한다.
-- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 13곳입니다.
+- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 11곳입니다.
 - notes: (none)
 
 ### monitor-exact-compare-2 · pass
@@ -509,7 +509,7 @@
 ### monitor-purchase-explain-3 · pass
 - prompt: 27GR93U는 지금 사도 괜찮은 가격대인지 설명해줘
 - expected_behavior: LG 27GR93U explain은 ok 상태를 목표로 한다.
-- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 13곳입니다. 현재 최저가는 634990원이고 최고가와의 차이는 1224010원입니다.
+- observed_summary: LG 전자 울트라기어 27GR93U 기준 최저가 634990원, 최고가 1859000원, 판매처 11곳입니다. 현재 최저가는 634990원이고 최고가와의 차이는 1224010원입니다.
 - notes: (none)
 
 ### monitor-purchase-explain-4 · pass
@@ -575,7 +575,7 @@
 ### pc-part-exact-compare-2 · pass
 - prompt: 9800X3D 가격 차이만 정확히 비교해줘
 - expected_behavior: CPU exact compare는 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 662690원, 최고가 1313110원, 판매처 20곳입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 662680원, 최고가 1118530원, 판매처 15곳입니다.
 - notes: (none)
 
 ### pc-part-exact-compare-3 · pass
@@ -629,7 +629,7 @@
 ### pc-part-purchase-explain-3 · pass
 - prompt: 9800X3D는 요즘 사도 괜찮은 가격인지 봐줘
 - expected_behavior: 9800X3D exact explain은 ok 상태를 목표로 한다.
-- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 662690원, 최고가 1313110원, 판매처 20곳입니다. 현재 최저가는 662690원이고 최고가와의 차이는 650420원입니다.
+- observed_summary: AMD RYZEN 7 9800X3D 8코어, 16스레드 데스크탑 프로세서 100444 기준 최저가 662680원, 최고가 1118530원, 판매처 15곳입니다. 현재 최저가는 662680원이고 최고가와의 차이는 455850원입니다.
 - notes: (none)
 
 ### pc-part-purchase-explain-4 · pass

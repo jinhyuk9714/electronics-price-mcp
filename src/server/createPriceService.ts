@@ -1,4 +1,5 @@
 import { readConfig, type RuntimeEnv } from "../config.js";
+import type { ProviderRequestDiagnostics } from "../domain/providerDiagnostics.js";
 import { PriceService } from "../domain/priceService.js";
 import type {
   CompareProductPricesInput,
@@ -17,6 +18,7 @@ export interface PriceServiceLike {
   searchProducts(input: SearchProductsInput): Promise<SearchProductsResult>;
   compareProductPrices(input: CompareProductPricesInput): Promise<CompareProductPricesResult>;
   explainPurchaseOptions(input: ExplainPurchaseOptionsInput): Promise<ExplainPurchaseOptionsResult>;
+  getLastProviderDiagnostics?(): ProviderRequestDiagnostics | null;
 }
 
 const sharedServices = new Map<string, PriceServiceLike>();
@@ -35,7 +37,7 @@ export function createSearchProviders(env?: RuntimeEnv): SearchProvider[] {
     );
   }
 
-  if (config.danawaClientId && config.danawaClientSecret) {
+  if (config.enableDanawa && config.danawaClientId && config.danawaClientSecret) {
     providers.push(
       new DanawaSearchProvider({
         clientId: config.danawaClientId,
@@ -65,6 +67,7 @@ export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
     "aggregate-provider",
     config.naverClientId ?? "",
     config.naverClientSecret ?? "",
+    config.enableDanawa ? "danawa-enabled" : "danawa-disabled",
     config.danawaClientId ?? "",
     config.danawaClientSecret ?? "",
     config.danawaApiBaseUrl,
@@ -115,9 +118,12 @@ function createUnavailableService(message: string): PriceServiceLike {
         selectedProductId: null,
         offers: []
       };
+    },
+    getLastProviderDiagnostics() {
+      return null;
     }
   };
 }
 
 const UNAVAILABLE_PROVIDER_MESSAGE =
-  "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.";
+  "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 ENABLE_DANAWA=true와 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.";

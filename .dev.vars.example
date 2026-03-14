@@ -3,6 +3,7 @@
 
 NAVER_CLIENT_ID=your_naver_client_id
 NAVER_CLIENT_SECRET=your_naver_client_secret
+ENABLE_DANAWA=false
 DANAWA_CLIENT_ID=your_danawa_client_id
 DANAWA_CLIENT_SECRET=your_danawa_client_secret
 DANAWA_API_BASE_URL=http://api.danawa.com

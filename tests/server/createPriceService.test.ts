@@ -20,8 +20,19 @@ describe("createPriceService", () => {
     expect(providers[0]).toBeInstanceOf(NaverShoppingClient);
   });
 
-  test("returns Danawa-backed providers through the registry when credentials exist", () => {
+  test("does not return Danawa-backed providers when the rollout gate is disabled", () => {
     const providers = createSearchProviders({
+      ENABLE_DANAWA: "false",
+      DANAWA_CLIENT_ID: "danawa-id",
+      DANAWA_CLIENT_SECRET: "danawa-secret"
+    });
+
+    expect(providers).toHaveLength(0);
+  });
+
+  test("returns Danawa-backed providers through the registry when the rollout gate is enabled", () => {
+    const providers = createSearchProviders({
+      ENABLE_DANAWA: "true",
       DANAWA_CLIENT_ID: "danawa-id",
       DANAWA_CLIENT_SECRET: "danawa-secret"
     });
@@ -30,10 +41,11 @@ describe("createPriceService", () => {
     expect(providers[0]).toBeInstanceOf(DanawaSearchProvider);
   });
 
-  test("returns both providers when Naver and Danawa credentials exist", () => {
+  test("returns both providers when Naver credentials exist and Danawa is explicitly enabled", () => {
     const providers = createSearchProviders({
       NAVER_CLIENT_ID: "naver-id",
       NAVER_CLIENT_SECRET: "naver-secret",
+      ENABLE_DANAWA: "true",
       DANAWA_CLIENT_ID: "danawa-id",
       DANAWA_CLIENT_SECRET: "danawa-secret"
     });

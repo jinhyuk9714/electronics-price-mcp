@@ -2,6 +2,7 @@ import { normalizeBrand, stripHtml } from "../domain/normalize.js";
 import type { SearchProvider, SearchProviderInput, SearchProviderResult } from "../domain/types.js";
 
 export class NaverShoppingClient implements SearchProvider {
+  readonly source = "naver-shopping" as const;
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly fetchFn: typeof fetch;

@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "eval:service-quality": "node --experimental-strip-types scripts/run-service-quality-eval.ts",
-    "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100"
+    "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
+    "smoke:danawa": "tsx scripts/run-danawa-smoke.ts"
   },
   "engines": {
     "node": ">=22"
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260110.0",
     "@types/node": "^24.3.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
     "wrangler": "^4.69.0"

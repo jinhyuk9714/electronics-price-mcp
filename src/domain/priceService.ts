@@ -18,6 +18,12 @@ import {
   simplifyIntentQuery,
   stripHtml
 } from "./normalize.js";
+import {
+  attachProviderDiagnostics,
+  createProviderDiagnostics,
+  readProviderDiagnostics,
+  type ProviderRequestDiagnostics
+} from "./providerDiagnostics.js";
 import type {
   CompareProductPricesInput,
   CompareProductPricesResult,
@@ -42,6 +48,7 @@ interface CacheEntry {
 interface NormalizedSearchResult {
   query: string;
   offers: ProductOffer[];
+  diagnostics?: ProviderRequestDiagnostics;
 }
 
 interface SearchSelection {
@@ -83,6 +90,7 @@ type ComparisonTarget =
       query: string;
       group: ProductGroup;
       offers: ProductOffer[];
+      diagnostics?: ProviderRequestDiagnostics;
     }
   | {
       status: "ambiguous";
@@ -90,6 +98,7 @@ type ComparisonTarget =
       summary: string;
       warning: string;
       offers: ProductOffer[];
+      diagnostics?: ProviderRequestDiagnostics;
     };
 
 export class PriceService {
@@ -131,7 +140,7 @@ export class PriceService {
       });
     }
 
-    return {
+    return attachProviderDiagnostics({
       query: providerResult.query,
       summary:
         groups.length === 0
@@ -140,7 +149,7 @@ export class PriceService {
       ...(warning ? { warning } : {}),
       offers,
       groups
-    };
+    }, providerResult.diagnostics);
   }
 
   async compareProductPrices(input: CompareProductPricesInput): Promise<CompareProductPricesResult> {
@@ -159,7 +168,7 @@ export class PriceService {
     if (target.status === "ambiguous") {
       const suggestedQueries = createSuggestedQueries(target.query, target.offers, "compare");
 
-      return {
+      return attachProviderDiagnostics({
         query: target.query,
         status: "ambiguous",
         summary: target.summary,
@@ -167,14 +176,14 @@ export class PriceService {
         ...(suggestedQueries ? { suggestedQueries } : {}),
         selectedProductId: null,
         offers: target.offers
-      };
+      }, target.diagnostics);
     }
 
     const offers = applyMaxOffers(target.offers, input.maxOffers);
     const minPrice = Math.min(...offers.map((offer) => offer.price));
     const maxPrice = Math.max(...offers.map((offer) => offer.price));
 
-    return {
+    return attachProviderDiagnostics({
       query: target.query,
       status: "ok",
       summary: `${target.group.title} 기준 최저가 ${minPrice}원, 최고가 ${maxPrice}원, 판매처 ${offers.length}곳입니다.`,
@@ -187,7 +196,7 @@ export class PriceService {
         mallCount: offers.length,
         spread: maxPrice - minPrice
       }
-    };
+    }, target.diagnostics);
   }
 
   async explainPurchaseOptions(input: ExplainPurchaseOptionsInput): Promise<ExplainPurchaseOptionsResult> {
@@ -203,7 +212,7 @@ export class PriceService {
           : undefined;
       const broadQueryKind = comparison.status === "ambiguous" ? detectBroadQueryKind(comparison.query) : "other";
 
-      return {
+      return attachProviderDiagnostics({
         query: comparison.query,
         status: comparison.status,
         summary:
@@ -216,20 +225,20 @@ export class PriceService {
         ...(suggestedQueries ? { suggestedQueries } : {}),
         selectedProductId: comparison.selectedProductId,
         offers: comparison.offers
-      };
+      }, readDiagnosticsFromResult(comparison));
     }
 
     const focus = input.focus ?? "lowest_price";
     const insight = createInsight(focus, comparison.comparison.minPrice, comparison.comparison.maxPrice, comparison.offers.length);
 
-    return {
+    return attachProviderDiagnostics({
       query: comparison.query,
       status: "ok",
       summary: `${comparison.summary} ${insight.message}`,
       selectedProductId: comparison.selectedProductId,
       offers: comparison.offers,
       insight
-    };
+    }, readDiagnosticsFromResult(comparison));
   }
 
   private async fetchNormalizedOffers(input: SearchProviderInput): Promise<NormalizedSearchResult> {
@@ -237,7 +246,8 @@ export class PriceService {
 
     return {
       query: providerResult.query,
-      offers: dedupeOffers(this.normalizeOffers(providerResult.query, providerResult.offers))
+      offers: dedupeOffers(this.normalizeOffers(providerResult.query, providerResult.offers)),
+      diagnostics: createProviderDiagnostics(providerResult.providerReports)
     };
   }
 
@@ -320,7 +330,8 @@ export class PriceService {
             broadQueryKind === "graphics-card"
               ? createBroadGpuAmbiguousWarning()
               : "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명까지 포함해 다시 검색해 주세요.",
-          offers: []
+          offers: [],
+          diagnostics: search.diagnostics
         };
       }
 
@@ -329,7 +340,8 @@ export class PriceService {
 
     return resolveComparisonTarget({
       query,
-      offers: search.offers
+      offers: search.offers,
+      diagnostics: search.diagnostics
     });
   }
 }
@@ -338,6 +350,7 @@ function resolveComparisonTarget(options: {
   query: string;
   offers: ProductOffer[];
   forcedExactModel?: string | null;
+  diagnostics?: ProviderRequestDiagnostics;
 }): ComparisonTarget | null {
   const dedupedOffers = dedupeOffers(options.offers);
   if (dedupedOffers.length === 0) {
@@ -364,7 +377,8 @@ function resolveComparisonTarget(options: {
         broadQueryKind === "graphics-card"
           ? createBroadGpuAmbiguousWarning()
           : "렌탈, 액세서리, 완본체 같은 다른 상품군만 확인되어 비교를 중단했습니다. 더 구체적인 제품명으로 다시 검색해 주세요.",
-      offers: []
+      offers: [],
+      diagnostics: options.diagnostics
     };
   }
 
@@ -390,7 +404,8 @@ function resolveComparisonTarget(options: {
           : broadGpuQuery
             ? createBroadGpuAmbiguousWarning()
             : createAmbiguousWarning(scopedOffers),
-      offers: scopedOffers
+      offers: scopedOffers,
+      diagnostics: options.diagnostics
     };
   }
 
@@ -400,7 +415,8 @@ function resolveComparisonTarget(options: {
       query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
-      offers: comparisonOffers
+      offers: comparisonOffers,
+      diagnostics: options.diagnostics
     };
   }
 
@@ -410,7 +426,8 @@ function resolveComparisonTarget(options: {
       query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
-      offers: comparisonOffers
+      offers: comparisonOffers,
+      diagnostics: options.diagnostics
     };
   }
 
@@ -420,7 +437,8 @@ function resolveComparisonTarget(options: {
       query: resolvedQuery,
       summary: "정확히 같은 모델만 비교할 수 있습니다.",
       warning: createBroadGpuAmbiguousWarning(),
-      offers: comparisonOffers
+      offers: comparisonOffers,
+      diagnostics: options.diagnostics
     };
   }
 
@@ -430,7 +448,8 @@ function resolveComparisonTarget(options: {
       query: resolvedQuery,
       summary: "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
       warning: createAmbiguousWarning(comparisonOffers),
-      offers: comparisonOffers
+      offers: comparisonOffers,
+      diagnostics: options.diagnostics
     };
   }
 
@@ -440,7 +459,8 @@ function resolveComparisonTarget(options: {
     status: "ok",
     query: resolvedQuery,
     group,
-    offers: comparisonOffers.filter((offer) => offer.productId === group.productId)
+    offers: comparisonOffers.filter((offer) => offer.productId === group.productId),
+    diagnostics: options.diagnostics
   };
 }
 
@@ -491,19 +511,28 @@ function selectSearchOffers(query: string, offers: ProductOffer[]): SearchSelect
 
 function dedupeOffers(offers: ProductOffer[]): ProductOffer[] {
   const seen = new Set<string>();
+  const crossSourceSeen = new Set<string>();
   const deduped: ProductOffer[] = [];
 
-  for (const offer of offers) {
+  for (const offer of [...offers].sort(compareOffersForRetention)) {
     const key = [offer.productId, offer.mallName, offer.price, offer.link].join("|");
+    const crossSourceKey = createCrossSourceDuplicateKey(offer);
     if (seen.has(key)) {
       continue;
     }
 
+    if (crossSourceKey && crossSourceSeen.has(crossSourceKey)) {
+      continue;
+    }
+
     seen.add(key);
+    if (crossSourceKey) {
+      crossSourceSeen.add(crossSourceKey);
+    }
     deduped.push(offer);
   }
 
-  return deduped.sort((left, right) => left.price - right.price);
+  return deduped.sort(compareOffersForDisplay);
 }
 
 function buildGroups(offers: ProductOffer[]): ProductGroup[] {
@@ -1186,10 +1215,92 @@ function pickRepresentativeOffer(offers: ProductOffer[]): ProductOffer {
       return right.matchConfidence - left.matchConfidence;
     }
 
-    if (left.price !== right.price) {
-      return left.price - right.price;
+    const displaySort = compareOffersForDisplay(left, right);
+    if (displaySort !== 0) {
+      return displaySort;
     }
 
     return left.title.localeCompare(right.title);
   })[0]!;
+}
+
+function readDiagnosticsFromResult(result: { [key: string]: unknown }): ProviderRequestDiagnostics | undefined {
+  return readProviderDiagnostics(result);
+}
+
+function compareOffersForRetention(left: ProductOffer, right: ProductOffer): number {
+  if (left.price !== right.price) {
+    return left.price - right.price;
+  }
+
+  const leftInfoScore = calculateOfferInfoScore(left);
+  const rightInfoScore = calculateOfferInfoScore(right);
+  if (leftInfoScore !== rightInfoScore) {
+    return rightInfoScore - leftInfoScore;
+  }
+
+  const sourcePriority = compareSourcePriority(left.source, right.source);
+  if (sourcePriority !== 0) {
+    return sourcePriority;
+  }
+
+  return left.title.localeCompare(right.title);
+}
+
+function compareOffersForDisplay(left: ProductOffer, right: ProductOffer): number {
+  if (left.price !== right.price) {
+    return left.price - right.price;
+  }
+
+  const sourcePriority = compareSourcePriority(left.source, right.source);
+  if (sourcePriority !== 0) {
+    return sourcePriority;
+  }
+
+  return left.title.localeCompare(right.title);
+}
+
+function compareSourcePriority(
+  left: ProductOffer["source"],
+  right: ProductOffer["source"]
+): number {
+  return getSourcePriority(left) - getSourcePriority(right);
+}
+
+function getSourcePriority(source: ProductOffer["source"]): number {
+  return source === "naver-shopping" ? 0 : 1;
+}
+
+function calculateOfferInfoScore(offer: ProductOffer): number {
+  return [offer.brand, offer.image, offer.link].filter(Boolean).length;
+}
+
+function createCrossSourceDuplicateKey(offer: ProductOffer): string | null {
+  if (!offer.normalizedModel) {
+    return null;
+  }
+
+  const mallKey = normalizeDuplicateToken(offer.mallName);
+  if (!mallKey) {
+    return null;
+  }
+
+  const identityKey =
+    normalizeDuplicateToken(offer.title) ||
+    normalizeDuplicateToken(offer.link) ||
+    normalizeDuplicateToken(offer.sourceProductId);
+
+  if (!identityKey) {
+    return null;
+  }
+
+  return [offer.normalizedModel, mallKey, identityKey].join("|");
+}
+
+function normalizeDuplicateToken(value: string | null | undefined): string {
+  if (!value) {
+    return "";
+  }
+
+  return normalizeQuery(value.replace(/^https?:\/\//i, "").replace(/\?.*$/, ""));
 }

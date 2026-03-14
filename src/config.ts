@@ -1,6 +1,7 @@
 export interface RuntimeConfig {
   naverClientId?: string;
   naverClientSecret?: string;
+  enableDanawa: boolean;
   danawaClientId?: string;
   danawaClientSecret?: string;
   danawaApiBaseUrl: string;
@@ -13,6 +14,7 @@ export interface RuntimeConfig {
 export interface RuntimeEnv {
   NAVER_CLIENT_ID?: string;
   NAVER_CLIENT_SECRET?: string;
+  ENABLE_DANAWA?: string;
   DANAWA_CLIENT_ID?: string;
   DANAWA_CLIENT_SECRET?: string;
   DANAWA_API_BASE_URL?: string;
@@ -31,6 +33,7 @@ export function readConfig(env?: RuntimeEnv): RuntimeConfig {
   return {
     naverClientId: env?.NAVER_CLIENT_ID,
     naverClientSecret: env?.NAVER_CLIENT_SECRET,
+    enableDanawa: readBoolean(env?.ENABLE_DANAWA, false),
     danawaClientId: env?.DANAWA_CLIENT_ID,
     danawaClientSecret: env?.DANAWA_CLIENT_SECRET,
     danawaApiBaseUrl: env?.DANAWA_API_BASE_URL || DEFAULT_DANAWA_API_BASE_URL,
@@ -39,6 +42,14 @@ export function readConfig(env?: RuntimeEnv): RuntimeConfig {
     publicBaseUrl: env?.PUBLIC_BASE_URL || DEFAULT_PUBLIC_BASE_URL,
     chatgptAppUrl: env?.CHATGPT_APP_URL
   };
+}
+
+function readBoolean(value: string | undefined, fallback: boolean): boolean {
+  if (!value) {
+    return fallback;
+  }
+
+  return value === "true";
 }
 
 function readNumber(value: string | undefined, fallback: number): number {

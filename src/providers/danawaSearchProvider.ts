@@ -2,6 +2,7 @@ import { normalizeBrand, stripHtml } from "../domain/normalize.js";
 import type { ProviderOffer, SearchProvider, SearchProviderInput, SearchProviderResult } from "../domain/types.js";
 
 export class DanawaSearchProvider implements SearchProvider {
+  readonly source = "danawa" as const;
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly fetchFn: typeof fetch;

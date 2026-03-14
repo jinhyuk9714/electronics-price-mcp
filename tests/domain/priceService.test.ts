@@ -5,6 +5,7 @@ import type { SearchProvider, SearchProviderResult } from "../../src/domain/type
 
 function createProvider(result: SearchProviderResult): SearchProvider {
   return {
+    source: "naver-shopping",
     async searchProducts() {
       return result;
     }
@@ -111,6 +112,55 @@ describe("PriceService", () => {
     expect(result.groups[0]).toMatchObject({
       normalizedModel: "LG 27GR93U",
       offerCount: 2
+    });
+  });
+
+  test("searchProducts deduplicates same-mall exact model offers across multiple sources", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "danawa",
+            sourceProductId: "dw-100",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "전자랜드",
+            price: 789000,
+            link: "https://example.com/danawa-27gr93u",
+            image: null
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "nv-100",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "전자랜드",
+            price: 789000,
+            link: "https://example.com/naver-27gr93u",
+            image: "https://example.com/naver-27gr93u.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]).toMatchObject({
+      source: "naver-shopping",
+      mallName: "전자랜드",
+      normalizedModel: "LG 27GR93U"
+    });
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]).toMatchObject({
+      normalizedModel: "LG 27GR93U",
+      offerCount: 1
     });
   });
 
@@ -3924,6 +3974,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -3967,6 +4018,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4010,6 +4062,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4035,6 +4088,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4073,6 +4127,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4121,6 +4176,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4170,6 +4226,7 @@ describe("PriceService", () => {
 
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           receivedQuery = input.query;
           return {
@@ -4217,6 +4274,7 @@ describe("PriceService", () => {
   test("compareProductPrices condenses broad Galaxy Book prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "갤럭시북4 프로 16") {
             return {
@@ -4269,6 +4327,7 @@ describe("PriceService", () => {
   test("compareProductPrices condenses broad keyboard prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "로지텍 기계식 키보드") {
             return {
@@ -4331,6 +4390,7 @@ describe("PriceService", () => {
   test("compareProductPrices condenses broad monitor prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "게이밍 모니터") {
             return {
@@ -4383,6 +4443,7 @@ describe("PriceService", () => {
   test("compareProductPrices condenses broad pc-part prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "DDR5 32GB 메모리") {
             return {
@@ -4445,6 +4506,7 @@ describe("PriceService", () => {
   test("explainPurchaseOptions condenses broad Gram prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "그램 16") {
             return {
@@ -4497,6 +4559,7 @@ describe("PriceService", () => {
   test("explainPurchaseOptions condenses broad motherboard prompts enough to recover follow-up suggestions", async () => {
     const service = new PriceService({
       provider: {
+        source: "naver-shopping",
         async searchProducts(input) {
           if (input.query !== "B650 메인보드") {
             return {
