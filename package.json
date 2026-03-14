@@ -7,11 +7,14 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "deploy:danawa-canary": "wrangler deploy --env danawa-canary",
     "build": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "eval:service-quality": "node --experimental-strip-types scripts/run-service-quality-eval.ts",
     "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
+    "eval:service-quality:canary": "SERVICE_QUALITY_TARGET=danawa-canary node --experimental-strip-types scripts/run-service-quality-eval.ts",
+    "eval:service-quality:advanced:canary": "SERVICE_QUALITY_TARGET=danawa-canary node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
     "smoke:danawa": "tsx scripts/run-danawa-smoke.ts"
   },
   "engines": {

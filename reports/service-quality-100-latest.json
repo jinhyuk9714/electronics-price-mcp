@@ -1,6 +1,6 @@
 {
   "title": "Service Quality 100 Evaluation",
-  "generatedAt": "2026-03-14T04:15:42.294Z",
+  "generatedAt": "2026-03-14T04:28:35.132Z",
   "baseUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev",
   "mcpUrl": "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp",
   "totals": {
@@ -720,10 +720,10 @@
       "executor": "search-api",
       "status": "pass",
       "expectedBehavior": "DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.",
-      "observedSummary": "DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다.",
+      "observedSummary": "DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.",
       "notes": "",
       "expected_behavior": "DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.",
-      "observed_summary": "DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다."
+      "observed_summary": "DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다."
     },
     {
       "id": "keyboard-exact-compare-1",

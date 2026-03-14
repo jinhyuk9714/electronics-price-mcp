@@ -2,6 +2,9 @@ name = "electronics-price-mcp"
 main = "src/index.ts"
 compatibility_date = "2026-03-12"
 
+[vars]
+ENABLE_DANAWA = "false"
+
 [observability]
 enabled = true
 
@@ -10,5 +13,22 @@ name = "ELECTRONICS_RATE_LIMITER"
 class_name = "RateLimiterDurableObject"
 
 [[migrations]]
+tag = "v1-rate-limiter"
+new_sqlite_classes = ["RateLimiterDurableObject"]
+
+[env.danawa-canary]
+name = "electronics-price-mcp-danawa-canary"
+
+[env.danawa-canary.vars]
+ENABLE_DANAWA = "true"
+
+[env.danawa-canary.observability]
+enabled = true
+
+[[env.danawa-canary.durable_objects.bindings]]
+name = "ELECTRONICS_RATE_LIMITER"
+class_name = "RateLimiterDurableObject"
+
+[[env.danawa-canary.migrations]]
 tag = "v1-rate-limiter"
 new_sqlite_classes = ["RateLimiterDurableObject"]

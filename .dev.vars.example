@@ -14,3 +14,4 @@ CHATGPT_APP_URL=
 
 ## ELECTRONICS_RATE_LIMITER는 wrangler.toml Durable Object binding으로 주입됩니다.
 ## .dev.vars에 직접 넣지 않습니다.
+## danawa-canary 배포에서는 wrangler.toml의 env.danawa-canary.vars가 ENABLE_DANAWA=true를 강제합니다.

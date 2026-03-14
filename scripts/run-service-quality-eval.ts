@@ -20,8 +20,10 @@ import {
   getServiceQualitySuiteConfig,
   resolveServiceQualitySuiteName
 } from "../src/eval/serviceQualitySuites.ts";
-
-const DEFAULT_BASE_URL = "https://electronics-price-mcp.jinhyuk9714.workers.dev";
+import {
+  resolveServiceQualityExecutionConfig,
+  resolveServiceQualityReportFiles
+} from "../src/eval/serviceQualityTargets.ts";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPORTS_DIR = resolve(SCRIPT_DIR, "../reports");
 
@@ -35,8 +37,11 @@ async function main() {
   const suite = getServiceQualitySuiteConfig(suiteName);
   validateServiceQualityCaseSet(suite.cases);
 
-  const baseUrl = process.env.SERVICE_QUALITY_BASE_URL?.trim() || DEFAULT_BASE_URL;
-  const mcpUrl = process.env.SERVICE_QUALITY_MCP_URL?.trim() || `${baseUrl}/mcp`;
+  const { target, baseUrl, mcpUrl } = resolveServiceQualityExecutionConfig();
+  const reportFiles = resolveServiceQualityReportFiles(target, {
+    jsonReportFile: suite.jsonReportFile,
+    markdownReportFile: suite.markdownReportFile
+  });
   const explainState = createExplainClientFactory(mcpUrl);
   const results = [];
 
@@ -65,8 +70,8 @@ async function main() {
     }))
   };
 
-  const jsonReportPath = resolve(REPORTS_DIR, suite.jsonReportFile);
-  const markdownReportPath = resolve(REPORTS_DIR, suite.markdownReportFile);
+  const jsonReportPath = resolve(REPORTS_DIR, reportFiles.jsonReportFile);
+  const markdownReportPath = resolve(REPORTS_DIR, reportFiles.markdownReportFile);
 
   await mkdir(REPORTS_DIR, { recursive: true });
   await writeFile(jsonReportPath, `${JSON.stringify(serializedReport, null, 2)}\n`, "utf8");

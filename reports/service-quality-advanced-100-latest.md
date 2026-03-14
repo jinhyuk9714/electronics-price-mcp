@@ -1,6 +1,6 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-14T04:17:23.624Z
+- 생성 시각: 2026-03-14T04:30:43.358Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -563,7 +563,7 @@
 ### pc-part-exact-ish-search-4 · pass
 - prompt: SuperFlower SF-850F14XG 이 파워 검색해줘
 - expected_behavior: 정확한 파워 검색은 모델명을 유지해야 한다.
-- observed_summary: SuperFlower SF-850F14XG 이 기준 1개 모델, 9개 판매처를 찾았습니다.
+- observed_summary: SuperFlower SF-850F14XG 이 기준 1개 모델, 8개 판매처를 찾았습니다.
 - notes: (none)
 
 ### pc-part-exact-compare-1 · pass

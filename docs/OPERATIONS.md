@@ -17,6 +17,8 @@
 
 - 홈페이지: `https://electronics-price-mcp.jinhyuk9714.workers.dev`
 - MCP: `https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp`
+- Danawa canary: `https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev`
+- Danawa canary MCP: `https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp`
 
 최신 품질 리포트:
 
@@ -28,6 +30,7 @@
 - Worker 엔트리포인트: [src/index.ts](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/src/index.ts)
 - Durable Object binding: `ELECTRONICS_RATE_LIMITER`
 - Wrangler 설정: [wrangler.toml](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/wrangler.toml)
+- canary env: `danawa-canary`
 
 Durable Object는 Wrangler binding으로 주입됩니다. `.dev.vars`에 직접 넣지 않습니다.
 
@@ -46,7 +49,7 @@ Durable Object는 Wrangler binding으로 주입됩니다. `.dev.vars`에 직접 
 - `PUBLIC_BASE_URL`
 - `CHATGPT_APP_URL`
 
-공개 배포본은 현재 네이버 중심으로 운영됩니다. Danawa는 자격 증명이 있는 self-host 환경에서만 선택적으로 활성화되며, secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다.
+공개 배포본 production은 현재 네이버 중심으로 운영됩니다. Danawa는 `danawa-canary` 환경에서 먼저 검증하고, self-host 환경에서도 secret이 있어도 `ENABLE_DANAWA=true`일 때만 registry에 들어갑니다.
 
 ## Rate Limit 정책
 
@@ -138,6 +141,16 @@ npm run smoke:danawa -- --query "RTX 5070" --category graphics-card
 
 이 스크립트는 `DANAWA_CLIENT_ID`, `DANAWA_CLIENT_SECRET`이 없으면 skip하고, 있으면 `danawa-only`와 `naver+danawa` 시나리오를 각각 확인합니다.
 
+Danawa canary 평가:
+
+```bash
+npm run deploy:danawa-canary
+npm run eval:service-quality:canary
+npm run eval:service-quality:advanced:canary
+```
+
+production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:service-quality:advanced`를 사용합니다.
+
 ## 흔한 장애 대응
 
 ### 1. 네이버 인증 관련 오류
@@ -207,17 +220,26 @@ npm run smoke:danawa -- --query "RTX 5070" --category graphics-card
 
 ## Danawa rollout 절차
 
-1. `wrangler secret put DANAWA_CLIENT_ID`
-2. `wrangler secret put DANAWA_CLIENT_SECRET`
-3. 필요하면 `ENABLE_DANAWA=true`를 배포 환경에 설정
-4. `npm run deploy`
+1. `wrangler secret put DANAWA_CLIENT_ID --env danawa-canary`
+2. `wrangler secret put DANAWA_CLIENT_SECRET --env danawa-canary`
+3. production secret은 건드리지 않고 canary env에만 secret을 넣음
+4. `npm run deploy:danawa-canary`
 5. `npm run smoke:danawa -- --query "RTX 5070" --category graphics-card`
-6. 로그에서 `providerStatuses`, `providerOfferCounts`, `partialProviderFailure`를 확인
+6. `npm run eval:service-quality:canary`
+7. `npm run eval:service-quality:advanced:canary`
+8. canary 응답과 로그에서 `providerStatuses`, `providerOfferCounts`, `partialProviderFailure`를 확인
 
 권장 순서:
 
-- 먼저 secret을 넣고 `ENABLE_DANAWA=false` 상태로 배포
-- smoke 경로와 로그 준비가 끝난 뒤 `ENABLE_DANAWA=true`로 rollout
+- 먼저 canary env에만 secret을 넣고 `deploy:danawa-canary`로 별도 URL을 연다
+- smoke 경로, baseline/advanced 평가, 대표 질의 수동 확인이 모두 끝난 뒤에만 production 승격을 검토한다
+
+production 승격 전 체크리스트:
+
+- canary baseline 평가 `100 / 0 / 0`
+- canary advanced 평가 `100 / 0 / 0`
+- `RTX 5070`, `그램 16`, `27GR93U`, `B650 메인보드`에서 merge 품질 문제 없음
+- partial provider failure가 있어도 응답이 깨지지 않음
 
 ### 4. 배포 후 Durable Object 오류
 

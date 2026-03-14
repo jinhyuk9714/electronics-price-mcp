@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T04:15:42.294Z
+- 생성 시각: 2026-03-14T04:28:35.132Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -323,7 +323,7 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass

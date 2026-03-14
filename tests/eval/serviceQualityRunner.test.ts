@@ -6,6 +6,12 @@ import {
   getServiceQualitySuiteConfig,
   resolveServiceQualitySuiteName
 } from "../../src/eval/serviceQualitySuites.js";
+import {
+  getServiceQualityTargetConfig,
+  resolveServiceQualityReportFiles,
+  resolveServiceQualityExecutionConfig,
+  resolveServiceQualityTargetName
+} from "../../src/eval/serviceQualityTargets.js";
 
 describe("service quality suite runner", () => {
   test("advanced service quality case set stays balanced at 100 cases", () => {
@@ -66,5 +72,69 @@ describe("service quality suite runner", () => {
       needsSuggestedQueries: false
     });
     expect(ssdExplain?.mustContain).toEqual(expect.arrayContaining(["SN850X", "2TB"]));
+  });
+
+  test("service quality target config exposes production and canary endpoints", () => {
+    expect(getServiceQualityTargetConfig("production")).toMatchObject({
+      name: "production",
+      baseUrl: "https://electronics-price-mcp.jinhyuk9714.workers.dev",
+      mcpUrl: "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp"
+    });
+
+    expect(getServiceQualityTargetConfig("danawa-canary")).toMatchObject({
+      name: "danawa-canary",
+      baseUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
+      mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp"
+    });
+  });
+
+  test("service quality target resolver supports argv and environment overrides", () => {
+    expect(resolveServiceQualityTargetName(["--target", "danawa-canary"], {})).toBe("danawa-canary");
+    expect(resolveServiceQualityTargetName([], { SERVICE_QUALITY_TARGET: "danawa-canary" })).toBe(
+      "danawa-canary"
+    );
+    expect(resolveServiceQualityTargetName([], {})).toBe("production");
+  });
+
+  test("execution config uses target defaults but lets explicit URLs win", () => {
+    expect(resolveServiceQualityExecutionConfig(["--target", "danawa-canary"], {})).toMatchObject({
+      target: "danawa-canary",
+      baseUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
+      mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp"
+    });
+
+    expect(
+      resolveServiceQualityExecutionConfig([], {
+        SERVICE_QUALITY_TARGET: "danawa-canary",
+        SERVICE_QUALITY_BASE_URL: "https://override.example.com",
+        SERVICE_QUALITY_MCP_URL: "https://override.example.com/custom-mcp"
+      })
+    ).toMatchObject({
+      target: "danawa-canary",
+      baseUrl: "https://override.example.com",
+      mcpUrl: "https://override.example.com/custom-mcp"
+    });
+  });
+
+  test("report filenames stay separate for canary evaluations", () => {
+    expect(
+      resolveServiceQualityReportFiles("production", {
+        jsonReportFile: "service-quality-100-latest.json",
+        markdownReportFile: "service-quality-100-latest.md"
+      })
+    ).toEqual({
+      jsonReportFile: "service-quality-100-latest.json",
+      markdownReportFile: "service-quality-100-latest.md"
+    });
+
+    expect(
+      resolveServiceQualityReportFiles("danawa-canary", {
+        jsonReportFile: "service-quality-100-latest.json",
+        markdownReportFile: "service-quality-100-latest.md"
+      })
+    ).toEqual({
+      jsonReportFile: "danawa-canary-service-quality-100-latest.json",
+      markdownReportFile: "danawa-canary-service-quality-100-latest.md"
+    });
   });
 });
