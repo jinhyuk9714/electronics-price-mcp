@@ -86,10 +86,19 @@ describe("service quality suite runner", () => {
       baseUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
       mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp"
     });
+
+    expect(getServiceQualityTargetConfig("static-canary-local")).toMatchObject({
+      name: "static-canary-local",
+      baseUrl: "static-canary-local://local",
+      mcpUrl: "static-canary-local://local/mcp"
+    });
   });
 
   test("service quality target resolver supports argv and environment overrides", () => {
     expect(resolveServiceQualityTargetName(["--target", "danawa-canary"], {})).toBe("danawa-canary");
+    expect(resolveServiceQualityTargetName(["--target", "static-canary-local"], {})).toBe(
+      "static-canary-local"
+    );
     expect(resolveServiceQualityTargetName([], { SERVICE_QUALITY_TARGET: "danawa-canary" })).toBe(
       "danawa-canary"
     );
@@ -101,6 +110,12 @@ describe("service quality suite runner", () => {
       target: "danawa-canary",
       baseUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
       mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp"
+    });
+
+    expect(resolveServiceQualityExecutionConfig(["--target", "static-canary-local"], {})).toMatchObject({
+      target: "static-canary-local",
+      baseUrl: "static-canary-local://local",
+      mcpUrl: "static-canary-local://local/mcp"
     });
 
     expect(
@@ -135,6 +150,16 @@ describe("service quality suite runner", () => {
     ).toEqual({
       jsonReportFile: "danawa-canary-service-quality-100-latest.json",
       markdownReportFile: "danawa-canary-service-quality-100-latest.md"
+    });
+
+    expect(
+      resolveServiceQualityReportFiles("static-canary-local", {
+        jsonReportFile: "service-quality-100-latest.json",
+        markdownReportFile: "service-quality-100-latest.md"
+      })
+    ).toEqual({
+      jsonReportFile: "static-canary-service-quality-100-latest.json",
+      markdownReportFile: "static-canary-service-quality-100-latest.md"
     });
   });
 });

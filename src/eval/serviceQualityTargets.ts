@@ -1,15 +1,21 @@
-export type ServiceQualityTargetName = "production" | "danawa-canary";
+export type ServiceQualityTargetName = "production" | "danawa-canary" | "static-canary-local";
+export type ServiceQualityTargetMode = "live" | "static-local";
 
 export interface ServiceQualityTargetConfig {
   name: ServiceQualityTargetName;
+  mode: ServiceQualityTargetMode;
   baseUrl: string;
   mcpUrl: string;
+  reportPrefix?: string;
+  localEnv?: Record<string, string>;
 }
 
 export interface ServiceQualityExecutionConfig {
   target: ServiceQualityTargetName;
+  mode: ServiceQualityTargetMode;
   baseUrl: string;
   mcpUrl: string;
+  localEnv?: Record<string, string>;
 }
 
 export interface ServiceQualityReportFileConfig {
@@ -20,13 +26,27 @@ export interface ServiceQualityReportFileConfig {
 const TARGET_CONFIGS: Record<ServiceQualityTargetName, ServiceQualityTargetConfig> = {
   production: {
     name: "production",
+    mode: "live",
     baseUrl: "https://electronics-price-mcp.jinhyuk9714.workers.dev",
     mcpUrl: "https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp"
   },
   "danawa-canary": {
     name: "danawa-canary",
+    mode: "live",
     baseUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
-    mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp"
+    mcpUrl: "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp",
+    reportPrefix: "danawa-canary"
+  },
+  "static-canary-local": {
+    name: "static-canary-local",
+    mode: "static-local",
+    baseUrl: "static-canary-local://local",
+    mcpUrl: "static-canary-local://local/mcp",
+    reportPrefix: "static-canary",
+    localEnv: {
+      ENABLE_STATIC_CATALOG: "true",
+      STATIC_CATALOG_DATASET: "canary-eval-v1"
+    }
   }
 };
 
@@ -48,7 +68,11 @@ export function resolveServiceQualityTargetName(
 
   const requestedTarget = inlineValue || nextValue || env.SERVICE_QUALITY_TARGET?.trim() || "production";
 
-  if (requestedTarget !== "production" && requestedTarget !== "danawa-canary") {
+  if (
+    requestedTarget !== "production" &&
+    requestedTarget !== "danawa-canary" &&
+    requestedTarget !== "static-canary-local"
+  ) {
     throw new Error(`지원하지 않는 평가 타깃입니다: ${requestedTarget}`);
   }
 
@@ -64,8 +88,16 @@ export function resolveServiceQualityExecutionConfig(
 
   return {
     target,
-    baseUrl: env.SERVICE_QUALITY_BASE_URL?.trim() || targetConfig.baseUrl,
-    mcpUrl: env.SERVICE_QUALITY_MCP_URL?.trim() || targetConfig.mcpUrl
+    mode: targetConfig.mode,
+    baseUrl:
+      targetConfig.mode === "live"
+        ? env.SERVICE_QUALITY_BASE_URL?.trim() || targetConfig.baseUrl
+        : targetConfig.baseUrl,
+    mcpUrl:
+      targetConfig.mode === "live"
+        ? env.SERVICE_QUALITY_MCP_URL?.trim() || targetConfig.mcpUrl
+        : targetConfig.mcpUrl,
+    ...(targetConfig.localEnv ? { localEnv: targetConfig.localEnv } : {})
   };
 }
 
@@ -73,12 +105,15 @@ export function resolveServiceQualityReportFiles(
   target: ServiceQualityTargetName,
   files: ServiceQualityReportFileConfig
 ): ServiceQualityReportFileConfig {
-  if (target === "production") {
+  const targetConfig = getServiceQualityTargetConfig(target);
+  const prefix = targetConfig.reportPrefix;
+
+  if (!prefix) {
     return files;
   }
 
   return {
-    jsonReportFile: `${target}-${files.jsonReportFile}`,
-    markdownReportFile: `${target}-${files.markdownReportFile}`
+    jsonReportFile: `${prefix}-${files.jsonReportFile}`,
+    markdownReportFile: `${prefix}-${files.markdownReportFile}`
   };
 }

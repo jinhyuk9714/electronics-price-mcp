@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T06:11:43.077Z
+- 생성 시각: 2026-03-14T06:21:25.855Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -323,7 +323,7 @@
 ### keyboard-exact-ish-search-4 · pass
 - prompt: DrunkDeer A75 찾아줘
 - expected_behavior: DrunkDeer A75 검색은 키보드 본체 중심이어야 한다.
-- observed_summary: DrunkDeer A75 기준 1개 모델, 3개 판매처를 찾았습니다.
+- observed_summary: DrunkDeer A75 기준 1개 모델, 4개 판매처를 찾았습니다.
 - notes: (none)
 
 ### keyboard-exact-compare-1 · pass
@@ -335,7 +335,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: 로지텍 MX Mechanical Mini 가격 비교해 줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 14곳입니다.
+- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 13곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -389,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 114000원이고 최고가와의 차이는 43280원입니다.
+- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 114000원이고 최고가와의 차이는 43280원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass

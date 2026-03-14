@@ -1,8 +1,8 @@
 {
   "title": "Service Quality Advanced 100 Evaluation",
-  "generatedAt": "2026-03-14T06:22:54.293Z",
-  "baseUrl": "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev",
-  "mcpUrl": "https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp",
+  "generatedAt": "2026-03-14T06:20:45.733Z",
+  "baseUrl": "static-canary-local://local",
+  "mcpUrl": "static-canary-local://local/mcp",
   "totals": {
     "total": 100,
     "pass": 100,

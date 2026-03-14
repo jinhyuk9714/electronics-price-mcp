@@ -4,7 +4,7 @@
 
 현재 공개 배포본은 공식 [네이버 쇼핑 검색 API](https://developers.naver.com/docs/serviceapi/search/shopping/shopping.md)를 기본 소스로 사용합니다.
 Danawa는 `canary-first`로 운영하며, production은 계속 Naver-only를 유지하고 `danawa-canary` 환경에서만 먼저 `ENABLE_DANAWA=true`로 검증합니다.
-Danawa 회신 전 canary/dev 검증을 이어가기 위해 `static-catalog` provider도 준비돼 있으며, 이것도 기본값은 비활성입니다. `danawa-canary`는 정적 fallback dataset `canary-eval-v1`를 써서 baseline/advanced 평가를 계속 돌릴 수 있게 유지합니다.
+Danawa 회신 전 canary/dev 검증을 이어가기 위해 `static-catalog` provider도 준비돼 있으며, 이것도 기본값은 비활성입니다. `danawa-canary`는 정적 fallback dataset `canary-eval-v1`를 써서 baseline/advanced 평가를 계속 돌릴 수 있게 유지합니다. 추가로 `static-canary-local` 오프라인 타깃이 있어, live endpoint 없이도 같은 품질 게이트를 CI에서 결정적으로 검증할 수 있습니다.
 
 ## AI 앱에서 바로 연결하기
 
@@ -187,9 +187,11 @@ GitHub Actions 기준 자동 검증:
 
 ```bash
 npm run verify:ci
+npm run eval:service-quality:static
+npm run eval:service-quality:advanced:static
 ```
 
-- CI는 mock-based multisource merge만 자동 실행합니다.
+- CI는 mock-based multisource merge와 `static-canary-local` baseline/advanced를 자동 실행합니다.
 - live service-quality 평가는 수동 workflow로만 돌립니다.
 - Danawa rollout 전에는 canary workflow 결과를 기준으로 승격 여부를 판단합니다.
 

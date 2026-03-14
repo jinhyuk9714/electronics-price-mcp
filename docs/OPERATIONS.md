@@ -25,6 +25,8 @@
 
 - baseline: [service-quality-100-latest.md](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/reports/service-quality-100-latest.md)
 - advanced: [service-quality-advanced-100-latest.md](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/reports/service-quality-advanced-100-latest.md)
+- static baseline: [static-canary-service-quality-100-latest.md](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/reports/static-canary-service-quality-100-latest.md)
+- static advanced: [static-canary-service-quality-advanced-100-latest.md](/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/reports/static-canary-service-quality-advanced-100-latest.md)
 
 ## 배포 구조
 
@@ -161,6 +163,7 @@ npm run eval:service-quality:advanced:canary
 ```
 
 production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:service-quality:advanced`를 사용합니다.
+오프라인 static canary 평가는 `npm run eval:service-quality:static`, `npm run eval:service-quality:advanced:static`를 사용합니다.
 
 ## GitHub Actions
 
@@ -168,7 +171,7 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
   - `push`, `pull_request`에서 자동 실행
   - `npm ci`
   - `npm run verify:ci`
-  - artifact: `multisource-merge-latest.json`, `multisource-merge-latest.md`
+  - artifact: `multisource-merge-latest.*`, `static-canary-service-quality-100-latest.*`, `static-canary-service-quality-advanced-100-latest.*`
 - `canary-eval.yml`
   - `workflow_dispatch` 전용 수동 workflow
   - 입력: `target=production|danawa-canary`, `suite=baseline|advanced|both`
@@ -179,6 +182,7 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
 
 - deterministic CI는 `ci.yml`에서만 자동 실행
 - live service-quality는 manual workflow에서만 실행
+- Danawa 회신 전 기본 품질 판단 순서는 `npm run verify:ci` -> `npm run eval:service-quality:static` -> 필요 시 live canary 수동 확인
 - Danawa rollout 전에는 canary workflow 결과와 artifact를 기준으로 판단
 - 승격 기준은 baseline/advanced 모두 `100 / 0 / 0`
 

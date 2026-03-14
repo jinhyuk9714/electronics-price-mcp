@@ -1,8 +1,8 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T06:21:12.870Z
-- base URL: https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev
-- MCP URL: https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev/mcp
+- 생성 시각: 2026-03-14T06:20:45.185Z
+- base URL: static-canary-local://local
+- MCP URL: static-canary-local://local/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
 - 통과율: 100.0%
 

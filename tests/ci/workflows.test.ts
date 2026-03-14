@@ -17,8 +17,10 @@ describe("CI workflow automation", () => {
     };
 
     expect(packageJson.scripts?.["verify:ci"]).toBe(
-      "npm test && npm run typecheck && npm run build && npm run eval:multisource-merge"
+      "npm test && npm run typecheck && npm run build && npm run eval:multisource-merge && npm run eval:service-quality:static && npm run eval:service-quality:advanced:static"
     );
+    expect(packageJson.scripts?.["eval:service-quality:static"]).toBeDefined();
+    expect(packageJson.scripts?.["eval:service-quality:advanced:static"]).toBeDefined();
   });
 
   test("ci workflow runs verify:ci on push and pull_request", () => {
@@ -75,12 +77,14 @@ describe("CI workflow automation", () => {
     expect(readme).toContain("live service-quality 평가는 수동 workflow");
     expect(readme).toContain("Danawa rollout 전에는 canary workflow");
     expect(readme).toContain("canary-eval-v1");
+    expect(readme).toContain("static-canary-local");
 
     expect(operations).toContain("ci.yml");
     expect(operations).toContain("canary-eval.yml");
     expect(operations).toContain("artifact");
     expect(operations).toContain("100 / 0 / 0");
     expect(operations).toContain("canary-eval-v1");
+    expect(operations).toContain("eval:service-quality:static");
 
     expect(wrangler).toContain("[env.danawa-canary.vars]");
     expect(wrangler).toContain('STATIC_CATALOG_DATASET = "canary-eval-v1"');
