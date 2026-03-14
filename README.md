@@ -197,6 +197,7 @@ npm run eval:service-quality:advanced:static
 - `eval:service-quality*`와 `eval:multisource-merge` 기본 스크립트는 exploratory run 용도라 리포트를 남기고 종료합니다.
 - Danawa rollout 전에는 canary workflow 결과를 기준으로 승격 여부를 판단합니다.
 - `deploy-worker.yml`은 canary 검증을 거친 뒤 production으로 올릴 때 쓰는 수동 승격 workflow입니다.
+- `canary-eval.yml`과 `deploy-worker.yml`은 `workflow_dispatch` 기반이라, GitHub에서 실제로 누르려면 해당 workflow 파일이 기본 브랜치 `main`에도 있어야 합니다. 아직 feature branch에만 있으면 `workflow not found on the default branch`로 막히니, 첫 release drill 전에는 workflow 파일부터 `main`에 반영해야 합니다.
 - 권장 순서는 `ci.yml` green -> canary deploy + `both` -> artifact와 smoke 확인 -> production deploy + baseline 입니다.
 
 기본 canary URL:

@@ -187,6 +187,16 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
   - `production`은 `main` ref만 허용하고, GitHub Environment `production` 승인 후 baseline 기준으로 마무리
   - post-deploy 평가는 strict gate로 실행하고, smoke log와 report artifact는 실패해도 `always()`로 남긴다
 
+Bootstrap note:
+
+- `workflow_dispatch` workflow는 해당 YAML이 기본 브랜치 `main`에 있어야 GitHub UI와 `gh workflow run`에서 실행할 수 있다. 파일이 feature branch에만 있으면 GitHub API는 `workflow ... not found on the default branch`로 응답한다.
+- 첫 release drill 전에 아래 GitHub 설정이 실제로 준비돼 있어야 한다.
+  - environment: `danawa-canary`
+  - environment: `production`
+  - `production` required reviewer approval
+  - secret: `CLOUDFLARE_API_TOKEN`
+  - secret: `CLOUDFLARE_ACCOUNT_ID`
+
 운영 원칙:
 
 - deterministic CI는 `ci.yml`에서만 자동 실행
