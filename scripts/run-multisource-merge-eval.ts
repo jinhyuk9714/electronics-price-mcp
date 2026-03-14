@@ -10,6 +10,10 @@ import {
   summarizeMultisourceMergeResults,
   type MultisourceMergeReport
 } from "../src/eval/multisourceMergeHarness.ts";
+import {
+  resolveStrictMode,
+  shouldFailMultisourceMergeGate
+} from "../src/eval/evalExitPolicy.ts";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPORTS_DIR = resolve(SCRIPT_DIR, "../reports");
@@ -17,6 +21,7 @@ const JSON_REPORT_FILE = "multisource-merge-latest.json";
 const MARKDOWN_REPORT_FILE = "multisource-merge-latest.md";
 
 async function main() {
+  const strict = resolveStrictMode();
   const results = [];
 
   for (const item of MULTISOURCE_MERGE_CASES) {
@@ -42,6 +47,11 @@ async function main() {
   console.log(`Saved JSON report to ${jsonReportPath}`);
   console.log(`Saved Markdown report to ${markdownReportPath}`);
   console.log(`Summary: ${report.totals.pass} pass / ${report.totals.fail} fail`);
+
+  if (shouldFailMultisourceMergeGate(report.totals, strict)) {
+    console.error("Strict multisource-merge gate failed.");
+    process.exitCode = 1;
+  }
 }
 
 void main().catch((error) => {

@@ -135,12 +135,12 @@ jobs:
             echo "- effective_eval: ${effective_eval}"
           } > "${summary_file}"
 
-          baseline_script="eval:service-quality"
-          advanced_script="eval:service-quality:advanced"
+          baseline_script="eval:service-quality:strict"
+          advanced_script="eval:service-quality:advanced:strict"
 
           if [[ "$target" == "danawa-canary" ]]; then
-            baseline_script="eval:service-quality:canary"
-            advanced_script="eval:service-quality:advanced:canary"
+            baseline_script="eval:service-quality:canary:strict"
+            advanced_script="eval:service-quality:advanced:canary:strict"
           fi
 
           if [[ "$effective_eval" == "none" ]]; then
@@ -157,6 +157,7 @@ jobs:
           npm run "$advanced_script"
 
       - name: Upload deployment artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: deploy-worker-artifacts-${{ inputs.target }}

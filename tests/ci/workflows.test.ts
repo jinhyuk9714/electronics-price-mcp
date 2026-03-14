@@ -17,10 +17,11 @@ describe("CI workflow automation", () => {
     };
 
     expect(packageJson.scripts?.["verify:ci"]).toBe(
-      "npm test && npm run typecheck && npm run build && npm run eval:multisource-merge && npm run eval:service-quality:static && npm run eval:service-quality:advanced:static"
+      "npm test && npm run typecheck && npm run build && npm run eval:multisource-merge:strict && npm run eval:service-quality:static:strict && npm run eval:service-quality:advanced:static:strict"
     );
-    expect(packageJson.scripts?.["eval:service-quality:static"]).toBeDefined();
-    expect(packageJson.scripts?.["eval:service-quality:advanced:static"]).toBeDefined();
+    expect(packageJson.scripts?.["eval:service-quality:static:strict"]).toBeDefined();
+    expect(packageJson.scripts?.["eval:service-quality:advanced:static:strict"]).toBeDefined();
+    expect(packageJson.scripts?.["eval:multisource-merge:strict"]).toBeDefined();
   });
 
   test("ci workflow runs verify:ci on push and pull_request", () => {
@@ -38,6 +39,7 @@ describe("CI workflow automation", () => {
     expect(workflow).toContain("node-version: '22'");
     expect(workflow).toContain("npm ci");
     expect(workflow).toContain("npm run verify:ci");
+    expect(workflow).toContain("static-canary-service-quality-100-latest.json");
     expect(workflow).toContain("reports/multisource-merge-latest.json");
     expect(workflow).toContain("reports/multisource-merge-latest.md");
   });
@@ -59,13 +61,16 @@ describe("CI workflow automation", () => {
     expect(workflow).toContain("- baseline");
     expect(workflow).toContain("- advanced");
     expect(workflow).toContain("- both");
-    expect(workflow).toContain('baseline_script="eval:service-quality"');
-    expect(workflow).toContain('advanced_script="eval:service-quality:advanced"');
+    expect(workflow).toContain('baseline_script="eval:service-quality:strict"');
+    expect(workflow).toContain('advanced_script="eval:service-quality:advanced:strict"');
+    expect(workflow).toContain('baseline_script="eval:service-quality:canary:strict"');
+    expect(workflow).toContain('advanced_script="eval:service-quality:advanced:canary:strict"');
     expect(workflow).toContain('npm run "$baseline_script"');
     expect(workflow).toContain('npm run "$advanced_script"');
     expect(workflow).toContain("sleep 65");
     expect(workflow).toContain("reports/*service-quality-100-latest.json");
     expect(workflow).toContain("reports/*service-quality-advanced-100-latest.md");
+    expect(workflow).toContain("if: always()");
   });
 
   test("manual deploy workflow supports canary and production promotion guards", () => {
@@ -92,11 +97,13 @@ describe("CI workflow automation", () => {
     expect(workflow).toContain('if [[ "$ref_name" != "main" ]]; then');
     expect(workflow).toContain("wrangler deploy --env danawa-canary");
     expect(workflow).toContain("wrangler deploy");
+    expect(workflow).toContain(':strict');
     expect(workflow).toContain("sleep 65");
     expect(workflow).toContain("/health");
     expect(workflow).toContain("/api/search?query=");
     expect(workflow).toContain("/api/compare?query=");
     expect(workflow).toContain("upload-artifact");
+    expect(workflow).toContain("if: always()");
   });
 
   test("documentation explains automated CI and manual live evaluation split", () => {
@@ -111,6 +118,7 @@ describe("CI workflow automation", () => {
     expect(readme).toContain("static-canary-local");
     expect(readme).toContain("deploy-worker.yml");
     expect(readme).toContain("수동 승격");
+    expect(readme).toContain("strict gate");
 
     expect(operations).toContain("ci.yml");
     expect(operations).toContain("canary-eval.yml");
@@ -121,6 +129,7 @@ describe("CI workflow automation", () => {
     expect(operations).toContain("eval:service-quality:static");
     expect(operations).toContain("canary deploy + `both`");
     expect(operations).toContain("production deploy + baseline");
+    expect(operations).toContain("strict gate");
 
     expect(wrangler).toContain("[env.danawa-canary.vars]");
     expect(wrangler).toContain('STATIC_CATALOG_DATASET = "canary-eval-v1"');

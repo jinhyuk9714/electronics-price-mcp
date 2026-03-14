@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, test } from "vitest";
 
 import { SERVICE_QUALITY_ADVANCED_100_CASES } from "../../eval-cases/service-quality-advanced-100.js";
@@ -12,6 +16,8 @@ import {
   resolveServiceQualityExecutionConfig,
   resolveServiceQualityTargetName
 } from "../../src/eval/serviceQualityTargets.js";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 describe("service quality suite runner", () => {
   test("advanced service quality case set stays balanced at 100 cases", () => {
@@ -161,5 +167,30 @@ describe("service quality suite runner", () => {
       jsonReportFile: "static-canary-service-quality-100-latest.json",
       markdownReportFile: "static-canary-service-quality-100-latest.md"
     });
+  });
+
+  test("package exposes strict service-quality scripts for gates", () => {
+    const packageJson = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+
+    expect(packageJson.scripts?.["eval:service-quality:strict"]).toBe(
+      "EVAL_STRICT=true tsx scripts/run-service-quality-eval.ts"
+    );
+    expect(packageJson.scripts?.["eval:service-quality:advanced:strict"]).toBe(
+      "EVAL_STRICT=true tsx scripts/run-service-quality-eval.ts --suite service-quality-advanced-100"
+    );
+    expect(packageJson.scripts?.["eval:service-quality:canary:strict"]).toBe(
+      "EVAL_STRICT=true SERVICE_QUALITY_TARGET=danawa-canary tsx scripts/run-service-quality-eval.ts"
+    );
+    expect(packageJson.scripts?.["eval:service-quality:advanced:canary:strict"]).toBe(
+      "EVAL_STRICT=true SERVICE_QUALITY_TARGET=danawa-canary tsx scripts/run-service-quality-eval.ts --suite service-quality-advanced-100"
+    );
+    expect(packageJson.scripts?.["eval:service-quality:static:strict"]).toBe(
+      "EVAL_STRICT=true SERVICE_QUALITY_TARGET=static-canary-local tsx scripts/run-service-quality-eval.ts"
+    );
+    expect(packageJson.scripts?.["eval:service-quality:advanced:static:strict"]).toBe(
+      "EVAL_STRICT=true SERVICE_QUALITY_TARGET=static-canary-local tsx scripts/run-service-quality-eval.ts --suite service-quality-advanced-100"
+    );
   });
 });

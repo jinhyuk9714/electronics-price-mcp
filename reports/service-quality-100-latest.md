@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T06:31:43.780Z
+- 생성 시각: 2026-03-14T06:48:20.550Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail
@@ -215,19 +215,19 @@
 ### graphics-card-exact-compare-2 · pass
 - prompt: RTX 5070 Ti 가격 비교해 줘
 - expected_behavior: RTX 5070 Ti exact compare는 ok 상태여야 한다.
-- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1511870원, 최고가 1955220원, 판매처 20곳입니다.
+- observed_summary: 기가바이트 지포스 RTX 5070 Ti WINDFORCE OC SFF D7 16GB 피씨디렉트 기준 최저가 1511760원, 최고가 1955220원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-3 · pass
 - prompt: RX 9070 가격 비교해 줘
 - expected_behavior: RX 9070 exact compare는 XT와 섞이지 않고 ok여야 한다.
-- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 931630원, 최고가 1065430원, 판매처 5곳입니다.
+- observed_summary: SAPPHIRE 라데온 RX 9070 PULSE D6 16GB 기준 최저가 931560원, 최고가 1065430원, 판매처 5곳입니다.
 - notes: (none)
 
 ### graphics-card-exact-compare-4 · pass
 - prompt: RX 9070 XT 가격 비교해 줘
 - expected_behavior: RX 9070 XT exact compare는 ok 상태여야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431700원, 판매처 20곳입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431590원, 판매처 20곳입니다.
 - notes: (none)
 
 ### graphics-card-broad-ambiguous-safety-1 · pass
@@ -263,7 +263,7 @@
 ### graphics-card-purchase-explain-2 · pass
 - prompt: RX 9070 XT 지금 사도 괜찮은 가격대야?
 - expected_behavior: RX 9070 XT explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431700원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534400원입니다.
+- observed_summary: 파워컬러 헬하운드 AMD 라데온 RX 9070 XT 16GB GDDR6 기준 최저가 897300원, 최고가 1431590원, 판매처 20곳입니다. 현재 최저가는 897300원이고 최고가와의 차이는 534290원입니다.
 - notes: (none)
 
 ### graphics-card-purchase-explain-3 · pass
@@ -335,7 +335,7 @@
 ### keyboard-exact-compare-2 · pass
 - prompt: 로지텍 MX Mechanical Mini 가격 비교해 줘
 - expected_behavior: MX Mechanical Mini exact compare는 가능하면 ok 상태여야 한다.
-- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 13곳입니다.
+- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 14곳입니다.
 - notes: (none)
 
 ### keyboard-exact-compare-3 · pass
@@ -389,7 +389,7 @@
 ### keyboard-purchase-explain-3 · pass
 - prompt: 로지텍 MX Mechanical Mini 지금 사도 괜찮은 가격대야?
 - expected_behavior: 정확한 MX Mechanical explain은 ok 상태로 가격 해석을 줘야 한다.
-- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 13곳입니다. 현재 최저가는 114000원이고 최고가와의 차이는 43280원입니다.
+- observed_summary: 로지텍 MX MECHANICAL MINI FOR MAC 페일그레이, 갈축 기준 최저가 114000원, 최고가 157280원, 판매처 14곳입니다. 현재 최저가는 114000원이고 최고가와의 차이는 43280원입니다.
 - notes: (none)
 
 ### keyboard-purchase-explain-4 · pass

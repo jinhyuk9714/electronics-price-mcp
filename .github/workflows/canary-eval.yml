@@ -50,12 +50,12 @@ jobs:
           target="${{ github.event.inputs.target || 'danawa-canary' }}"
           suite="${{ github.event.inputs.suite || 'both' }}"
 
-          baseline_script="eval:service-quality"
-          advanced_script="eval:service-quality:advanced"
+          baseline_script="eval:service-quality:strict"
+          advanced_script="eval:service-quality:advanced:strict"
 
           if [[ "$target" == "danawa-canary" ]]; then
-            baseline_script="eval:service-quality:canary"
-            advanced_script="eval:service-quality:advanced:canary"
+            baseline_script="eval:service-quality:canary:strict"
+            advanced_script="eval:service-quality:advanced:canary:strict"
           fi
 
           if [[ "$suite" == "baseline" ]]; then
@@ -73,6 +73,7 @@ jobs:
           npm run "$advanced_script"
 
       - name: Upload service-quality reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: service-quality-reports-${{ github.event.inputs.target || 'danawa-canary' }}-${{ github.event.inputs.suite || 'both' }}

@@ -172,22 +172,26 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
   - `npm ci`
   - `npm run verify:ci`
   - artifact: `multisource-merge-latest.*`, `static-canary-service-quality-100-latest.*`, `static-canary-service-quality-advanced-100-latest.*`
+  - strict gate라서 deterministic 평가가 `100 / 0 / 0`이 아니면 workflow가 실패한다
 - `canary-eval.yml`
   - `workflow_dispatch` 전용 수동 workflow
   - 입력: `target=production|danawa-canary`, `suite=baseline|advanced|both`
   - `both`면 baseline 후 `65s` 대기 후 advanced 실행
-  - artifact로 live report를 업로드
+  - strict gate라서 live 평가가 `100 / 0 / 0`이 아니면 workflow가 실패한다
+  - artifact는 실패해도 `always()`로 업로드된다
 - `deploy-worker.yml`
   - `workflow_dispatch` 전용 수동 배포/승격 workflow
   - 입력: `target=danawa-canary|production`, `ref`, `post_deploy_eval=none|baseline|both`
   - 공통 실행: `npm ci` -> `npm run verify:ci` -> target별 deploy -> `/health`, `/api/search`, `/api/compare` smoke -> artifact 업로드
   - `danawa-canary`는 `both` 기준으로 baseline 후 `65s` 대기 후 advanced 실행
   - `production`은 `main` ref만 허용하고, GitHub Environment `production` 승인 후 baseline 기준으로 마무리
+  - post-deploy 평가는 strict gate로 실행하고, smoke log와 report artifact는 실패해도 `always()`로 남긴다
 
 운영 원칙:
 
 - deterministic CI는 `ci.yml`에서만 자동 실행
 - live service-quality는 manual workflow에서만 실행
+- 로컬 기본 평가 스크립트는 exploratory run 용도이고, 승격용 workflow는 strict gate 기준으로 판단한다
 - Danawa 회신 전 기본 품질 판단 순서는 `npm run verify:ci` -> `npm run eval:service-quality:static` -> 필요 시 live canary 수동 확인
 - Danawa rollout 전에는 canary workflow 결과와 artifact를 기준으로 판단
 - 승격 기준은 baseline/advanced 모두 `100 / 0 / 0`

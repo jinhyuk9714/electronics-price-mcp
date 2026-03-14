@@ -30,5 +30,8 @@ describe("multisource merge runner", () => {
     expect(packageJson.scripts?.["eval:multisource-merge"]).toBe(
       "tsx scripts/run-multisource-merge-eval.ts"
     );
+    expect(packageJson.scripts?.["eval:multisource-merge:strict"]).toBe(
+      "EVAL_STRICT=true tsx scripts/run-multisource-merge-eval.ts"
+    );
   });
 });

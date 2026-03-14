@@ -9,6 +9,10 @@ import {
   validateServiceQualityCaseSet,
   type ServiceQualityReport
 } from "../src/eval/serviceQualityHarness.ts";
+import {
+  resolveStrictMode,
+  shouldFailServiceQualityGate
+} from "../src/eval/evalExitPolicy.ts";
 import { createServiceQualityExecutor } from "../src/eval/serviceQualityExecution.ts";
 import {
   getServiceQualitySuiteConfig,
@@ -22,6 +26,7 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const REPORTS_DIR = resolve(SCRIPT_DIR, "../reports");
 
 async function main() {
+  const strict = resolveStrictMode();
   const suiteName = resolveServiceQualitySuiteName();
   const suite = getServiceQualitySuiteConfig(suiteName);
   validateServiceQualityCaseSet(suite.cases);
@@ -72,6 +77,11 @@ async function main() {
   console.log(
     `Summary: ${report.totals.pass} pass / ${report.totals.softFail} soft_fail / ${report.totals.fail} fail`
   );
+
+  if (shouldFailServiceQualityGate(report.totals, strict)) {
+    console.error("Strict service-quality gate failed.");
+    process.exitCode = 1;
+  }
 }
 
 void main().catch((error) => {
