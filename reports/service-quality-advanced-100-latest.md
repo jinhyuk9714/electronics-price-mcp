@@ -1,6 +1,6 @@
 # Service Quality Advanced 100 Evaluation
 
-- 생성 시각: 2026-03-14T05:48:11.146Z
+- 생성 시각: 2026-03-14T05:54:26.553Z
 - base URL: https://electronics-price-mcp.jinhyuk9714.workers.dev
 - MCP URL: https://electronics-price-mcp.jinhyuk9714.workers.dev/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail

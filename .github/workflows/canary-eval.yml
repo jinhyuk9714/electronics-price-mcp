@@ -1,0 +1,84 @@
+name: Canary Eval
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Live evaluation target
+        required: true
+        default: danawa-canary
+        type: choice
+        options:
+          - production
+          - danawa-canary
+      suite:
+        description: Which service-quality suite to run
+        required: true
+        default: both
+        type: choice
+        options:
+          - baseline
+          - advanced
+          - both
+
+concurrency:
+  group: canary-eval-${{ github.event.inputs.target || 'danawa-canary' }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run live service-quality evaluations
+        shell: bash
+        run: |
+          target="${{ github.event.inputs.target || 'danawa-canary' }}"
+          suite="${{ github.event.inputs.suite || 'both' }}"
+
+          baseline_script="eval:service-quality"
+          advanced_script="eval:service-quality:advanced"
+
+          if [[ "$target" == "danawa-canary" ]]; then
+            baseline_script="eval:service-quality:canary"
+            advanced_script="eval:service-quality:advanced:canary"
+          fi
+
+          if [[ "$suite" == "baseline" ]]; then
+            npm run "$baseline_script"
+            exit 0
+          fi
+
+          if [[ "$suite" == "advanced" ]]; then
+            npm run "$advanced_script"
+            exit 0
+          fi
+
+          npm run "$baseline_script"
+          sleep 65
+          npm run "$advanced_script"
+
+      - name: Upload service-quality reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-quality-reports-${{ github.event.inputs.target || 'danawa-canary' }}-${{ github.event.inputs.suite || 'both' }}
+          path: |
+            reports/*service-quality-100-latest.json
+            reports/*service-quality-100-latest.md
+            reports/*service-quality-advanced-100-latest.json
+            reports/*service-quality-advanced-100-latest.md
+          if-no-files-found: error

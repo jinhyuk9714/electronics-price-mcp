@@ -162,6 +162,26 @@ npm run eval:service-quality:advanced:canary
 
 production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:service-quality:advanced`를 사용합니다.
 
+## GitHub Actions
+
+- `ci.yml`
+  - `push`, `pull_request`에서 자동 실행
+  - `npm ci`
+  - `npm run verify:ci`
+  - artifact: `multisource-merge-latest.json`, `multisource-merge-latest.md`
+- `canary-eval.yml`
+  - `workflow_dispatch` 전용 수동 workflow
+  - 입력: `target=production|danawa-canary`, `suite=baseline|advanced|both`
+  - `both`면 baseline 후 `65s` 대기 후 advanced 실행
+  - artifact로 live report를 업로드
+
+운영 원칙:
+
+- deterministic CI는 `ci.yml`에서만 자동 실행
+- live service-quality는 manual workflow에서만 실행
+- Danawa rollout 전에는 canary workflow 결과와 artifact를 기준으로 판단
+- 승격 기준은 baseline/advanced 모두 `100 / 0 / 0`
+
 ## 흔한 장애 대응
 
 ### 1. 네이버 인증 관련 오류

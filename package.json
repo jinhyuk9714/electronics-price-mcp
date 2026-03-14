@@ -11,6 +11,7 @@
     "build": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "verify:ci": "npm test && npm run typecheck && npm run build && npm run eval:multisource-merge",
     "eval:service-quality": "node --experimental-strip-types scripts/run-service-quality-eval.ts",
     "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
     "eval:service-quality:canary": "SERVICE_QUALITY_TARGET=danawa-canary node --experimental-strip-types scripts/run-service-quality-eval.ts",

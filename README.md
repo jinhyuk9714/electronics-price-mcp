@@ -182,6 +182,16 @@ npm run eval:service-quality:canary
 npm run eval:service-quality:advanced:canary
 ```
 
+GitHub Actions 기준 자동 검증:
+
+```bash
+npm run verify:ci
+```
+
+- CI는 mock-based multisource merge만 자동 실행합니다.
+- live service-quality 평가는 수동 workflow로만 돌립니다.
+- Danawa rollout 전에는 canary workflow 결과를 기준으로 승격 여부를 판단합니다.
+
 기본 canary URL:
 
 ```text
@@ -194,6 +204,8 @@ https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev
 - Danawa는 `danawa-canary` 환경에서 먼저 검증하고, production 승격은 별도 라운드에서 진행합니다.
 - self-host 환경에서는 `ENABLE_DANAWA=true`일 때만 Danawa provider를 함께 활성화할 수 있습니다.
 - `static-catalog`는 canary/dev fallback용 보조 source이며 production 기본값은 비활성입니다.
+- GitHub Actions `ci.yml`은 deterministic 검증만 자동 실행합니다.
+- GitHub Actions `canary-eval.yml`은 production/canary live 평가를 수동 실행하는 운영 workflow입니다.
 - 역대 최저가, 실시간 재고, 배송 예정일은 다루지 않습니다.
 - 상세 스펙 표를 만들지 않고, 상품 제목에서 읽히는 모델명만 사용합니다.
 - `RTX 5070`과 `RTX 5070 Ti`처럼 다른 모델이 섞이면 비교를 거부합니다.
