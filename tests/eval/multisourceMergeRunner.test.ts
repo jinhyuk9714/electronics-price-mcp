@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { describe, expect, test } from "vitest";
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 describe("multisource merge runner", () => {
   test("suite includes the expected source combination scenarios", async () => {
@@ -19,9 +23,7 @@ describe("multisource merge runner", () => {
   });
 
   test("package script exposes a dedicated multisource merge evaluation command", () => {
-    const packageJson = JSON.parse(
-      readFileSync("/Users/sungjh/Projects/mcp1/.worktrees/electronics-price-mcp/package.json", "utf8")
-    ) as {
+    const packageJson = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8")) as {
       scripts?: Record<string, string>;
     };
 
