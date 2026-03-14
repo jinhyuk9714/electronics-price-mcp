@@ -8,6 +8,8 @@ export interface ProviderRequestDiagnostics {
   providerStatuses: Partial<Record<SearchSource, ProviderExecutionStatus>>;
   providerOfferCounts: Partial<Record<SearchSource, number>>;
   partialProviderFailure: boolean;
+  canonicalMallDedupeHits: number;
+  crossSourceDuplicateDrops: number;
 }
 
 const providerDiagnosticsByResult = new WeakMap<object, ProviderRequestDiagnostics>();
@@ -34,16 +36,23 @@ export function readProviderDiagnostics(value: unknown): ProviderRequestDiagnost
 }
 
 export function createProviderDiagnostics(
-  reports: ProviderExecutionReport[] | undefined
+  reports: ProviderExecutionReport[] | undefined,
+  mergeDiagnostics?: {
+    canonicalMallDedupeHits: number;
+    crossSourceDuplicateDrops: number;
+  }
 ): ProviderRequestDiagnostics | undefined {
-  if (!reports || reports.length === 0) {
+  const canonicalMallDedupeHits = mergeDiagnostics?.canonicalMallDedupeHits ?? 0;
+  const crossSourceDuplicateDrops = mergeDiagnostics?.crossSourceDuplicateDrops ?? 0;
+
+  if ((!reports || reports.length === 0) && canonicalMallDedupeHits === 0 && crossSourceDuplicateDrops === 0) {
     return undefined;
   }
 
   const providerStatuses: Partial<Record<SearchSource, ProviderExecutionStatus>> = {};
   const providerOfferCounts: Partial<Record<SearchSource, number>> = {};
 
-  for (const report of reports) {
+  for (const report of reports ?? []) {
     providerStatuses[report.source] = report.status;
     providerOfferCounts[report.source] = report.offerCount;
   }
@@ -52,7 +61,9 @@ export function createProviderDiagnostics(
     providerStatuses,
     providerOfferCounts,
     partialProviderFailure:
-      reports.some((report) => report.status === "error") &&
-      reports.some((report) => report.status === "success")
+      (reports ?? []).some((report) => report.status === "error") &&
+      (reports ?? []).some((report) => report.status === "success"),
+    canonicalMallDedupeHits,
+    crossSourceDuplicateDrops
   };
 }

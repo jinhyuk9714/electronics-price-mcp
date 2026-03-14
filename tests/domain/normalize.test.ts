@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import {
+  canonicalizeMallName,
   condenseNaturalLanguageQuery,
   extractGpuModel,
   extractExactQueryModel,
@@ -24,6 +25,15 @@ describe("normalize helpers", () => {
     expect(normalizeBrand("  lg전자  ")).toBe("LG");
     expect(normalizeBrand("SAMSUNG")).toBe("Samsung");
     expect(normalizeBrand("")).toBeNull();
+  });
+
+  test("canonicalizeMallName normalizes common mall aliases conservatively", () => {
+    expect(canonicalizeMallName("11번가")).toBe("11ST");
+    expect(canonicalizeMallName("11ST")).toBe("11ST");
+    expect(canonicalizeMallName("네이버 스마트스토어")).toBe("SMARTSTORE");
+    expect(canonicalizeMallName("smartstore")).toBe("SMARTSTORE");
+    expect(canonicalizeMallName("컴퓨존")).toBe("컴퓨존");
+    expect(canonicalizeMallName("")).toBeNull();
   });
 
   test("extractNormalizedModel keeps GPU variants distinct", () => {

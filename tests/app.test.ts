@@ -548,7 +548,9 @@ describe("createApp", () => {
               "naver-shopping": 1,
               danawa: 0
             },
-            partialProviderFailure: true
+            partialProviderFailure: true,
+            canonicalMallDedupeHits: 2,
+            crossSourceDuplicateDrops: 1
           };
         }
       },
@@ -591,7 +593,9 @@ describe("createApp", () => {
         "naver-shopping": 1,
         danawa: 0
       },
-      partialProviderFailure: true
+      partialProviderFailure: true,
+      canonicalMallDedupeHits: 2,
+      crossSourceDuplicateDrops: 1
     });
   });
 });

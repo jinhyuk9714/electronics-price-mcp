@@ -1,4 +1,5 @@
 import {
+  canonicalizeMallName,
   classifyOfferTitle,
   condenseNaturalLanguageQuery,
   detectBroadQueryKind,
@@ -54,6 +55,12 @@ interface NormalizedSearchResult {
 interface SearchSelection {
   offers: ProductOffer[];
   warning?: string;
+}
+
+interface OfferDedupeResult {
+  offers: ProductOffer[];
+  canonicalMallDedupeHits: number;
+  crossSourceDuplicateDrops: number;
 }
 
 const SUGGESTION_QUERY_STOPWORDS = new Set([
@@ -243,11 +250,15 @@ export class PriceService {
 
   private async fetchNormalizedOffers(input: SearchProviderInput): Promise<NormalizedSearchResult> {
     const providerResult = await this.provider.searchProducts(input);
+    const dedupeResult = dedupeOffers(this.normalizeOffers(providerResult.query, providerResult.offers));
 
     return {
       query: providerResult.query,
-      offers: dedupeOffers(this.normalizeOffers(providerResult.query, providerResult.offers)),
-      diagnostics: createProviderDiagnostics(providerResult.providerReports)
+      offers: dedupeResult.offers,
+      diagnostics: createProviderDiagnostics(providerResult.providerReports, {
+        canonicalMallDedupeHits: dedupeResult.canonicalMallDedupeHits,
+        crossSourceDuplicateDrops: dedupeResult.crossSourceDuplicateDrops
+      })
     };
   }
 
@@ -352,7 +363,7 @@ function resolveComparisonTarget(options: {
   forcedExactModel?: string | null;
   diagnostics?: ProviderRequestDiagnostics;
 }): ComparisonTarget | null {
-  const dedupedOffers = dedupeOffers(options.offers);
+  const dedupedOffers = dedupeOffers(options.offers).offers;
   if (dedupedOffers.length === 0) {
     return null;
   }
@@ -520,30 +531,36 @@ function selectSearchOffers(query: string, offers: ProductOffer[]): SearchSelect
   };
 }
 
-function dedupeOffers(offers: ProductOffer[]): ProductOffer[] {
+function dedupeOffers(offers: ProductOffer[]): OfferDedupeResult {
   const seen = new Set<string>();
-  const crossSourceSeen = new Set<string>();
   const deduped: ProductOffer[] = [];
+  let canonicalMallDedupeHits = 0;
+  let crossSourceDuplicateDrops = 0;
 
   for (const offer of [...offers].sort(compareOffersForRetention)) {
     const key = [offer.productId, offer.mallName, offer.price, offer.link].join("|");
-    const crossSourceKey = createCrossSourceDuplicateKey(offer);
     if (seen.has(key)) {
       continue;
     }
 
-    if (crossSourceKey && crossSourceSeen.has(crossSourceKey)) {
+    const duplicate = findCrossSourceDuplicate(deduped, offer);
+    if (duplicate) {
+      crossSourceDuplicateDrops += 1;
+      if (didCanonicalMallMatch(duplicate.mallName, offer.mallName)) {
+        canonicalMallDedupeHits += 1;
+      }
       continue;
     }
 
     seen.add(key);
-    if (crossSourceKey) {
-      crossSourceSeen.add(crossSourceKey);
-    }
     deduped.push(offer);
   }
 
-  return deduped.sort(compareOffersForDisplay);
+  return {
+    offers: deduped.sort(compareOffersForDisplay),
+    canonicalMallDedupeHits,
+    crossSourceDuplicateDrops
+  };
 }
 
 function buildGroups(offers: ProductOffer[]): ProductGroup[] {
@@ -1299,25 +1316,21 @@ function calculateOfferInfoScore(offer: ProductOffer): number {
 }
 
 function createCrossSourceDuplicateKey(offer: ProductOffer): string | null {
-  if (!offer.normalizedModel) {
-    return null;
-  }
-
-  const mallKey = normalizeDuplicateToken(offer.mallName);
-  if (!mallKey) {
+  const canonicalMallKey = getCanonicalMallKey(offer.mallName);
+  if (!offer.normalizedModel || !canonicalMallKey) {
     return null;
   }
 
   const identityKey =
-    normalizeDuplicateToken(offer.title) ||
     normalizeDuplicateToken(offer.link) ||
+    normalizeDuplicateToken(offer.title) ||
     normalizeDuplicateToken(offer.sourceProductId);
 
   if (!identityKey) {
     return null;
   }
 
-  return [offer.normalizedModel, mallKey, identityKey].join("|");
+  return [offer.normalizedModel, canonicalMallKey, identityKey].join("|");
 }
 
 function normalizeDuplicateToken(value: string | null | undefined): string {
@@ -1326,4 +1339,63 @@ function normalizeDuplicateToken(value: string | null | undefined): string {
   }
 
   return normalizeQuery(value.replace(/^https?:\/\//i, "").replace(/\?.*$/, ""));
+}
+
+function findCrossSourceDuplicate(existingOffers: ProductOffer[], candidate: ProductOffer): ProductOffer | null {
+  if (!candidate.normalizedModel) {
+    return null;
+  }
+
+  const candidateMallKey = getCanonicalMallKey(candidate.mallName);
+  if (!candidateMallKey) {
+    return null;
+  }
+
+  for (const existing of existingOffers) {
+    if (existing.source === candidate.source) {
+      continue;
+    }
+
+    if (existing.normalizedModel !== candidate.normalizedModel) {
+      continue;
+    }
+
+    if (getCanonicalMallKey(existing.mallName) !== candidateMallKey) {
+      continue;
+    }
+
+    if (!isReasonableDuplicatePriceGap(existing.price, candidate.price)) {
+      continue;
+    }
+
+    if (createCrossSourceDuplicateKey(existing) && createCrossSourceDuplicateKey(existing) === createCrossSourceDuplicateKey(candidate)) {
+      return existing;
+    }
+
+    if (normalizeDuplicateToken(existing.title) === normalizeDuplicateToken(candidate.title)) {
+      return existing;
+    }
+  }
+
+  return null;
+}
+
+function getCanonicalMallKey(mallName: string | null | undefined): string {
+  return canonicalizeMallName(mallName) ?? "";
+}
+
+function didCanonicalMallMatch(leftMallName: string, rightMallName: string): boolean {
+  const leftCanonical = getCanonicalMallKey(leftMallName);
+  const rightCanonical = getCanonicalMallKey(rightMallName);
+  if (!leftCanonical || leftCanonical !== rightCanonical) {
+    return false;
+  }
+
+  return normalizeDuplicateToken(leftMallName) !== normalizeDuplicateToken(rightMallName);
+}
+
+function isReasonableDuplicatePriceGap(leftPrice: number, rightPrice: number): boolean {
+  const minPrice = Math.min(leftPrice, rightPrice);
+  const maxAllowedGap = Math.max(5000, Math.round(minPrice * 0.05));
+  return Math.abs(leftPrice - rightPrice) <= maxAllowedGap;
 }

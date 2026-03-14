@@ -67,6 +67,8 @@ type AppVariables = {
   providerStatuses: Record<string, string> | null;
   providerOfferCounts: Record<string, number> | null;
   partialProviderFailure: boolean;
+  canonicalMallDedupeHits: number;
+  crossSourceDuplicateDrops: number;
 };
 
 export function createApp(options?: AppOptions) {
@@ -86,6 +88,8 @@ export function createApp(options?: AppOptions) {
     c.set("providerStatuses", null);
     c.set("providerOfferCounts", null);
     c.set("partialProviderFailure", false);
+    c.set("canonicalMallDedupeHits", 0);
+    c.set("crossSourceDuplicateDrops", 0);
 
     let response: Response;
 
@@ -369,6 +373,8 @@ function applyProviderDiagnostics(
   c.set("providerStatuses", diagnostics?.providerStatuses ?? null);
   c.set("providerOfferCounts", diagnostics?.providerOfferCounts ?? null);
   c.set("partialProviderFailure", diagnostics?.partialProviderFailure ?? false);
+  c.set("canonicalMallDedupeHits", diagnostics?.canonicalMallDedupeHits ?? 0);
+  c.set("crossSourceDuplicateDrops", diagnostics?.crossSourceDuplicateDrops ?? 0);
 }
 
 function resolveRateLimiter(customRateLimiter: RateLimiter | undefined, env?: RuntimeEnv) {
@@ -436,7 +442,9 @@ function logRequest(
     upstreamError: c.get("upstreamError"),
     providerStatuses: c.get("providerStatuses"),
     providerOfferCounts: c.get("providerOfferCounts"),
-    partialProviderFailure: c.get("partialProviderFailure")
+    partialProviderFailure: c.get("partialProviderFailure"),
+    canonicalMallDedupeHits: c.get("canonicalMallDedupeHits"),
+    crossSourceDuplicateDrops: c.get("crossSourceDuplicateDrops")
   };
 
   const serialized = JSON.stringify(entry);

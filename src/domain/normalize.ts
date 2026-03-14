@@ -56,6 +56,37 @@ const HTML_ENTITIES: Record<string, string> = {
   "&#39;": "'"
 };
 
+const CANONICAL_MALL_ALIASES = [
+  {
+    canonical: "11ST",
+    aliases: ["11번가", "11ST", "11st"]
+  },
+  {
+    canonical: "SMARTSTORE",
+    aliases: ["네이버 스마트스토어", "스마트스토어", "smartstore", "네이버스마트스토어"]
+  },
+  {
+    canonical: "GMARKET",
+    aliases: ["G마켓", "gmarket"]
+  },
+  {
+    canonical: "AUCTION",
+    aliases: ["옥션", "auction"]
+  },
+  {
+    canonical: "COUPANG",
+    aliases: ["쿠팡", "coupang"]
+  },
+  {
+    canonical: "SSG",
+    aliases: ["SSG", "SSG.COM", "신세계몰"]
+  },
+  {
+    canonical: "LOTTEON",
+    aliases: ["롯데온", "lotteon"]
+  }
+] as const;
+
 const DASH_CHARACTERS = /[‐‑‒–—−]/g;
 
 const NOTEBOOK_MODEL_PATTERNS = [
@@ -473,6 +504,26 @@ export function normalizeBrand(value: string | null | undefined): string | null 
   }
 
   return normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
+}
+
+export function canonicalizeMallName(value: string | null | undefined): string | null {
+  const normalized = stripHtml(value ?? "").trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const aliasToken = normalizeMallAliasToken(normalized);
+  if (!aliasToken) {
+    return null;
+  }
+
+  for (const entry of CANONICAL_MALL_ALIASES) {
+    if (entry.aliases.some((alias) => normalizeMallAliasToken(alias) === aliasToken)) {
+      return entry.canonical;
+    }
+  }
+
+  return aliasToken;
 }
 
 export function extractNormalizedModel(value: string): string | null {
@@ -1697,6 +1748,10 @@ function trimTrailingGenericProductNouns(value: string): string {
 function hasAnyCue(value: string, cues: readonly string[]): boolean {
   const normalized = normalizeQuery(value);
   return cues.some((cue) => normalized.includes(cue));
+}
+
+function normalizeMallAliasToken(value: string): string {
+  return normalizeQuery(value).replace(/[^A-Z0-9가-힣]/g, "");
 }
 
 function escapeRegExp(value: string): string {

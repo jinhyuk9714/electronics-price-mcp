@@ -208,6 +208,140 @@ describe("PriceService", () => {
     });
   });
 
+  test("searchProducts deduplicates same-mall alias offers across naver and danawa", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "danawa",
+            sourceProductId: "dw-11st",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "11번가",
+            price: 789000,
+            link: "https://danawa.example.com/27gr93u",
+            image: null
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "nv-11st",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "11ST",
+            price: 789000,
+            link: "https://naver.example.com/27gr93u",
+            image: "https://naver.example.com/27gr93u.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(1);
+    expect(result.offers[0]).toMatchObject({
+      source: "naver-shopping",
+      mallName: "11ST",
+      normalizedModel: "LG 27GR93U"
+    });
+    expect(result.groups[0]).toMatchObject({
+      normalizedModel: "LG 27GR93U",
+      offerCount: 1
+    });
+  });
+
+  test("searchProducts keeps different malls even when exact models match across sources", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "danawa",
+            sourceProductId: "dw-11st",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "11번가",
+            price: 789000,
+            link: "https://danawa.example.com/27gr93u",
+            image: null
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "nv-gmarket",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "G마켓",
+            price: 789000,
+            link: "https://naver.example.com/27gr93u",
+            image: "https://naver.example.com/27gr93u.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(2);
+    expect(result.groups[0]).toMatchObject({
+      normalizedModel: "LG 27GR93U",
+      offerCount: 2
+    });
+  });
+
+  test("searchProducts keeps same-mall exact model offers when price gap looks abnormal", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "danawa",
+            sourceProductId: "dw-11st",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "11번가",
+            price: 789000,
+            link: "https://danawa.example.com/27gr93u",
+            image: null
+          },
+          {
+            source: "naver-shopping",
+            sourceProductId: "nv-11st",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "11ST",
+            price: 979000,
+            link: "https://naver.example.com/27gr93u",
+            image: "https://naver.example.com/27gr93u.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(2);
+    expect(result.groups[0]).toMatchObject({
+      normalizedModel: "LG 27GR93U",
+      offerCount: 2
+    });
+  });
+
   test("searchProducts excludes accessory-like titles from device comparisons", async () => {
     const service = new PriceService({
       provider: createProvider({
