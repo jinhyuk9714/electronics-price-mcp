@@ -7,6 +7,7 @@ export type ProductCategory =
 
 export type SearchSort = "relevance" | "price_asc" | "price_desc";
 export type ExplainFocus = "lowest_price" | "seller_variety" | "brand";
+export type SearchSource = "naver-shopping";
 
 export interface SearchProviderInput {
   query: string;
@@ -17,7 +18,7 @@ export interface SearchProviderInput {
 }
 
 export interface ProviderOffer {
-  source: "naver-shopping";
+  source: SearchSource;
   sourceProductId: string;
   title: string;
   brand: string | null;

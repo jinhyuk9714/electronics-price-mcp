@@ -3,11 +3,13 @@ import { PriceService } from "../domain/priceService.js";
 import type {
   CompareProductPricesInput,
   CompareProductPricesResult,
+  SearchProvider,
   ExplainPurchaseOptionsInput,
   ExplainPurchaseOptionsResult,
   SearchProductsInput,
   SearchProductsResult
 } from "../domain/types.js";
+import { AggregateSearchProvider } from "../providers/aggregateSearchProvider.js";
 import { NaverShoppingClient } from "../providers/naverShoppingClient.js";
 
 export interface PriceServiceLike {
@@ -17,6 +19,26 @@ export interface PriceServiceLike {
 }
 
 const sharedServices = new Map<string, PriceServiceLike>();
+
+export function createSearchProviders(env?: RuntimeEnv): SearchProvider[] {
+  const config = readConfig(env);
+
+  if (!config.naverClientId || !config.naverClientSecret) {
+    return [];
+  }
+
+  return [
+    new NaverShoppingClient({
+      clientId: config.naverClientId,
+      clientSecret: config.naverClientSecret,
+      timeoutMs: config.requestTimeoutMs
+    })
+  ];
+}
+
+export function createSearchProvider(env?: RuntimeEnv): SearchProvider {
+  return new AggregateSearchProvider(createSearchProviders(env));
+}
 
 export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
   const config = readConfig(env);
@@ -28,6 +50,8 @@ export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
   }
 
   const cacheKey = [
+    "aggregate-provider",
+    "naver-shopping",
     config.naverClientId,
     config.naverClientSecret,
     config.requestTimeoutMs,
@@ -40,11 +64,7 @@ export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
   }
 
   const service = new PriceService({
-    provider: new NaverShoppingClient({
-      clientId: config.naverClientId,
-      clientSecret: config.naverClientSecret,
-      timeoutMs: config.requestTimeoutMs
-    }),
+    provider: createSearchProvider(env),
     cacheTtlMs: config.cacheTtlMs
   });
 
