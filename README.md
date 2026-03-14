@@ -194,6 +194,8 @@ npm run eval:service-quality:advanced:static
 - CI는 mock-based multisource merge와 `static-canary-local` baseline/advanced를 자동 실행합니다.
 - live service-quality 평가는 수동 workflow로만 돌립니다.
 - Danawa rollout 전에는 canary workflow 결과를 기준으로 승격 여부를 판단합니다.
+- `deploy-worker.yml`은 canary 검증을 거친 뒤 production으로 올릴 때 쓰는 수동 승격 workflow입니다.
+- 권장 순서는 `ci.yml` green -> canary deploy + `both` -> artifact와 smoke 확인 -> production deploy + baseline 입니다.
 
 기본 canary URL:
 
@@ -209,6 +211,7 @@ https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev
 - `static-catalog`는 canary/dev fallback용 보조 source이며 production 기본값은 비활성입니다.
 - GitHub Actions `ci.yml`은 deterministic 검증만 자동 실행합니다.
 - GitHub Actions `canary-eval.yml`은 production/canary live 평가를 수동 실행하는 운영 workflow입니다.
+- GitHub Actions `deploy-worker.yml`은 canary와 production 배포를 수동 승격 흐름으로 실행하는 운영 workflow입니다.
 - 역대 최저가, 실시간 재고, 배송 예정일은 다루지 않습니다.
 - 상세 스펙 표를 만들지 않고, 상품 제목에서 읽히는 모델명만 사용합니다.
 - `RTX 5070`과 `RTX 5070 Ti`처럼 다른 모델이 섞이면 비교를 거부합니다.

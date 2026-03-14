@@ -177,6 +177,12 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
   - 입력: `target=production|danawa-canary`, `suite=baseline|advanced|both`
   - `both`면 baseline 후 `65s` 대기 후 advanced 실행
   - artifact로 live report를 업로드
+- `deploy-worker.yml`
+  - `workflow_dispatch` 전용 수동 배포/승격 workflow
+  - 입력: `target=danawa-canary|production`, `ref`, `post_deploy_eval=none|baseline|both`
+  - 공통 실행: `npm ci` -> `npm run verify:ci` -> target별 deploy -> `/health`, `/api/search`, `/api/compare` smoke -> artifact 업로드
+  - `danawa-canary`는 `both` 기준으로 baseline 후 `65s` 대기 후 advanced 실행
+  - `production`은 `main` ref만 허용하고, GitHub Environment `production` 승인 후 baseline 기준으로 마무리
 
 운영 원칙:
 
@@ -185,6 +191,15 @@ production 평가는 기존처럼 `npm run eval:service-quality`, `npm run eval:
 - Danawa 회신 전 기본 품질 판단 순서는 `npm run verify:ci` -> `npm run eval:service-quality:static` -> 필요 시 live canary 수동 확인
 - Danawa rollout 전에는 canary workflow 결과와 artifact를 기준으로 판단
 - 승격 기준은 baseline/advanced 모두 `100 / 0 / 0`
+- production 승격 권장 순서는 `ci.yml` green -> canary deploy + `both` -> artifact와 smoke 확인 -> production deploy + baseline
+
+배포 workflow 환경 설정:
+
+- `danawa-canary`, `production` GitHub Environment를 만든다
+- `production` environment에는 reviewer approval을 건다
+- Cloudflare 배포용 secret은 environment 또는 repository secret으로 넣는다
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
 
 ## 흔한 장애 대응
 

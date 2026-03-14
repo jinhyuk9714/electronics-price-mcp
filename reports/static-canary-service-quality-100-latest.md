@@ -1,6 +1,6 @@
 # Service Quality 100 Evaluation
 
-- 생성 시각: 2026-03-14T06:20:45.185Z
+- 생성 시각: 2026-03-14T06:30:58.602Z
 - base URL: static-canary-local://local
 - MCP URL: static-canary-local://local/mcp
 - 전체 결과: 100 pass / 0 soft_fail / 0 fail

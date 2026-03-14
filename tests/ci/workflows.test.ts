@@ -68,6 +68,37 @@ describe("CI workflow automation", () => {
     expect(workflow).toContain("reports/*service-quality-advanced-100-latest.md");
   });
 
+  test("manual deploy workflow supports canary and production promotion guards", () => {
+    const workflowPath = `${ROOT}/.github/workflows/deploy-worker.yml`;
+
+    expect(existsSync(workflowPath)).toBe(true);
+
+    const workflow = readText(workflowPath);
+
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("target:");
+    expect(workflow).toContain("- danawa-canary");
+    expect(workflow).toContain("- production");
+    expect(workflow).toContain("ref:");
+    expect(workflow).toContain("post_deploy_eval:");
+    expect(workflow).toContain("default: both");
+    expect(workflow).toContain("default: baseline");
+    expect(workflow).toContain("- none");
+    expect(workflow).toContain("- baseline");
+    expect(workflow).toContain("- both");
+    expect(workflow).toContain("environment:");
+    expect(workflow).toContain("name: ${{ inputs.target }}");
+    expect(workflow).toContain('if [[ "$target" == "production" ]]; then');
+    expect(workflow).toContain('if [[ "$ref_name" != "main" ]]; then');
+    expect(workflow).toContain("wrangler deploy --env danawa-canary");
+    expect(workflow).toContain("wrangler deploy");
+    expect(workflow).toContain("sleep 65");
+    expect(workflow).toContain("/health");
+    expect(workflow).toContain("/api/search?query=");
+    expect(workflow).toContain("/api/compare?query=");
+    expect(workflow).toContain("upload-artifact");
+  });
+
   test("documentation explains automated CI and manual live evaluation split", () => {
     const readme = readText(`${ROOT}/README.md`);
     const operations = readText(`${ROOT}/docs/OPERATIONS.md`);
@@ -78,13 +109,18 @@ describe("CI workflow automation", () => {
     expect(readme).toContain("Danawa rollout 전에는 canary workflow");
     expect(readme).toContain("canary-eval-v1");
     expect(readme).toContain("static-canary-local");
+    expect(readme).toContain("deploy-worker.yml");
+    expect(readme).toContain("수동 승격");
 
     expect(operations).toContain("ci.yml");
     expect(operations).toContain("canary-eval.yml");
+    expect(operations).toContain("deploy-worker.yml");
     expect(operations).toContain("artifact");
     expect(operations).toContain("100 / 0 / 0");
     expect(operations).toContain("canary-eval-v1");
     expect(operations).toContain("eval:service-quality:static");
+    expect(operations).toContain("canary deploy + `both`");
+    expect(operations).toContain("production deploy + baseline");
 
     expect(wrangler).toContain("[env.danawa-canary.vars]");
     expect(wrangler).toContain('STATIC_CATALOG_DATASET = "canary-eval-v1"');

@@ -1,0 +1,170 @@
+name: Deploy Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Deployment target
+        required: true
+        default: danawa-canary
+        type: choice
+        options:
+          - danawa-canary
+          - production
+      ref:
+        description: Git ref to deploy
+        required: true
+        default: main
+        type: string
+      post_deploy_eval:
+        description: Post-deploy evaluation suite
+        required: true
+        default: both
+        # production default: baseline
+        type: choice
+        options:
+          - none
+          - baseline
+          - both
+
+concurrency:
+  group: deploy-worker-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: ${{ inputs.target }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Guard production ref
+        shell: bash
+        run: |
+          target="${{ inputs.target }}"
+          ref_name="${{ inputs.ref }}"
+
+          if [[ "$target" == "production" ]]; then
+            if [[ "$ref_name" != "main" ]]; then
+              echo "Production deploys must use the main ref."
+              exit 1
+            fi
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run deterministic verification
+        run: npm run verify:ci
+
+      - name: Deploy worker
+        shell: bash
+        run: |
+          target="${{ inputs.target }}"
+
+          if [[ "$target" == "danawa-canary" ]]; then
+            npx wrangler deploy --env danawa-canary
+            exit 0
+          fi
+
+          npx wrangler deploy
+
+      - name: Run post-deploy smoke checks
+        shell: bash
+        run: |
+          mkdir -p reports
+          target="${{ inputs.target }}"
+          smoke_log="reports/deploy-smoke-${target}.log"
+
+          if [[ "$target" == "danawa-canary" ]]; then
+            base_url="https://electronics-price-mcp-danawa-canary.jinhyuk9714.workers.dev"
+          else
+            base_url="https://electronics-price-mcp.jinhyuk9714.workers.dev"
+          fi
+
+          {
+            echo "target=${target}"
+            echo "base_url=${base_url}"
+            echo
+            echo "== /health =="
+            curl -fsS -i "${base_url}/health"
+            echo
+            echo "== /api/search =="
+            curl -fsS -i "${base_url}/api/search?query=%EA%B7%B8%EB%9E%A8%2016"
+            echo
+            echo "== /api/compare =="
+            curl -fsS -i "${base_url}/api/compare?query=RTX%205070"
+          } | tee "${smoke_log}"
+
+      - name: Run post-deploy live evaluations
+        shell: bash
+        run: |
+          mkdir -p reports
+          target="${{ inputs.target }}"
+          requested_eval="${{ inputs.post_deploy_eval }}"
+          effective_eval="${requested_eval}"
+          summary_file="reports/deploy-summary-${target}.md"
+
+          if [[ "$target" == "production" && "$requested_eval" == "both" ]]; then
+            effective_eval="baseline"
+          fi
+
+          {
+            echo "# Deploy Summary"
+            echo
+            echo "- target: ${target}"
+            echo "- ref: ${{ inputs.ref }}"
+            echo "- requested_eval: ${requested_eval}"
+            echo "- effective_eval: ${effective_eval}"
+          } > "${summary_file}"
+
+          baseline_script="eval:service-quality"
+          advanced_script="eval:service-quality:advanced"
+
+          if [[ "$target" == "danawa-canary" ]]; then
+            baseline_script="eval:service-quality:canary"
+            advanced_script="eval:service-quality:advanced:canary"
+          fi
+
+          if [[ "$effective_eval" == "none" ]]; then
+            exit 0
+          fi
+
+          if [[ "$effective_eval" == "baseline" ]]; then
+            npm run "$baseline_script"
+            exit 0
+          fi
+
+          npm run "$baseline_script"
+          sleep 65
+          npm run "$advanced_script"
+
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-worker-artifacts-${{ inputs.target }}
+          path: |
+            reports/deploy-smoke-*.log
+            reports/deploy-summary-*.md
+            reports/*service-quality-100-latest.json
+            reports/*service-quality-100-latest.md
+            reports/*service-quality-advanced-100-latest.json
+            reports/*service-quality-advanced-100-latest.md
+          if-no-files-found: error
