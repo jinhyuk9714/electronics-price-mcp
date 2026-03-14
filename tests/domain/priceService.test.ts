@@ -69,6 +69,51 @@ describe("PriceService", () => {
     expect(result.offers[0]?.productId).toBeTruthy();
   });
 
+  test("searchProducts groups the same exact model across multiple sources", async () => {
+    const service = new PriceService({
+      provider: createProvider({
+        query: "27GR93U",
+        offers: [
+          {
+            source: "naver-shopping",
+            sourceProductId: "100",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "몰A",
+            price: 799000,
+            link: "https://example.com/naver-a",
+            image: "https://example.com/naver-a.jpg"
+          },
+          {
+            source: "danawa",
+            sourceProductId: "dw-100",
+            title: "LG 울트라기어 27GR93U",
+            brand: "LG전자",
+            mallName: "몰B",
+            price: 789000,
+            link: "https://example.com/danawa-b",
+            image: "https://example.com/danawa-b.jpg"
+          }
+        ]
+      })
+    });
+
+    const result = await service.searchProducts({
+      query: "27GR93U",
+      sort: "relevance",
+      excludeUsed: true,
+      limit: 10
+    });
+
+    expect(result.offers).toHaveLength(2);
+    expect(result.offers.map((offer) => offer.source)).toEqual(["danawa", "naver-shopping"]);
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]).toMatchObject({
+      normalizedModel: "LG 27GR93U",
+      offerCount: 2
+    });
+  });
+
   test("searchProducts excludes accessory-like titles from device comparisons", async () => {
     const service = new PriceService({
       provider: createProvider({

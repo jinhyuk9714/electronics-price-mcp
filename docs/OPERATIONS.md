@@ -6,6 +6,7 @@
 
 - 런타임: Cloudflare Workers
 - 데이터 소스: 네이버 쇼핑 검색 API
+- 선택 소스: Danawa provider
 - 전자기기 가격 비교 로직: Worker 내부 `PriceService`
 - 운영 가드레일:
   - `ELECTRONICS_RATE_LIMITER` Durable Object
@@ -32,15 +33,19 @@ Durable Object는 Wrangler binding으로 주입됩니다. `.dev.vars`에 직접 
 
 필수 비밀값:
 
-- `NAVER_CLIENT_ID`
-- `NAVER_CLIENT_SECRET`
+- 아래 둘 중 하나는 반드시 필요합니다.
+- `NAVER_CLIENT_ID` + `NAVER_CLIENT_SECRET`
+- `DANAWA_CLIENT_ID` + `DANAWA_CLIENT_SECRET`
 
 선택 설정:
 
+- `DANAWA_API_BASE_URL`
 - `REQUEST_TIMEOUT_MS`
 - `CACHE_TTL_MS`
 - `PUBLIC_BASE_URL`
 - `CHATGPT_APP_URL`
+
+공개 배포본은 현재 네이버 중심으로 운영됩니다. Danawa는 자격 증명이 있는 self-host 환경에서만 선택적으로 활성화됩니다.
 
 ## Rate Limit 정책
 
@@ -132,6 +137,19 @@ curl -i https://electronics-price-mcp.<subdomain>.workers.dev/prompt
 
 1. Worker secret이 둘 다 설정돼 있는지 확인
 2. 네이버 앱 상태와 secret 재발급 여부 확인
+3. 필요하면 `wrangler secret put`으로 다시 설정
+
+### 1-1. Danawa 인증 관련 오류
+
+증상:
+
+- `503`
+- 메시지에 `DANAWA_CLIENT_ID`, `DANAWA_CLIENT_SECRET` 언급
+
+확인 순서:
+
+1. Worker secret이 둘 다 설정돼 있는지 확인
+2. Danawa API base URL override를 쓰는 경우 URL이 올바른지 확인
 3. 필요하면 `wrangler secret put`으로 다시 설정
 
 ### 2. 네이버 upstream rate limit 또는 timeout

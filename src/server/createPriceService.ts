@@ -10,6 +10,7 @@ import type {
   SearchProductsResult
 } from "../domain/types.js";
 import { AggregateSearchProvider } from "../providers/aggregateSearchProvider.js";
+import { DanawaSearchProvider } from "../providers/danawaSearchProvider.js";
 import { NaverShoppingClient } from "../providers/naverShoppingClient.js";
 
 export interface PriceServiceLike {
@@ -22,18 +23,30 @@ const sharedServices = new Map<string, PriceServiceLike>();
 
 export function createSearchProviders(env?: RuntimeEnv): SearchProvider[] {
   const config = readConfig(env);
+  const providers: SearchProvider[] = [];
 
-  if (!config.naverClientId || !config.naverClientSecret) {
-    return [];
+  if (config.naverClientId && config.naverClientSecret) {
+    providers.push(
+      new NaverShoppingClient({
+        clientId: config.naverClientId,
+        clientSecret: config.naverClientSecret,
+        timeoutMs: config.requestTimeoutMs
+      })
+    );
   }
 
-  return [
-    new NaverShoppingClient({
-      clientId: config.naverClientId,
-      clientSecret: config.naverClientSecret,
-      timeoutMs: config.requestTimeoutMs
-    })
-  ];
+  if (config.danawaClientId && config.danawaClientSecret) {
+    providers.push(
+      new DanawaSearchProvider({
+        clientId: config.danawaClientId,
+        clientSecret: config.danawaClientSecret,
+        apiBaseUrl: config.danawaApiBaseUrl,
+        timeoutMs: config.requestTimeoutMs
+      })
+    );
+  }
+
+  return providers;
 }
 
 export function createSearchProvider(env?: RuntimeEnv): SearchProvider {
@@ -42,18 +55,19 @@ export function createSearchProvider(env?: RuntimeEnv): SearchProvider {
 
 export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
   const config = readConfig(env);
+  const providers = createSearchProviders(env);
 
-  if (!config.naverClientId || !config.naverClientSecret) {
-    return createUnavailableService(
-      "NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요."
-    );
+  if (providers.length === 0) {
+    return createUnavailableService(UNAVAILABLE_PROVIDER_MESSAGE);
   }
 
   const cacheKey = [
     "aggregate-provider",
-    "naver-shopping",
-    config.naverClientId,
-    config.naverClientSecret,
+    config.naverClientId ?? "",
+    config.naverClientSecret ?? "",
+    config.danawaClientId ?? "",
+    config.danawaClientSecret ?? "",
+    config.danawaApiBaseUrl,
     config.requestTimeoutMs,
     config.cacheTtlMs
   ].join("|");
@@ -64,7 +78,7 @@ export function createPriceService(env?: RuntimeEnv): PriceServiceLike {
   }
 
   const service = new PriceService({
-    provider: createSearchProvider(env),
+    provider: new AggregateSearchProvider(providers),
     cacheTtlMs: config.cacheTtlMs
   });
 
@@ -104,3 +118,6 @@ function createUnavailableService(message: string): PriceServiceLike {
     }
   };
 }
+
+const UNAVAILABLE_PROVIDER_MESSAGE =
+  "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.";

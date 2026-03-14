@@ -7,7 +7,7 @@ export type ProductCategory =
 
 export type SearchSort = "relevance" | "price_asc" | "price_desc";
 export type ExplainFocus = "lowest_price" | "seller_variety" | "brand";
-export type SearchSource = "naver-shopping";
+export type SearchSource = "naver-shopping" | "danawa";
 
 export interface SearchProviderInput {
   query: string;

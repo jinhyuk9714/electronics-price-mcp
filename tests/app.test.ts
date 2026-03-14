@@ -264,7 +264,7 @@ describe("createApp", () => {
     await client.close();
   });
 
-  test("returns a friendly message when Naver credentials are missing", async () => {
+  test("returns a friendly message when search provider credentials are missing", async () => {
     const app = createApp({
       env: {}
     });
@@ -292,12 +292,12 @@ describe("createApp", () => {
     expect(typedResult.content[0]).toMatchObject({
       type: "text"
     });
-    expect(typedResult.content[0]?.text).toContain("NAVER_CLIENT_ID");
+    expect(typedResult.content[0]?.text).toContain("DANAWA_CLIENT_ID");
 
     await client.close();
   });
 
-  test("returns a friendly http error payload when Naver credentials are missing", async () => {
+  test("returns a friendly http error payload when search provider credentials are missing", async () => {
     const app = createApp({
       env: {}
     });
@@ -309,7 +309,7 @@ describe("createApp", () => {
     expect(body).toMatchObject({
       success: false,
       error: {
-        message: expect.stringContaining("NAVER_CLIENT_ID")
+        message: expect.stringContaining("DANAWA_CLIENT_ID")
       }
     });
   });

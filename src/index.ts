@@ -183,7 +183,7 @@ export function createApp(options?: AppOptions) {
     const baseService = options?.service ?? createPriceService(env);
     const service = createInstrumentedService(baseService, c);
 
-    if (!options?.service && !hasRequiredApiConfig(config.naverClientId, config.naverClientSecret)) {
+    if (!options?.service && !hasRequiredApiConfig(config)) {
       c.set("resultStatus", "error");
       return c.json(createUnavailableResponse(c.get("requestId")), 503);
     }
@@ -221,7 +221,7 @@ export function createApp(options?: AppOptions) {
     const baseService = options?.service ?? createPriceService(env);
     const service = createInstrumentedService(baseService, c);
 
-    if (!options?.service && !hasRequiredApiConfig(config.naverClientId, config.naverClientSecret)) {
+    if (!options?.service && !hasRequiredApiConfig(config)) {
       c.set("resultStatus", "error");
       return c.json(createUnavailableResponse(c.get("requestId")), 503);
     }
@@ -469,13 +469,21 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
   return value !== "false";
 }
 
-function hasRequiredApiConfig(clientId?: string, clientSecret?: string) {
-  return Boolean(clientId && clientSecret);
+function hasRequiredApiConfig(config: {
+  naverClientId?: string;
+  naverClientSecret?: string;
+  danawaClientId?: string;
+  danawaClientSecret?: string;
+}) {
+  return Boolean(
+    (config.naverClientId && config.naverClientSecret) ||
+      (config.danawaClientId && config.danawaClientSecret)
+  );
 }
 
 function createUnavailableResponse(requestId: string) {
   return createErrorEnvelope(
-    "NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.",
+    "NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 또는 DANAWA_CLIENT_ID/DANAWA_CLIENT_SECRET을 설정한 뒤 다시 시도해 주세요.",
     requestId
   );
 }

@@ -3,6 +3,9 @@
 
 NAVER_CLIENT_ID=your_naver_client_id
 NAVER_CLIENT_SECRET=your_naver_client_secret
+DANAWA_CLIENT_ID=your_danawa_client_id
+DANAWA_CLIENT_SECRET=your_danawa_client_secret
+DANAWA_API_BASE_URL=http://api.danawa.com
 REQUEST_TIMEOUT_MS=8000
 CACHE_TTL_MS=300000
 PUBLIC_BASE_URL=https://electronics-price-mcp.jinhyuk9714.workers.dev
