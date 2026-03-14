@@ -106,19 +106,20 @@ describe("CI workflow automation", () => {
     expect(workflow).toContain("if: always()");
   });
 
-  test("documentation explains automated CI and manual live evaluation split", () => {
+  test("documentation splits landing-page guidance from operations runbook", () => {
     const readme = readText(`${ROOT}/README.md`);
     const operations = readText(`${ROOT}/docs/OPERATIONS.md`);
     const wrangler = readText(`${ROOT}/wrangler.toml`);
 
-    expect(readme).toContain("verify:ci");
-    expect(readme).toContain("live service-quality 평가는 수동 workflow");
-    expect(readme).toContain("Danawa rollout 전에는 canary workflow");
-    expect(readme).toContain("canary-eval-v1");
-    expect(readme).toContain("static-canary-local");
-    expect(readme).toContain("deploy-worker.yml");
-    expect(readme).toContain("수동 승격");
-    expect(readme).toContain("strict gate");
+    expect(readme).toContain("## 빠른 연결");
+    expect(readme).toContain("/mcp");
+    expect(readme).toContain("## 바로 써볼 질문");
+    expect(readme).toContain("## HTTP로 바로 확인하기");
+    expect(readme).toContain("## Self-host 최소 가이드");
+    expect(readme).toContain("## 현재 상태와 제한");
+    expect(readme).toContain("Naver-only");
+    expect(readme).toContain("danawa-canary");
+    expect(readme).toContain("OPERATIONS.md");
 
     expect(operations).toContain("ci.yml");
     expect(operations).toContain("canary-eval.yml");
@@ -126,6 +127,7 @@ describe("CI workflow automation", () => {
     expect(operations).toContain("artifact");
     expect(operations).toContain("100 / 0 / 0");
     expect(operations).toContain("canary-eval-v1");
+    expect(operations).toContain("오프라인 static canary 평가");
     expect(operations).toContain("eval:service-quality:static");
     expect(operations).toContain("canary deploy + `both`");
     expect(operations).toContain("production deploy + baseline");
