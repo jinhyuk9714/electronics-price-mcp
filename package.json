@@ -15,6 +15,7 @@
     "eval:service-quality:advanced": "node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
     "eval:service-quality:canary": "SERVICE_QUALITY_TARGET=danawa-canary node --experimental-strip-types scripts/run-service-quality-eval.ts",
     "eval:service-quality:advanced:canary": "SERVICE_QUALITY_TARGET=danawa-canary node --experimental-strip-types scripts/run-service-quality-eval.ts --suite service-quality-advanced-100",
+    "eval:multisource-merge": "tsx scripts/run-multisource-merge-eval.ts",
     "smoke:danawa": "tsx scripts/run-danawa-smoke.ts",
     "smoke:static-catalog": "tsx scripts/run-static-catalog-smoke.ts"
   },

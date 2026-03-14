@@ -1,0 +1,201 @@
+{
+  "title": "Multisource Merge Evaluation",
+  "generatedAt": "2026-03-14T05:43:34.124Z",
+  "totals": {
+    "total": 7,
+    "pass": 7,
+    "fail": 0,
+    "passRate": 100,
+    "canonicalMallDedupeHits": 4,
+    "crossSourceDuplicateDrops": 4,
+    "bySourceCombination": [
+      {
+        "key": "danawa+static-catalog",
+        "total": 1,
+        "pass": 1,
+        "fail": 0,
+        "passRate": 100
+      },
+      {
+        "key": "naver-shopping+danawa",
+        "total": 2,
+        "pass": 2,
+        "fail": 0,
+        "passRate": 100
+      },
+      {
+        "key": "naver-shopping+danawa+static-catalog",
+        "total": 1,
+        "pass": 1,
+        "fail": 0,
+        "passRate": 100
+      },
+      {
+        "key": "naver-shopping+static-catalog",
+        "total": 3,
+        "pass": 3,
+        "fail": 0,
+        "passRate": 100
+      }
+    ],
+    "failurePatterns": []
+  },
+  "results": [
+    {
+      "id": "merge-same-mall-alias-dedupe",
+      "description": "same exact model + same mall alias dedupes to one kept offer",
+      "sourceCombination": "naver-shopping+static-catalog",
+      "action": "search",
+      "status": "pass",
+      "observedSummary": "27GR93U 기준 1개 모델, 1개 판매처를 찾았습니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "static-catalog": "success"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 1,
+          "static-catalog": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 1,
+        "crossSourceDuplicateDrops": 1
+      }
+    },
+    {
+      "id": "merge-different-mall-keep-both",
+      "description": "same exact model + different mall keeps both offers",
+      "sourceCombination": "naver-shopping+static-catalog",
+      "action": "search",
+      "status": "pass",
+      "observedSummary": "27GR93U 기준 1개 모델, 2개 판매처를 찾았습니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "static-catalog": "success"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 1,
+          "static-catalog": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 0,
+        "crossSourceDuplicateDrops": 0
+      }
+    },
+    {
+      "id": "merge-same-mall-large-price-gap",
+      "description": "same mall alias but abnormal price gap keeps both offers",
+      "sourceCombination": "naver-shopping+danawa",
+      "action": "search",
+      "status": "pass",
+      "observedSummary": "27GR93U 기준 1개 모델, 2개 판매처를 찾았습니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "danawa": "success"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 1,
+          "danawa": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 0,
+        "crossSourceDuplicateDrops": 0
+      }
+    },
+    {
+      "id": "merge-source-priority-tiebreak",
+      "description": "same mall alias across all sources keeps naver first on tie",
+      "sourceCombination": "naver-shopping+danawa+static-catalog",
+      "action": "search",
+      "status": "pass",
+      "observedSummary": "27GR93U 기준 1개 모델, 1개 판매처를 찾았습니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "danawa": "success",
+          "static-catalog": "success"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 1,
+          "danawa": 1,
+          "static-catalog": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 2,
+        "crossSourceDuplicateDrops": 2
+      }
+    },
+    {
+      "id": "merge-partial-provider-failure",
+      "description": "one provider failure still returns exact compare result from another source",
+      "sourceCombination": "naver-shopping+danawa",
+      "action": "compare",
+      "status": "pass",
+      "observedSummary": "ZOTAC GAMING GeForce RTX 5070 Twin Edge 기준 최저가 919000원, 최고가 929000원, 판매처 2곳입니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "danawa": "error"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 2,
+          "danawa": 0
+        },
+        "partialProviderFailure": true,
+        "canonicalMallDedupeHits": 0,
+        "crossSourceDuplicateDrops": 0
+      }
+    },
+    {
+      "id": "merge-broad-query-safety",
+      "description": "broad compare stays ambiguous even with multiple exact offers across sources",
+      "sourceCombination": "naver-shopping+static-catalog",
+      "action": "compare",
+      "status": "pass",
+      "observedSummary": "정확한 모델이 여러 개라 바로 판단할 수 없습니다. 모델 코드나 정확한 제품명으로 다시 물어봐 주세요.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "naver-shopping": "success",
+          "static-catalog": "success"
+        },
+        "providerOfferCounts": {
+          "naver-shopping": 2,
+          "static-catalog": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 0,
+        "crossSourceDuplicateDrops": 0
+      }
+    },
+    {
+      "id": "merge-danawa-static-alias-dedupe",
+      "description": "danawa and static-catalog same mall alias dedupes with danawa priority",
+      "sourceCombination": "danawa+static-catalog",
+      "action": "search",
+      "status": "pass",
+      "observedSummary": "RTX 5070 기준 1개 모델, 1개 판매처를 찾았습니다.",
+      "notes": "",
+      "diagnostics": {
+        "providerStatuses": {
+          "danawa": "success",
+          "static-catalog": "success"
+        },
+        "providerOfferCounts": {
+          "danawa": 1,
+          "static-catalog": 1
+        },
+        "partialProviderFailure": false,
+        "canonicalMallDedupeHits": 1,
+        "crossSourceDuplicateDrops": 1
+      }
+    }
+  ]
+}
